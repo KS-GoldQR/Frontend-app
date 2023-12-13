@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/screens/home_screen.dart';
+import 'package:grit_qr_scanner/screens/login_screen.dart';
 import 'package:grit_qr_scanner/screens/qr_scanner_screen.dart';
 import 'package:grit_qr_scanner/screens/result_screen.dart';
 
@@ -17,6 +19,16 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         ),
       );
 
+    case LoginScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      );
+
+    case HomeScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      );
+      
     default:
       return MaterialPageRoute(
         builder: (context) => const Scaffold(

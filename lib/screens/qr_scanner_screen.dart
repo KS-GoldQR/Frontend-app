@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/screens/result_screen.dart';
-import 'package:grit_qr_scanner/widgets/qr_overrlay.dart';
+import 'package:grit_qr_scanner/utils/widgets/qr_overrlay.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 // ignore: must_be_immutable

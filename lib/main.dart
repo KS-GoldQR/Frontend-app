@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/routers.dart';
-import 'package:grit_qr_scanner/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/screens/home_screen.dart';
+import 'package:grit_qr_scanner/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home:  const QRScannerScreen(),
+      home: const LoginScreen(),
     );
   }
 }
