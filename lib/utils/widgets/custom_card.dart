@@ -13,6 +13,7 @@ class CustomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Card(
       color: Colors.white,
       elevation: 5,
@@ -23,20 +24,20 @@ class CustomCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: 80,
-            width: 80,
+            height: (size.height / 3) * 0.2,
+            width: size.width * 0.15,
             decoration: BoxDecoration(
               color: blueColor,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: icon,
+            child: Center(child: icon),
           ),
           const SizedBox(height: 10),
           Text(
             text,
             style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

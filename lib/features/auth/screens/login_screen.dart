@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../utils/widgets/login_page_lower_design.dart';
-import '../utils/widgets/qr_button.dart';
+import '../../../utils/widgets/login_page_lower_design.dart';
+import '../../../utils/widgets/qr_button.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login-screen';
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final UserService _userService = UserService();
   final TextEditingController _userId = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -27,10 +29,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void isFormValid() {
     if (_formKey.currentState!.validate()) {
+    } else {}
+  }
 
-    }else{
-      
-    }
+  void login() {
+    _userService.userLogin(_userId.text.trim(), _password.text, context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _userId.dispose();
+    _password.dispose();
   }
 
   @override
@@ -91,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             isFormValid();
+                            login();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: greyColor,
