@@ -10,11 +10,12 @@ void showSnackBar(String text) {
   snackbarKey.currentState?.showSnackBar(snackBar);
 }
 
-Future<File?> pickImageFromGallery(BuildContext context) async {
+
+Future<File?> pickFile(BuildContext context, ImageSource source) async {
   File? image;
   try {
     final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: source, imageQuality: 20,);
 
     if (pickedImage != null) {
       image = File(pickedImage.path);
@@ -37,7 +38,48 @@ Future<List<File>> pickFiles(BuildContext context) async {
       }
     }
   } catch (e) {
-    showSnackBar( "from utils file of pickfiles func $e");
+    showSnackBar( "Error occurred $e");
   }
   return files;
 }
+
+  TextStyle customTextDecoration() {
+    return const TextStyle(
+      color: Color(0xFF282828),
+      fontSize: 15,
+      fontWeight: FontWeight.w400,
+      fontFamily: 'Inter',
+    );
+  }
+
+  InputDecoration customTextfieldDecoration() {
+    return const InputDecoration(
+      isDense: true,
+      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Color(0xFFC3C3C3),
+        ),
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Color(0xFFC3C3C3),
+        ),
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Color(0xFFC3C3C3),
+        ),
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+    );
+  }
+

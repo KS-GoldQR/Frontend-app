@@ -45,6 +45,10 @@ dependencies:
   carousel_indicator: ^1.0.6
   dotted_border: ^2.1.0
   carousel_slider: ^4.2.1
+  quickalert: ^1.0.2
+  awesome_dialog: ^3.1.0
+  gap: ^3.0.1
+  cached_network_image: ^3.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/features/products/screens/add_product_screen.dart';
+import 'package:grit_qr_scanner/features/products/screens/sell_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
@@ -53,6 +55,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
     case AddProductScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => const AddProductScreen(),
+      );
+
+    case SellProductScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const SellProductScreen(),
       );
 
     case ErrorPage.routeName:

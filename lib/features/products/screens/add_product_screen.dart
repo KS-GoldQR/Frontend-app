@@ -1,11 +1,13 @@
 import 'dart:io';
 
-import 'package:carousel_indicator/carousel_indicator.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/utils/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../utils/utils.dart';
 
@@ -32,16 +34,34 @@ class _AddProductScreenState extends State<AddProductScreen> {
   List<String> types = ['Chapawala', 'Tejabi', 'Chapi'];
   String selectedType = 'Chapawala';
 
-  List<String> weight = ['Tola', 'Gram'];
+  List<String> weight = ['Tola', 'Gram', 'Laal'];
   String selectedWeight = 'Tola';
-  List<File> images = [];
+  File? images;
   int currentIndex = 0;
 
-  void selectFiles() async {
-    var result = await pickFiles(context);
-    setState(() {
-      images = result;
-    });
+  Future<void> _pickImage(ImageSource source) async {
+    images = await pickFile(context, source);
+    setState(() {});
+  }
+
+  Future<void> _showChoiceDialog() async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: 'Upload Image',
+      desc: 'choose to upload image of product',
+      btnOkText: 'Gallery',
+      btnCancelText: 'Camera',
+      btnOkColor: blueColor,
+      btnCancelColor: blueColor,
+      btnCancelOnPress: () {
+        _pickImage(ImageSource.camera);
+      },
+      btnOkOnPress: () {
+        _pickImage(ImageSource.gallery);
+      },
+    ).show();
   }
 
   @override
@@ -106,7 +126,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
+                     const Gap(10),
                       TextFormField(
                         controller: _descriptionController,
                         maxLines: null,
@@ -114,10 +134,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           hintText: "Enter the description for the product",
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       GestureDetector(
-                        onTap: selectFiles,
-                        child: images.isEmpty
+                        onTap: _showChoiceDialog,
+                        child: images == null
                             ? DottedBorder(
                                 strokeWidth: 1,
                                 borderType: BorderType.RRect,
@@ -152,58 +172,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   ),
                                 ),
                               )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  CarouselSlider(
-                                    items: images.map((e) {
-                                      return Builder(
-                                        builder: (context) => Image.file(
-                                          e,
-                                          fit: BoxFit.cover,
-                                          height: 200,
-                                        ),
-                                      );
-                                    }).toList(),
-                                    options: CarouselOptions(
-                                      onPageChanged: (index, reason) {
-                                        setState(() {
-                                          currentIndex = index;
-                                        });
-                                      },
-                                      viewportFraction: 1,
-                                      height: 200,
-                                      autoPlay: true,
-                                      autoPlayCurve: Curves.decelerate,
-                                    ),
-                                  ),
-                                  CarouselIndicator(
-                                    count: images.length,
-                                    index: currentIndex,
-                                    color: Colors.grey,
-                                    activeColor: blueColor,
-                                  ),
-                                  const SizedBox(height: 15),
-                                ],
+                            : Image.file(
+                                images!,
+                                fit: BoxFit.contain,
+                                height: size.height * 0.2,
+                                width: double.infinity,
                               ),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Name of Product",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       TextFormField(
                         controller: _nameController,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Type",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       DropdownButtonFormField<String>(
                         value: selectedType,
                         iconEnabledColor: const Color(0xFFC3C3C3),
@@ -226,12 +218,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         },
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Weight",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       Row(
                         children: [
                           Expanded(
@@ -241,7 +233,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               decoration: customTextfieldDecoration(),
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const Gap(10),
                           Expanded(
                             flex: 1,
                             child: DropdownButtonFormField<String>(
@@ -269,51 +261,51 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Stone",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       TextFormField(
                         controller: _stoneController,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Stone Price",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       TextFormField(
                         controller: _stonePriceController,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Jyala",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       TextFormField(
                         controller: _jyalaController,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       Text(
                         "Jarti",
                         style: customTextDecoration(),
                       ),
-                      const SizedBox(height: 5),
+                      const Gap(5),
                       TextFormField(
                         controller: _jartiController,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                     ],
                   ),
                 ),
@@ -322,66 +314,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        height: size.height * 0.1,
-        width: size.width * 0.9,
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 30),
-        child: ElevatedButton(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 15,
+        ),
+        child: CustomButton(
           onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: blueColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: const Text(
-            "Submit",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  TextStyle customTextDecoration() {
-    return const TextStyle(
-      color: Color(0xFF282828),
-      fontSize: 15,
-      fontWeight: FontWeight.w400,
-      fontFamily: 'Inter',
-    );
-  }
-
-  InputDecoration customTextfieldDecoration() {
-    return const InputDecoration(
-      isDense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
+          text: "Submit",
+          textColor: Colors.white,
+          backgroundColor: blueColor,
         ),
       ),
     );

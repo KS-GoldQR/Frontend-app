@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:grit_qr_scanner/features/products/screens/add_product_screen.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:grit_qr_scanner/routers.dart';
-import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home: const LoginScreen(),
+      home: const AddProductScreen(),
     );
   }
 }
