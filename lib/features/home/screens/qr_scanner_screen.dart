@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/screens/result_screen.dart';
+import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
+import 'package:grit_qr_scanner/features/products/screens/add_product_screen.dart';
 import 'package:grit_qr_scanner/utils/widgets/qr_overrlay.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -119,14 +120,26 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         debugPrint('Barcode found! ${barcode.rawValue}');
                       }
                       cameraController.stop();
-                      Navigator.pushNamed(
-                        context,
-                        ResultScreen.routeName,
-                        arguments: {
-                          'data': barcodes[0].rawValue,
-                          'callback': toggleCanScan,
-                        },
-                      );
+
+                      if (barcodes.length == 1) {
+                        Navigator.pushNamed(
+                          context,
+                          AddProductScreen.routeName,
+                          arguments: {
+                            'productId': barcodes[0].rawValue,
+                            'callback': toggleCanScan,
+                          },
+                        );
+                      } else {
+                        Navigator.pushNamed(
+                          context,
+                          AboutProduct.routeName,
+                          arguments: {
+                            'productId': barcodes[0].rawValue,
+                            'callback': toggleCanScan,
+                          },
+                        );
+                      }
                     }
                   },
                   // startDelay: true,
@@ -140,7 +153,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               height: size.height * 0.05,
             ),
             const Text(
-              "Developed By GRIT💙",
+              "A product of Golden Nepal IT Solution",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(

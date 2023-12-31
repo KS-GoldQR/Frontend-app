@@ -1,9 +1,9 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:remixicon/remixicon.dart';
-
-import '../../../utils/widgets/login_page_lower_design.dart';
 import '../../../utils/widgets/qr_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool isVisible = false;
+  bool isSecondBoxVisible = false;
 
   void togglePassowordVisibility() {
     setState(() {
@@ -29,11 +30,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void isFormValid() {
     if (_formKey.currentState!.validate()) {
+      login();
     } else {}
   }
 
   void login() {
     _userService.userLogin(_userId.text.trim(), _password.text, context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 5), () {
+      setState(() {
+        isSecondBoxVisible = true;
+      });
+    });
   }
 
   @override
@@ -47,12 +59,65 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: size.height * 0.25),
+            SizedBox(height: size.height * 0.20),
+            const Gap(1),
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: TextLiquidFill(
+                    text: 'Smart Sunar',
+                    waveColor: blueColor,
+                    loadUntil: 0.88,
+                    boxBackgroundColor: Colors.white,
+                    textStyle: const TextStyle(
+                      fontSize: 40.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    boxHeight: 60.0,
+                    loadDuration: const Duration(seconds: 4),
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 20,
+                  child: Visibility(
+                    visible: isSecondBoxVisible,
+                    child: DefaultTextStyle(
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        fontFamily: 'Poppins',
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            'Next-Gen Jewellery App',
+                            textAlign: TextAlign.center,
+                            speed: const Duration(
+                              milliseconds: 300,
+                            ),
+                          ),
+                        ],
+                        repeatForever: false,
+                        totalRepeatCount: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Gap(size.height * 0.10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               child: Form(
@@ -88,7 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorHeight: 25,
                       decoration: passwordDecoration(),
                       validator: (value) {
-                        if (value!.isEmpty) return "Password cannot be Empty!";
+                        if (value!.isEmpty) {
+                          return "Password cannot be Empty!";
+                        }
                         if (value.length < 6) {
                           return "Password must be 6 character long!";
                         }
@@ -101,7 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             isFormValid();
-                            login();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: greyColor,
@@ -132,10 +198,20 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: size.height * 0.3,
-        width: double.infinity,
-        child: const LoginLowerDesign(),
+      bottomNavigationBar: Container(
+        height: 50,
+        padding: const EdgeInsets.only(bottom: 20),
+        child: const Align(
+          alignment: Alignment.bottomCenter,
+          child: Text(
+            'A product of Golden Nepal IT Solution',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
       ),
     );
   }

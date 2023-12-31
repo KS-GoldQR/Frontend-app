@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/utils/custom_appbar.dart';
+import 'package:grit_qr_scanner/utils/widgets/custom_appbar.dart';
 
 import '../../../models/product_model.dart';
-import '../../../utils/custom_button.dart';
+import '../../../utils/widgets/custom_button.dart';
 import '../../../utils/global_variables.dart';
-import '../../../utils/product_detail_card.dart';
+import '../../../utils/widgets/product_detail_card.dart';
 import '../../../utils/utils.dart';
 import '../services/product_service.dart';
 

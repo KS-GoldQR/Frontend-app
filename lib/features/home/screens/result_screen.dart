@@ -14,7 +14,8 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   Future<bool> _onWillPop() async {
-    return (await showDialog(
+    return (
+      await showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Scan QR Again?'),

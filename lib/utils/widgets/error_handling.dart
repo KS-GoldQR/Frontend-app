@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:http/http.dart' as http;
@@ -14,14 +15,14 @@ void httpErrorHandle({
       break;
 
     case 400:
-      showSnackBar(jsonDecode(response.body)['msg']);
+      showSnackBar(title: 'Not Found', message: jsonDecode(response.body)['error'], contentType: ContentType.warning);
       break;
 
     case 500:
-      showSnackBar(jsonDecode(response.body)['error']);
+      showSnackBar(title: 'Error', message: jsonDecode(response.body)['error'], contentType: ContentType.failure);
       break;
 
     default:
-      showSnackBar(response.body);
+      showSnackBar(title: 'Failed', message: 'Invalid Move', contentType: ContentType.help);
   }
 }

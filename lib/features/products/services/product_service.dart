@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:grit_qr_scanner/utils/error_handling.dart';
+import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,7 @@ class ProductService {
     List<Product> products = [];
     try {
       http.Response response = await http.post(
-        Uri.parse('$hostedUrl/users/viewInventory'),
+        Uri.parse('$hostedUrl/viewInventory'),
         body: jsonEncode({
           'sessionToken': testingSessionToken,
         }),
@@ -40,10 +42,16 @@ class ProductService {
               }
             });
       } else {
-        showSnackBar(jsonDecode(response.body)['message']);
+        showSnackBar(
+            title: 'Error',
+            message: jsonDecode(response.body)['message'],
+            contentType: ContentType.failure);
       }
     } catch (e) {
-      showSnackBar("Internal error: $e");
+      showSnackBar(
+          title: 'Internal Error',
+          message: e.toString(),
+          contentType: ContentType.failure);
     }
 
     return products;
@@ -55,7 +63,7 @@ class ProductService {
     List<Product> products = [];
     try {
       http.Response response = await http.post(
-        Uri.parse('$hostedUrl/users/viewSoldItems'),
+        Uri.parse('$hostedUrl/viewSoldItems'),
         body: jsonEncode({
           'sessionToken': userProvider.user.sessionToken,
         }),
@@ -75,10 +83,16 @@ class ProductService {
               }
             });
       } else {
-        showSnackBar(jsonDecode(response.body)['message']);
+        showSnackBar(
+            title: 'Error',
+            message: jsonDecode(response.body)['message'],
+            contentType: ContentType.failure);
       }
     } catch (e) {
-      showSnackBar("Internal error: $e");
+      showSnackBar(
+          title: 'Internal Error',
+          message: e.toString(),
+          contentType: ContentType.failure);
     }
 
     return products;
@@ -91,7 +105,7 @@ class ProductService {
     try {
       debugPrint(productId);
       http.Response response = await http.post(
-        Uri.parse('$hostedUrl/users/viewProduct'),
+        Uri.parse('$hostedUrl/viewProduct'),
         body: jsonEncode({
           "product_id": productId,
           "sessionToken": testingSessionToken,
@@ -112,13 +126,50 @@ class ProductService {
               );
             });
       } else {
-        showSnackBar(jsonDecode(response.body)['body']);
+        showSnackBar(
+            title: 'Error',
+            message: jsonDecode(response.body)['message'],
+            contentType: ContentType.failure);
         // navigatorKey.currentState!.pushNamed(ErrorPage.routeName);
       }
     } catch (e) {
-      showSnackBar("Internal error: $e");
+      showSnackBar(
+          title: 'Internal Error',
+          message: e.toString(),
+          contentType: ContentType.failure);
     }
-
     return product;
+  }
+
+  Future<void> addProduct(BuildContext context, File image) async {
+    /*
+    //testing with image as string
+    List<int> imageBytes = image.readAsBytesSync();
+    String base64Image = base64Encode(imageBytes);
+    debugPrint(base64Image);
+
+    Uint8List bytes = base64Decode(base64Image);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Image Dialog'),
+          content: Image.memory(bytes),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+            
+          ],
+        );
+      },
+    );
+    */
+    try {} catch (e) {
+      debugPrint("error $e");
+    }
   }
 }

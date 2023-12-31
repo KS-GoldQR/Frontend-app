@@ -1,4 +1,6 @@
 *.env
+env.dart
+env.g.dart
 notes.txt
 # Miscellaneous
 *.class

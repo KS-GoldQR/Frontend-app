@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'global_variables.dart';
+import '../global_variables.dart';
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;

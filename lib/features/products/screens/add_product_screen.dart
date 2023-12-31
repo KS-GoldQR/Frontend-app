@@ -5,7 +5,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/utils/custom_button.dart';
+import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -23,6 +24,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final String avatar = 'assets/images/avtar.svg';
   final addProductFormKey = GlobalKey<FormState>();
+  final ProductService _productService = ProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
@@ -42,6 +44,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Future<void> _pickImage(ImageSource source) async {
     images = await pickFile(context, source);
     setState(() {});
+  }
+
+  void addProduct(File image) async {
+    debugPrint("hit");
+    _productService.addProduct(context, image);
   }
 
   Future<void> _showChoiceDialog() async {
@@ -126,7 +133,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                     const Gap(10),
+                      const Gap(10),
                       TextFormField(
                         controller: _descriptionController,
                         maxLines: null,
@@ -320,7 +327,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           vertical: 15,
         ),
         child: CustomButton(
-          onPressed: () {},
+          onPressed: () => addProduct(images!),
           text: "Submit",
           textColor: Colors.white,
           backgroundColor: blueColor,

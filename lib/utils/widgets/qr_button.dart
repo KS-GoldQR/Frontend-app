@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:remixicon/remixicon.dart';
 
 import '../global_variables.dart';
@@ -19,7 +19,9 @@ class QrButton extends StatelessWidget {
       child: SizedBox(
         width: size.width * 0.5,
         child: TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, QRScannerScreen.routeName);
+          },
           style: TextButton.styleFrom(
             enableFeedback: false,
             splashFactory: NoSplash.splashFactory,

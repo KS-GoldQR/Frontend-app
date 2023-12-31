@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grit_qr_scanner/features/products/screens/add_product_screen.dart';
+import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
-import 'package:grit_qr_scanner/utils/error_page.dart';
+import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../utils/widgets/custom_card.dart';
+import '../../../utils/widgets/custom_card.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home-screen";
@@ -21,28 +22,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final String avatar = 'assets/images/avtar.svg';
   List<String> cardsText = [
-    "Add Product",
-    "View Product",
-    "Sales Report",
+    "Scan Qr",
     "Inventory",
-    "Sold Items"
+    "Sold Items",
+    "Create Order",
+    "Order List",
   ];
 
   List<Widget> cardsIcon = [
     const Icon(
-      Remix.add_line,
-      size: 30,
-      color: Colors.white,
-    ),
-    const ImageIcon(
-      AssetImage(
-        'assets/icons/view-product.png',
-      ),
-      size: 30,
-      color: Colors.white,
-    ),
-    const Icon(
-      Remix.file_chart_line,
+      Remix.qr_code_line,
       size: 30,
       color: Colors.white,
     ),
@@ -55,15 +44,29 @@ class _HomeScreenState extends State<HomeScreen> {
       Remix.product_hunt_line,
       size: 30,
       color: Colors.white,
-    )
+    ),
+    const Icon(
+      Remix.add_line,
+      size: 30,
+      color: Colors.white,
+    ),
+    const Icon(
+      Remix.file_chart_line,
+      size: 30,
+      color: Colors.white,
+    ),
   ];
 
   void onCardsTapped(int index) {
     switch (index) {
       case 0:
-        Navigator.pushNamed(context, AddProductScreen.routeName);
+        Navigator.pushNamed(context, QRScannerScreen.routeName);
         break;
-        
+
+      case 1:
+        Navigator.pushNamed(context, AboutProduct.routeName);
+        break;
+
       case 3:
         Navigator.pushNamed(context, ViewInventoryScreeen.routeName);
         break;
@@ -89,12 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {},
           icon: SvgPicture.asset(
             menuIcon,
-            // ignore: deprecated_member_use
             color: Colors.white,
           ),
         ),
         title: const Text(
-          "GRIT",
+          "Smart Sunar",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

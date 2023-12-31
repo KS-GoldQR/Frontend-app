@@ -5,51 +5,48 @@ import 'package:grit_qr_scanner/features/products/screens/sell_product_screen.da
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/screens/home_screen.dart';
+import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
-import 'package:grit_qr_scanner/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/screens/result_screen.dart';
-import 'package:grit_qr_scanner/utils/error_page.dart';
+import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
   switch (routeSettings.name) {
     case QRScannerScreen.routeName:
       return MaterialPageRoute(
+        settings: routeSettings,
         builder: (context) => const QRScannerScreen(),
-      );
-
-    case ResultScreen.routeName:
-      var scannedResult = routeSettings.arguments as Map<String, dynamic>;
-      return MaterialPageRoute(
-        builder: (context) => ResultScreen(
-          args: scannedResult,
-        ),
       );
 
     case LoginScreen.routeName:
       return MaterialPageRoute(
+        settings: routeSettings,
         builder: (context) => const LoginScreen(),
       );
 
     case HomeScreen.routeName:
       return MaterialPageRoute(
+        settings: routeSettings,
         builder: (context) => const HomeScreen(),
       );
 
     case ViewInventoryScreeen.routeName:
       return MaterialPageRoute(
+        settings: routeSettings,
         builder: (context) => const ViewInventoryScreeen(),
       );
 
     case SoldItemsScreen.routeName:
       return MaterialPageRoute(
+        settings: routeSettings,
         builder: (context) => const SoldItemsScreen(),
       );
 
     case AboutProduct.routeName:
-      String productId = "P1";
+      final args = routeSettings.arguments as Map<String,dynamic>;
       return MaterialPageRoute(
-        builder: (context) => AboutProduct(productId: productId),
+        builder: (context) => AboutProduct(args: args),
+        
       );
 
     case AddProductScreen.routeName:
