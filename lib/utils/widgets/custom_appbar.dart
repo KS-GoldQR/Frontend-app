@@ -21,7 +21,7 @@ class CustomAppbar extends StatelessWidget {
         },
         icon: SvgPicture.asset(
           menuIcon,
-          color: Colors.black,
+          colorFilter:const ColorFilter.mode(Colors.black, BlendMode.srcIn)
         ),
       ),
       actions: [

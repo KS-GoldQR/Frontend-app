@@ -45,7 +45,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                     debugPrint(products![index].id);
                     return Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text(products![index].name),
+                      child: Text(products![index].name!),
                     );
                   },
                 ),

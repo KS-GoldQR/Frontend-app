@@ -1,16 +1,17 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/models/product_model.dart';
+import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
+import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../../models/product_model.dart';
 import '../../../utils/widgets/custom_appbar.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../../utils/global_variables.dart';
-import '../../../utils/widgets/product_detail_card.dart';
+import '../services/product_detail_card.dart';
 
 class AboutProduct extends StatefulWidget {
   static const String routeName = '/about-product-screen';
@@ -24,7 +25,6 @@ class AboutProduct extends StatefulWidget {
 class _AboutProductState extends State<AboutProduct> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final String avatar = 'assets/images/avtar.svg';
-  final ProductService productService = ProductService();
   Product? product;
   int currentIndex = 0;
 
@@ -32,49 +32,38 @@ class _AboutProductState extends State<AboutProduct> {
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
       "Sed do eiusmod tempor incididunt ut";
 
-  Future<void> getProduct() async {
-    product =
-        await productService.viewProduct(context, widget.args['productId']);
-    setState(() {});
-  }
-
-  Future<bool> _onWillPop() async {
-    return (await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Scan QR Again?'),
-            content: const Text('All Progress Will Be Lost!'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () {
-                  widget.args['callback']();
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-        false;
-  }
-
-  @override
-  void initState() {
-    getProduct();
-    super.initState();
+  Future<void> _onWillPop() async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: 'Want to scan again?',
+      desc: 'All progress will disappear',
+      btnOkText: 'Yes',
+      btnCancelText: 'No',
+      btnOkColor: blueColor,
+      btnCancelColor: blueColor,
+      btnCancelOnPress: () {},
+      btnOkOnPress: () {
+        widget.args['callback']();
+        Navigator.pop(context);
+      },
+    ).show();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(widget.args['productId']);
-    final sessionToken = Provider.of<UserProvider>(context).user.sessionToken;
-    debugPrint(sessionToken);
-    return  WillPopScope(
-      onWillPop: _onWillPop,
+    final user = Provider.of<UserProvider>(context).user;
+
+    if (user.sessionToken.isEmpty) {
+      product = widget.args['product'];
+    } else {
+      product = Provider.of<ProductProvider>(context).currentProduct;
+    }
+    // debugPrint(product!.stone_price.toString());
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) => _onWillPop(),
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size(
@@ -103,7 +92,7 @@ class _AboutProductState extends State<AboutProduct> {
                 const Gap(10), // Add some spacing
                 SingleChildScrollView(
                   child: Text(
-                    product!.name,
+                    productDescription,
                     textAlign:
                         TextAlign.justify, // Your full product description here
                     style: const TextStyle(
@@ -112,55 +101,81 @@ class _AboutProductState extends State<AboutProduct> {
                   ),
                 ),
                 const Gap(10), // Add some spacing
-                Container(
+                SizedBox(
                   height: 200,
-                  color: Colors.grey,
+                  child: Center(
+                    child: CachedNetworkImage(
+                      imageUrl: product!.image!,
+                      fit: BoxFit.contain,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Text("error getting image!"),
+                    ),
+                  ),
                 ),
                 const Gap(10),
-                const ProductDetail(label: 'Product Name: ', value: "name"),
-                const ProductDetail(label: 'Type: ', value: "address"),
-                const ProductDetail(label: 'Weight: ', value: "name"),
-                const ProductDetail(label: 'Stone: ', value: "address"),
-                const ProductDetail(label: 'Stone Price: ', value: "address"),
-                const ProductDetail(label: 'Jyala: ', value: "name"),
-                const ProductDetail(label: 'Jarti: ', value: "address"),
-                const ProductDetail(label: 'Price: ', value: "address"),
+                ProductDetail(label: 'Product Name: ', value: product!.name!),
+                ProductDetail(label: 'Type: ', value: product!.productType!),
+                ProductDetail(
+                    label: 'Weight: ', value: "${product!.weight!} gm"),
+                ProductDetail(label: 'Stone: ', value: product!.stone!),
+                // product!.stone_price!.toString()
+                ProductDetail(
+                    label: 'Stone Price: ',
+                    value: product!.stone_price.toString()),
+                ProductDetail(
+                    label: 'Jyala: ', value: product!.jyala!.toString()),
+                ProductDetail(
+                    label: 'Jarti: ', value: product!.jarti!.toString()),
+                const ProductDetail(
+                    label: 'Price: ', value: "to be calculated"),
                 const Gap(20),
-                CustomButton(
-                  onPressed: () {},
-                  text: "Sell Item",
-                  backgroundColor: blueColor,
-                  iconColor: Colors.white,
-                  textColor: Colors.white,
-                  iconPath: 'assets/icons/material-symbols_sell.svg',
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: CustomButton(
-                        onPressed: () {},
-                        text: "Edit Item",
-                        iconColor: blueColor,
-                        textColor: blueColor,
-                        iconPath: 'assets/icons/bx_edit.svg',
-                        fontSize: 15,
+
+                if (user.sessionToken.isNotEmpty) ...[
+                  CustomButton(
+                    onPressed: () {},
+                    text: "Sell Item",
+                    backgroundColor: blueColor,
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+                    iconPath: 'assets/icons/material-symbols_sell.svg',
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context, EditProductScreen.routeName,
+                              arguments: {
+                                'product': product,
+                                'fromAboutProduct': true,
+                              }),
+                          text: "Edit Item",
+                          iconColor: blueColor,
+                          textColor: blueColor,
+                          iconPath: 'assets/icons/bx_edit.svg',
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
-                    const Gap(5),
-                    Expanded(
-                      child: CustomButton(
-                        onPressed: () {},
-                        text: "Delete Item",
-                        iconColor: blueColor,
-                        textColor: blueColor,
-                        fontSize: 15,
-                        iconPath: 'assets/icons/ic_round-delete.svg',
+                      const Gap(5),
+                      Expanded(
+                        child: CustomButton(
+                          onPressed: () {},
+                          text: "Delete Item",
+                          iconColor: blueColor,
+                          textColor: blueColor,
+                          fontSize: 15,
+                          iconPath: 'assets/icons/ic_round-delete.svg',
+                        ),
                       ),
-                    ),
-                  ],
-                )
+                    ],
+                  )
+                ],
               ],
             ),
           ),

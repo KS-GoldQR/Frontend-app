@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
+import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
@@ -11,8 +11,10 @@ import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../utils/widgets/error_page.dart';
+
 String testingSessionToken =
-    '9cc5b723f2ef2674f09fb4da7c2fe291b0b0db68b13573bbcbc8f6c3a591a51c';
+    'f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b';
 
 // userProvider.user.sessionToken is used sessiontoken in actual
 
@@ -22,7 +24,7 @@ class ProductService {
     List<Product> products = [];
     try {
       http.Response response = await http.post(
-        Uri.parse('$hostedUrl/viewInventory'),
+        Uri.parse('$hostedUrl/prod/users/viewInventory'),
         body: jsonEncode({
           'sessionToken': testingSessionToken,
         }),
@@ -63,7 +65,7 @@ class ProductService {
     List<Product> products = [];
     try {
       http.Response response = await http.post(
-        Uri.parse('$hostedUrl/viewSoldItems'),
+        Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
         body: jsonEncode({
           'sessionToken': userProvider.user.sessionToken,
         }),
@@ -98,78 +100,150 @@ class ProductService {
     return products;
   }
 
-  Future<Product?> viewProduct(BuildContext context, String productId) async {
+  Future<Product?> viewProduct(
+      BuildContext context, String productId, String sessionToken) async {
+    debugPrint("product id is $productId");
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+
     Product? product;
+
     try {
-      debugPrint(productId);
-      http.Response response = await http.post(
-        Uri.parse('$hostedUrl/viewProduct'),
-        body: jsonEncode({
-          "product_id": productId,
-          "sessionToken": testingSessionToken,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      );
+      http.Response response;
+      if (sessionToken.isEmpty) {
+        response = await http.post(
+          Uri.parse('$hostedUrl/prod/products/viewProduct'),
+          body: jsonEncode({
+            "product_id": productId,
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+      } else {
+        response = await http.post(
+          Uri.parse('$hostedUrl/prod/products/viewProduct'),
+          body: jsonEncode({
+            "product_id": productId,
+            'sessionToken': testingSessionToken,
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
 
-      debugPrint(jsonDecode(response.body)['statusCode'].toString());
-
-      if (jsonDecode(response.body)['statusCode'] == 200) {
+      debugPrint(response.body);
+      if (response.statusCode == 200) {
         httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              product = Product.fromJson(
-                jsonEncode(
-                  jsonDecode(response.body),
-                ),
-              );
-            });
+          response: response,
+          onSuccess: () {
+            product = Product.fromJson(
+              jsonEncode(
+                jsonDecode(response.body),
+              ),
+            );
+
+            if (sessionToken.isNotEmpty) {
+              Provider.of<ProductProvider>(context, listen: false)
+                  .setProduct(product!);
+            }
+          },
+        );
       } else {
         showSnackBar(
-            title: 'Error',
-            message: jsonDecode(response.body)['message'],
-            contentType: ContentType.failure);
-        // navigatorKey.currentState!.pushNamed(ErrorPage.routeName);
+          title: 'Error',
+          message: jsonDecode(response.body)['message'],
+          contentType: ContentType.failure,
+        );
+        navigatorKey.currentState!.popAndPushNamed(
+          ErrorPage.routeName,
+          arguments: "Error Occurred - Bad Request",
+        );
       }
     } catch (e) {
+      debugPrint(e.toString());
       showSnackBar(
-          title: 'Internal Error',
-          message: e.toString(),
-          contentType: ContentType.failure);
+        title: 'Internal Error',
+        message: e.toString(),
+        contentType: ContentType.failure,
+      );
+      navigatorKey.currentState!.popAndPushNamed(
+        ErrorPage.routeName,
+        arguments: "Error Occurred - Bad Request",
+      );
     }
     return product;
   }
 
-  Future<void> addProduct(BuildContext context, File image) async {
-    /*
-    //testing with image as string
-    List<int> imageBytes = image.readAsBytesSync();
-    String base64Image = base64Encode(imageBytes);
-    debugPrint(base64Image);
+//image should be file type, stone_price will not be manual
+  Future<void> editProduct({
+    required BuildContext context,
+    required String sessionToken,
+    required String productId,
+    required String image,
+    required String name,
+    required String productType,
+    required double weight,
+    required String stone,
+    required double stonePrice,
+    required double jyala,
+    required double jarti,
+  }) async {
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$hostedUrl/prod/products/editProduct"),
+        body: jsonEncode({
+          "product_id": productId,
+          "sessionToken": sessionToken,
+          "image": image,
+          "name": name,
+          "productType": productType,
+          "weight": weight,
+          "stone": stone,
+          "stone_price": 0.0,
+          "jyala": jyala,
+          "jarti": jarti
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-    Uint8List bytes = base64Decode(base64Image);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Image Dialog'),
-          content: Image.memory(bytes),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Close'),
-            ),
-            
-          ],
-        );
-      },
-    );
-    */
-    try {} catch (e) {
-      debugPrint("error $e");
+      debugPrint(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        httpErrorHandle(
+            response: response,
+            onSuccess: () {
+              showSnackBar(
+                  title: "Success",
+                  message: jsonDecode(response.body)['message'],
+                  contentType: ContentType.success);
+              Product product = productProvider.currentProduct!.copyWith(
+                  name: name,
+                  image: image,
+                  productType: productType,
+                  weight: weight,
+                  stone: stone,
+                  stone_price: stonePrice,
+                  jyala: jyala,
+                  jarti: jarti);
+              productProvider.setProduct(product);
+              navigatorKey.currentState!.pop();
+            });
+      } else {
+        httpErrorHandle(
+            response: response,
+            onSuccess: () {
+              showSnackBar(
+                  title: "Failed",
+                  message: "product editing failed!",
+                  contentType: ContentType.failure);
+              navigatorKey.currentState!.pop();
+            });
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      showSnackBar(
+          title: "Error Occurred",
+          message: "A unknown error occurred",
+          contentType: ContentType.failure);
     }
   }
 }

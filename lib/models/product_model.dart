@@ -2,37 +2,43 @@
 
 import 'dart:convert';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
-
 class Product {
   String id;
-  String image;
-  double jarti;
-  double jyala;
-  String name;
+  String? image;
+  double? jarti;
+  double? jyala;
+  String? name;
   int owned_by;
   int sold;
-  String stone;
-  double stone_price;
-  String type;
-  double weight;
+  String? stone;
+  double? stone_price;
+  String? productType;
+  double? weight;
+  String? rate;
+  String owner_name;
+  String owner_phone;
+  String validSession;
+
   Product({
     required this.id,
-    required this.image,
-    required this.jarti,
-    required this.jyala,
-    required this.name,
+    this.image,
+    this.jarti,
+    this.jyala,
+    this.name,
     required this.owned_by,
     required this.sold,
-    required this.stone,
-    required this.stone_price,
-    required this.type,
-    required this.weight,
+    this.stone,
+    this.stone_price,
+    this.productType,
+    this.weight,
+    this.rate,
+    required this.owner_name,
+    required this.owner_phone,
+    required this.validSession,
   });
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'id': id,
       'image': image,
       'jarti': jarti,
@@ -42,28 +48,101 @@ class Product {
       'sold': sold,
       'stone': stone,
       'stone_price': stone_price,
-      'type': type,
+      'productType': productType,
       'weight': weight,
+      'rate': rate,
+      'owner_name': owner_name,
+      'owner_phone': owner_phone,
+      'validSession': validSession,
     };
   }
+
+  // factory Product.fromMap(Map<String, dynamic> map) {
+  //   return Product(
+  //     id: map['id'] as String,
+  //     image: map['image'] as String?,
+  //     jarti: map['jarti'] != null ? double.tryParse(map['jarti']) : 0.0,
+  //     jyala: map['jyala'] != null ? double.tryParse(map['jyala']) : 0.0,
+  //     name: map['name'] as String?,
+  //     owned_by: map['owned_by'] as int,
+  //     sold: map['sold'] as int,
+  //     stone: map['stone'] as String?,
+  //     stone_price: map['stone_price'] != null
+  //         ? double.tryParse(map['stone_price'])
+  //         : 0.0,
+  //     productType: map['productType'] as String?,
+  //     weight: map['weight'] != null ? double.tryParse(map['weight']) : 0.0,
+  //     rate: map['rate'] as String?,
+  //     owner_name: map['owner_name'] as String,
+  //     owner_phone: map['owner_phone'] as String,
+  //     validSession: map['validSession'] as String,
+  //   );
+  // }
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       id: map['id'] as String,
-      image: map['image'] as String,
-      jarti: map['jarti'] as double,
-      jyala: map['jyala'] as double,
-      name: map['name'] as String,
-      owned_by: map['owned_by'] as int,
-      sold: map['sold'] as int,
-      stone: map['stone'] as String,
-      stone_price: map['stone_price'] as double,
-      type: map['type'] as String,
-      weight: map['weight'] as double,
+      image: map['image'] as String?,
+      jarti:
+          map['jarti'] != null ? double.tryParse(map['jarti'].toString()) : 0.0,
+      jyala:
+          map['jyala'] != null ? double.tryParse(map['jyala'].toString()) : 0.0,
+      name: map['name'] as String?,
+      owned_by: int.tryParse(map['owned_by'].toString()) ?? 0,
+      sold: int.tryParse(map['sold'].toString()) ?? 0,
+      stone: map['stone'] as String?,
+      stone_price: map['stone_price'] != null
+          ? double.tryParse(map['stone_price'].toString())
+          : 0.0,
+      productType: map['productType'] as String?,
+      weight: map['weight'] != null
+          ? double.tryParse(map['weight'].toString())
+          : 0.0,
+      rate: map['rate'] as String?,
+      owner_name: map['owner_name'] as String,
+      owner_phone: map['owner_phone'] as String,
+      validSession: map['validSession'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Product.fromJson(String source) => Product.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Product.fromJson(String source) =>
+      Product.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  Product copyWith({
+    String? id,
+    String? image,
+    double? jarti,
+    double? jyala,
+    String? name,
+    int? owned_by,
+    int? sold,
+    String? stone,
+    double? stone_price,
+    String? productType,
+    double? weight,
+    String? rate,
+    String? owner_name,
+    String? owner_phone,
+    String? validSession,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      image: image ?? this.image,
+      jarti: jarti ?? this.jarti,
+      jyala: jyala ?? this.jyala,
+      name: name ?? this.name,
+      owned_by: owned_by ?? this.owned_by,
+      sold: sold ?? this.sold,
+      stone: stone ?? this.stone,
+      stone_price: stone_price ?? this.stone_price,
+      productType: productType ?? this.productType,
+      weight: weight ?? this.weight,
+      rate: rate ?? this.rate,
+      owner_name: owner_name ?? this.owner_name,
+      owner_phone: owner_phone ?? this.owner_phone,
+      validSession: validSession ?? this.validSession,
+    );
+  }
 }

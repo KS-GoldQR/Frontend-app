@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../global_variables.dart';
 
+// ignore: must_be_immutable
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   String? iconPath;
@@ -48,7 +49,7 @@ class CustomButton extends StatelessWidget {
           if (iconPath != null)
             SvgPicture.asset(
               iconPath!,
-              color: iconColor!,
+              colorFilter: ColorFilter.mode(iconColor!, BlendMode.srcIn),
             ),
           const SizedBox(width: 10),
           Text(

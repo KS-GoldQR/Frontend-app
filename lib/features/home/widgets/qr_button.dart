@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../global_variables.dart';
+import '../../../utils/global_variables.dart';
 
 class QrButton extends StatelessWidget {
-  const QrButton({
+ const QrButton({
     super.key,
     required this.size,
   });

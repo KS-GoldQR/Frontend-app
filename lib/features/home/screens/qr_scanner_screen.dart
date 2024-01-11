@@ -1,8 +1,17 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/add_product_screen.dart';
-import 'package:grit_qr_scanner/utils/widgets/qr_overrlay.dart';
+import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
+import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
+
+import '../../../models/product_model.dart';
+import '../../../utils/global_variables.dart';
+import '../../../utils/widgets/error_page.dart';
 
 // ignore: must_be_immutable
 class QRScannerScreen extends StatefulWidget {
@@ -18,12 +27,42 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     detectionSpeed: DetectionSpeed.normal,
   );
   bool canScan = false;
+  final ProductService _productService = ProductService();
+  Product? product;
+  bool isScanning = false;
 
-  void toggleCanScan() {
+  toggleCanScan() {
     setState(() {
       canScan = false;
       cameraController.start();
     });
+  }
+
+  Future<void> getProductInfo(String productId, String sessionToken) async {
+    try {
+      product =
+          await _productService.viewProduct(context, productId, sessionToken);
+    } catch (e) {
+      navigatorKey.currentState!.popAndPushNamed(
+        ErrorPage.routeName,
+        arguments: "Error Occurred - Bad Request",
+      );
+    }
+  }
+
+  Future<void> _cannotEdit() async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.warning,
+      animType: AnimType.rightSlide,
+      title: 'Not Allowed',
+      desc: 'product is not allowed to view/edit',
+      btnOkText: 'Ok',
+      btnOkColor: blueColor,
+      btnOkOnPress: () {
+        Navigator.pop(context);
+      },
+    ).show();
   }
 
   @override
@@ -35,131 +74,152 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "QR Scanner",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            color: Colors.black,
-            icon: ValueListenableBuilder(
-              valueListenable: cameraController.torchState,
-              builder: (context, state, child) {
-                switch (state) {
-                  case TorchState.off:
-                    return const Icon(Icons.flash_off, color: Colors.black);
-                  case TorchState.on:
-                    return const Icon(Icons.flash_on, color: Colors.red);
-                }
-              },
-            ),
-            iconSize: 32.0,
-            onPressed: () => cameraController.toggleTorch(),
-          ),
-          IconButton(
-            color: Colors.black,
-            icon: ValueListenableBuilder(
-              valueListenable: cameraController.cameraFacingState,
-              builder: (context, state, child) {
-                switch (state) {
-                  case CameraFacing.front:
-                    return const Icon(Icons.camera_front);
-                  case CameraFacing.back:
-                    return const Icon(Icons.camera_rear);
-                }
-              },
-            ),
-            iconSize: 32.0,
-            onPressed: () => cameraController.switchCamera(),
-          ),
-        ],
+    final user = Provider.of<UserProvider>(context).user;
+    // TODO(dhiraj): Implement ModalProgressHUD
+    return ModalProgressHUD(
+      inAsyncCall: isScanning,
+      opacity: 0.5,
+      progressIndicator: const SpinKitChasingDots(
+        color: blueColor,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Place the QR Code in the area",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Scanning will be started automatically",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "QR Scanner",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            IconButton(
+              color: Colors.black,
+              icon: ValueListenableBuilder(
+                valueListenable: cameraController.torchState,
+                builder: (context, state, child) {
+                  switch (state) {
+                    case TorchState.off:
+                      return const Icon(Icons.flash_off, color: Colors.black);
+                    case TorchState.on:
+                      return const Icon(Icons.flash_on, color: Colors.red);
+                  }
+                },
               ),
+              iconSize: 32.0,
+              onPressed: () => cameraController.toggleTorch(),
             ),
-            SizedBox(
-              height: size.height * 0.05,
+            IconButton(
+              color: Colors.black,
+              icon: ValueListenableBuilder(
+                valueListenable: cameraController.cameraFacingState,
+                builder: (context, state, child) {
+                  switch (state) {
+                    case CameraFacing.front:
+                      return const Icon(Icons.camera_front);
+                    case CameraFacing.back:
+                      return const Icon(Icons.camera_rear);
+                  }
+                },
+              ),
+              iconSize: 32.0,
+              onPressed: () => cameraController.switchCamera(),
             ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              height: 450,
-              width: 450,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: MobileScanner(
-                  controller: cameraController,
-                  onScannerStarted: (arguments) {
-                    debugPrint(arguments.toString());
-                  },
-                  onDetect: (capture) {
-                    if (!canScan) {
-                      canScan = true;
-                      final List<Barcode> barcodes = capture.barcodes;
-                      for (final barcode in barcodes) {
-                        debugPrint('Barcode found! ${barcode.rawValue}');
-                      }
-                      cameraController.stop();
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Place the QR Code in the area",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Scanning will be started automatically",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                height: 450,
+                width: 450,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: MobileScanner(
+                    controller: cameraController,
+                    onScannerStarted: (arguments) {
+                      debugPrint(arguments.toString());
+                    },
+                    onDetect: (capture) async {
+                      if (!canScan) {
+                        canScan = true;
+                        final List<Barcode> barcodes = capture.barcodes;
+                        for (final barcode in barcodes) {
+                          debugPrint('Barcode found! ${barcode.rawValue}');
+                        }
+                        cameraController.stop();
 
-                      if (barcodes.length == 1) {
-                        Navigator.pushNamed(
-                          context,
-                          AddProductScreen.routeName,
-                          arguments: {
-                            'productId': barcodes[0].rawValue,
-                            'callback': toggleCanScan,
-                          },
-                        );
-                      } else {
-                        Navigator.pushNamed(
-                          context,
-                          AboutProduct.routeName,
-                          arguments: {
-                            'productId': barcodes[0].rawValue,
-                            'callback': toggleCanScan,
-                          },
-                        );
+                        try {
+                          await getProductInfo(
+                              barcodes[0].rawValue!, user.sessionToken);
+
+                          if (product != null) {
+                            if (product!.name == null &&
+                                user.sessionToken.isEmpty) {
+                              _cannotEdit();
+                            } else if (product!.name == null) {
+                              navigatorKey.currentState!.pushNamed(
+                                  EditProductScreen.routeName,
+                                  arguments: {
+                                    'product': product,
+                                    'callback': toggleCanScan,
+                                    'fromAboutProduct': false,
+                                  });
+                            } else {
+                              navigatorKey.currentState!.pushNamed(
+                                  AboutProduct.routeName,
+                                  arguments: {
+                                    'product': product,
+                                    'callback': toggleCanScan,
+                                  });
+                            }
+                          }
+                        } catch (e) {
+                          debugPrint("Error while getting product info: $e");
+                        }
                       }
-                    }
-                  },
-                  // startDelay: true,
-                  overlay: const QRScannerOverlay(
-                    overlayColour: Colors.transparent,
+                    },
+                    placeholderBuilder: (p0, p1) {
+                      return const SpinKitChasingDots(
+                        color: Colors.green,
+                      );
+                    },
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.05,
-            ),
-            const Text(
-              "A product of Golden Nepal IT Solution",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: size.height * 0.05,
-            ),
-          ],
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              const Text(
+                "A product of Golden Nepal IT Solution",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+            ],
+          ),
         ),
       ),
     );

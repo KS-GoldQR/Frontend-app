@@ -31,10 +31,10 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
 
   void getGroupedProduct() {
     for (var product in products!) {
-      if (!groupedProducts.containsKey(product.type)) {
-        groupedProducts[product.type] = [];
+      if (!groupedProducts.containsKey(product.productType)) {
+        groupedProducts[product.productType!] = [];
       }
-      groupedProducts[product.type]!.add(product);
+      groupedProducts[product.productType]!.add(product);
     }
   }
 
@@ -55,8 +55,7 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
             },
             icon: SvgPicture.asset(
               menuIcon,
-              // ignore: deprecated_member_use
-              color: Colors.black,
+              colorFilter:const ColorFilter.mode(Colors.black, BlendMode.srcIn),
             ),
           ),
           actions: [
@@ -178,7 +177,7 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
                                       return Container(
                                         margin: const EdgeInsets.all(8.0),
                                         child:
-                                            Text(categoryProducts[index].image),
+                                            Text(categoryProducts[index].image!),
                                         // TODO(dhiraj): Make cards as in fighma
                                       );
                                     },
