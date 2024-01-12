@@ -84,22 +84,20 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: size.height * 0.20),
               const Gap(1),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    width: double.infinity,
-                    child: TextLiquidFill(
-                      text: 'Smart Sunar',
-                      waveColor: blueColor,
-                      loadUntil: 0.88,
-                      boxBackgroundColor: Colors.white,
-                      textStyle: const TextStyle(
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      boxHeight: 60.0,
-                      boxWidth: double.infinity,
-                      loadDuration: const Duration(seconds: 4),
+                  DefaultTextStyle(
+                    style: const TextStyle(
+                      fontSize: 40.0,
+                      color: blueColor,
+                      fontWeight: FontWeight.bold
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText('Smart Sunar'),
+                      ],
+                      isRepeatingAnimation: false,
                     ),
                   ),
                   SizedBox(

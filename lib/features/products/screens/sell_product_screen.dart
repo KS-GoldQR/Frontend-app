@@ -5,7 +5,7 @@ import 'package:grit_qr_scanner/utils/widgets/custom_appbar.dart';
 import '../../../models/product_model.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../../utils/global_variables.dart';
-import '../services/product_detail_card.dart';
+import '../widgets/product_detail_card.dart';
 import '../../../utils/utils.dart';
 import '../services/product_service.dart';
 

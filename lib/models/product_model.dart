@@ -57,51 +57,23 @@ class Product {
     };
   }
 
-  // factory Product.fromMap(Map<String, dynamic> map) {
-  //   return Product(
-  //     id: map['id'] as String,
-  //     image: map['image'] as String?,
-  //     jarti: map['jarti'] != null ? double.tryParse(map['jarti']) : 0.0,
-  //     jyala: map['jyala'] != null ? double.tryParse(map['jyala']) : 0.0,
-  //     name: map['name'] as String?,
-  //     owned_by: map['owned_by'] as int,
-  //     sold: map['sold'] as int,
-  //     stone: map['stone'] as String?,
-  //     stone_price: map['stone_price'] != null
-  //         ? double.tryParse(map['stone_price'])
-  //         : 0.0,
-  //     productType: map['productType'] as String?,
-  //     weight: map['weight'] != null ? double.tryParse(map['weight']) : 0.0,
-  //     rate: map['rate'] as String?,
-  //     owner_name: map['owner_name'] as String,
-  //     owner_phone: map['owner_phone'] as String,
-  //     validSession: map['validSession'] as String,
-  //   );
-  // }
-
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       id: map['id'] as String,
       image: map['image'] as String?,
-      jarti:
-          map['jarti'] != null ? double.tryParse(map['jarti'].toString()) : 0.0,
-      jyala:
-          map['jyala'] != null ? double.tryParse(map['jyala'].toString()) : 0.0,
+      jarti: double.tryParse(map['jarti']) ?? 0.0,
+      jyala: double.tryParse(map['jyala']) ?? 0.0,
       name: map['name'] as String?,
-      owned_by: int.tryParse(map['owned_by'].toString()) ?? 0,
-      sold: int.tryParse(map['sold'].toString()) ?? 0,
+      owned_by: int.tryParse(map['owned_by']) ?? 0,
+      sold: int.tryParse(map['sold']) ?? 0,
       stone: map['stone'] as String?,
-      stone_price: map['stone_price'] != null
-          ? double.tryParse(map['stone_price'].toString())
-          : 0.0,
+      stone_price: double.tryParse(map['stone_price']) ?? 0.0,
       productType: map['productType'] as String?,
-      weight: map['weight'] != null
-          ? double.tryParse(map['weight'].toString())
-          : 0.0,
-      rate: map['rate'] as String?,
-      owner_name: map['owner_name'] as String,
-      owner_phone: map['owner_phone'] as String,
-      validSession: map['validSession'] as String,
+      weight: double.tryParse(map['weight']) ?? 0.0,
+      rate: map['rate'] ?? "",
+      owner_name: map['owner_name'] ?? "",
+      owner_phone: map['owner_phone'] ?? "",
+      validSession: map['validSession'] ?? "",
     );
   }
 

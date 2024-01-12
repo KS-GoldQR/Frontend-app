@@ -67,7 +67,7 @@ class ProductService {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
         body: jsonEncode({
-          'sessionToken': userProvider.user.sessionToken,
+          'sessionToken': testingSessionToken,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -199,7 +199,7 @@ class ProductService {
           "productType": productType,
           "weight": weight,
           "stone": stone,
-          "stone_price": 0.0,
+          "stone_price": stonePrice,
           "jyala": jyala,
           "jarti": jarti
         }),

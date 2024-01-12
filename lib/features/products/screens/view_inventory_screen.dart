@@ -18,15 +18,15 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final String avatar = 'assets/images/avtar.svg';
   List<Product>? products;
-  final ProductService productService = ProductService();
+  final ProductService _productService = ProductService();
   List<String> types = ['Chapawala', 'Tejabi', 'Chapi'];
   String? selectedType;
   Map<String, List<Product>> groupedProducts = {};
 
   Future<void> getInventory() async {
-    products = await productService.getInventory(context);
+    products = await _productService.getInventory(context);
     setState(() {});
-    getGroupedProduct();
+    // getGroupedProduct();
   }
 
   void getGroupedProduct() {

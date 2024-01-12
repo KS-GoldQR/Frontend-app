@@ -26,22 +26,20 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   MobileScannerController cameraController = MobileScannerController(
     detectionSpeed: DetectionSpeed.normal,
   );
-  bool canScan = false;
   final ProductService _productService = ProductService();
   Product? product;
   bool isScanning = false;
 
-  toggleCanScan() {
-    setState(() {
-      canScan = false;
-      cameraController.start();
-    });
-  }
-
   Future<void> getProductInfo(String productId, String sessionToken) async {
     try {
+      setState(() {
+        isScanning = true;
+      });
       product =
           await _productService.viewProduct(context, productId, sessionToken);
+      setState(() {
+        isScanning = false;
+      });
     } catch (e) {
       navigatorKey.currentState!.popAndPushNamed(
         ErrorPage.routeName,
@@ -75,7 +73,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final user = Provider.of<UserProvider>(context).user;
-    // TODO(dhiraj): Implement ModalProgressHUD
     return ModalProgressHUD(
       inAsyncCall: isScanning,
       opacity: 0.5,
@@ -162,42 +159,37 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       debugPrint(arguments.toString());
                     },
                     onDetect: (capture) async {
-                      if (!canScan) {
-                        canScan = true;
-                        final List<Barcode> barcodes = capture.barcodes;
-                        for (final barcode in barcodes) {
-                          debugPrint('Barcode found! ${barcode.rawValue}');
-                        }
-                        cameraController.stop();
+                      final List<Barcode> barcodes = capture.barcodes;
+                      for (final barcode in barcodes) {
+                        debugPrint('Barcode found! ${barcode.rawValue}');
+                      }
+                      cameraController.stop();
 
-                        try {
-                          await getProductInfo(
-                              barcodes[0].rawValue!, user.sessionToken);
+                      try {
+                        await getProductInfo(
+                            barcodes[0].rawValue!, user.sessionToken);
 
-                          if (product != null) {
-                            if (product!.name == null &&
-                                user.sessionToken.isEmpty) {
-                              _cannotEdit();
-                            } else if (product!.name == null) {
-                              navigatorKey.currentState!.pushNamed(
-                                  EditProductScreen.routeName,
-                                  arguments: {
-                                    'product': product,
-                                    'callback': toggleCanScan,
-                                    'fromAboutProduct': false,
-                                  });
-                            } else {
-                              navigatorKey.currentState!.pushNamed(
-                                  AboutProduct.routeName,
-                                  arguments: {
-                                    'product': product,
-                                    'callback': toggleCanScan,
-                                  });
-                            }
+                        if (product != null) {
+                          if (product!.name == null &&
+                              user.sessionToken.isEmpty) {
+                            _cannotEdit();
+                          } else if (product!.name == null) {
+                            navigatorKey.currentState!.pushReplacementNamed(
+                                EditProductScreen.routeName,
+                                arguments: {
+                                  'product': product,
+                                  'fromAboutProduct': false,
+                                });
+                          } else {
+                            navigatorKey.currentState!.pushReplacementNamed(
+                                AboutProduct.routeName,
+                                arguments: {
+                                  'product': product,
+                                });
                           }
-                        } catch (e) {
-                          debugPrint("Error while getting product info: $e");
                         }
+                      } catch (e) {
+                        debugPrint("Error while getting product info: $e");
                       }
                     },
                     placeholderBuilder: (p0, p1) {

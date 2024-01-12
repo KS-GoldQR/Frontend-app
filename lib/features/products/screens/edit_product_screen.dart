@@ -78,8 +78,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       weight: getWeight(
           double.tryParse(_weightController.text.trim())!, selectedWeight),
       stone: _stoneController.text.trim(),
-      // stonePrice: double.tryParse(_stonePriceController.text.trim())!,
-      stonePrice: 0.0,
+      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
@@ -119,25 +118,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
     ).show();
   }
 
-  Future<void> _onWillPop() async {
-    AwesomeDialog(
+  void _onWillPop(BuildContext context) {
+    showDialog(
       context: context,
-      dialogType: DialogType.question,
-      animType: AnimType.rightSlide,
-      title: 'Want to scan again?',
-      desc: 'All progress will disappear',
-      btnOkText: 'Yes',
-      btnCancelText: 'No',
-      btnOkColor: blueColor,
-      btnCancelColor: blueColor,
-      btnCancelOnPress: () {},
-      btnOkOnPress: () {
-        if (widget.args['fromAboutProduct'] == false) {
-          widget.args['callback']();
-        }
-        Navigator.pop(context);
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Quit Edit?'),
+          content: const Text('All progress will disappear'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
       },
-    ).show();
+    );
   }
 
   @override
@@ -172,7 +177,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final size = MediaQuery.sizeOf(context);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => _onWillPop(),
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        _onWillPop(context);
+      },
       child: ModalProgressHUD(
         inAsyncCall: isSubmitting,
         progressIndicator: const SpinKitRotatingCircle(color: blueColor),
@@ -408,18 +416,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             controller: _stonePriceController,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
-                            // validator: (value) {
-                            //   if (value!.isEmpty) {
-                            //     return "stone price cannot be empty!";
-                            //   }
-                            //   if (double.tryParse(value!) == null) {
-                            //     return "enter a valid number";
-                            //   }
-                            //   if (double.tryParse(value)! <= 0) {
-                            //     return "stone price cannot be negative/zero";
-                            //   }
-                            //   return null;
-                            // },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "stone price cannot be empty!";
+                              }
+                              if (double.tryParse(value!) == null) {
+                                return "enter a valid number";
+                              }
+                              if (double.tryParse(value)! <= 0) {
+                                return "stone price cannot be negative/zero";
+                              }
+                              return null;
+                            },
                           ),
                           const Gap(10),
                           Text(

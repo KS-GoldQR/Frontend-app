@@ -30,8 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "Scan Qr",
     "Inventory",
     "Sold Items",
-    "Create Order",
-    "Order List",
+    "Orders",
   ];
 
   List<Widget> cardsIcon = [
@@ -51,12 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Colors.white,
     ),
     const Icon(
-      Remix.add_line,
-      size: 30,
-      color: Colors.white,
-    ),
-    const Icon(
-      Remix.file_chart_line,
+      Remix.shopping_cart_2_line,
       size: 30,
       color: Colors.white,
     ),
@@ -72,11 +66,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushNamed(context, ViewInventoryScreeen.routeName);
         break;
 
-      case 3:
-        Navigator.pushNamed(context, ViewInventoryScreeen.routeName);
+      case 2:
+        Navigator.pushNamed(context, SoldItemsScreen.routeName);
         break;
 
-      case 4:
+      case 3:
         Navigator.pushNamed(context, SoldItemsScreen.routeName);
         break;
 
