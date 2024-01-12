@@ -215,6 +215,7 @@ class ProductService {
                   title: "Success",
                   message: jsonDecode(response.body)['message'],
                   contentType: ContentType.success);
+              // productProvider.setProduct(product);
               Product product = productProvider.currentProduct!.copyWith(
                   name: name,
                   image: image,
@@ -224,6 +225,7 @@ class ProductService {
                   stone_price: stonePrice,
                   jyala: jyala,
                   jarti: jarti);
+              debugPrint("herer");
               productProvider.setProduct(product);
               navigatorKey.currentState!.pop();
             });

@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 1:
-        Navigator.pushNamed(context, ViewInventoryScreeen.routeName);
+        Navigator.pushNamed(context, ViewInventoryScreen.routeName);
         break;
 
       case 2:

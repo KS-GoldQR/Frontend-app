@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
@@ -8,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../models/product_model.dart';
-import '../../../utils/widgets/custom_appbar.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../../utils/global_variables.dart';
 import '../widgets/product_detail_card.dart';
@@ -31,7 +29,6 @@ class _AboutProductState extends State<AboutProduct> {
   final String productDescription =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
       "Sed do eiusmod tempor incididunt ut";
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,23 +73,25 @@ class _AboutProductState extends State<AboutProduct> {
               SizedBox(
                 height: 200,
                 child: Center(
-                  child: CachedNetworkImage(
-                    imageUrl: product!.image!,
-                    fit: BoxFit.contain,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) =>
-                        const Text("error getting image!"),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: product!.image!,
+                      fit: BoxFit.contain,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Text("error getting image!"),
+                    ),
                   ),
                 ),
               ),
               const Gap(10),
               ProductDetail(label: 'Product Name: ', value: product!.name!),
               ProductDetail(label: 'Type: ', value: product!.productType!),
-              ProductDetail(
-                  label: 'Weight: ', value: "${product!.weight!} gm"),
+              ProductDetail(label: 'Weight: ', value: "${product!.weight!} gm"),
               ProductDetail(label: 'Stone: ', value: product!.stone!),
               ProductDetail(
                   label: 'Stone Price: ',
@@ -101,10 +100,9 @@ class _AboutProductState extends State<AboutProduct> {
                   label: 'Jyala: ', value: product!.jyala!.toString()),
               ProductDetail(
                   label: 'Jarti: ', value: product!.jarti!.toString()),
-              const ProductDetail(
-                  label: 'Price: ', value: "to be calculated"),
+              const ProductDetail(label: 'Price: ', value: "to be calculated"),
               const Gap(20),
-    
+
               if (user.sessionToken.isNotEmpty) ...[
                 CustomButton(
                   onPressed: () {},

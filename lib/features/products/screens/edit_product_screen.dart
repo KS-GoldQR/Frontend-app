@@ -36,7 +36,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final TextEditingController _jyalaController = TextEditingController();
   final TextEditingController _jartiController = TextEditingController();
 
-  List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi', 'cgold_1tola'];
+  List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
   String selectedType = 'Chapawala';
 
   List<String> weight = ['Tola', 'Gram', 'Laal'];
@@ -420,7 +420,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               if (value!.isEmpty) {
                                 return "stone price cannot be empty!";
                               }
-                              if (double.tryParse(value!) == null) {
+                              if (double.tryParse(value) == null) {
                                 return "enter a valid number";
                               }
                               if (double.tryParse(value)! <= 0) {

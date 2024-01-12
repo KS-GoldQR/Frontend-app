@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:loading_btn/loading_btn.dart';
 import 'package:remixicon/remixicon.dart';
 import '../../home/widgets/qr_button.dart';
 
@@ -23,27 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isVisible = false;
   bool isSecondBoxVisible = false;
-  bool _isLogging = false;
 
   void togglePassowordVisibility() {
     setState(() {
       isVisible = !isVisible;
-    });
-  }
-
-  void isFormValid() {
-    if (_formKey.currentState!.validate()) {
-      login();
-    } else {}
-  }
-
-  void login() async {
-    setState(() {
-      _isLogging = true;
-    });
-    await _userService.userLogin(_userId.text.trim(), _password.text, context);
-    setState(() {
-      _isLogging = false;
     });
   }
 
@@ -67,165 +50,172 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return ModalProgressHUD(
-      inAsyncCall: _isLogging,
-      blur: 0.5,
-      color: Colors.black,
-      progressIndicator: const SpinKitDoubleBounce(
-        color: blueColor,
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: size.height * 0.20),
-              const Gap(1),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DefaultTextStyle(
-                    style: const TextStyle(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: size.height * 0.20),
+            const Gap(1),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DefaultTextStyle(
+                  style: const TextStyle(
                       fontSize: 40.0,
                       color: blueColor,
-                      fontWeight: FontWeight.bold
-                    ),
-                    child: AnimatedTextKit(
-                      animatedTexts: [
-                        WavyAnimatedText('Smart Sunar'),
-                      ],
-                      isRepeatingAnimation: false,
-                    ),
+                      fontWeight: FontWeight.bold),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      WavyAnimatedText('Smart Sunar'),
+                    ],
+                    isRepeatingAnimation: false,
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 20,
-                    child: Visibility(
-                      visible: isSecondBoxVisible,
-                      child: DefaultTextStyle(
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          fontFamily: 'Poppins',
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        child: AnimatedTextKit(
-                          animatedTexts: [
-                            TypewriterAnimatedText(
-                              'Next-Gen Jewellery App',
-                              textAlign: TextAlign.center,
-                              speed: const Duration(
-                                milliseconds: 300,
-                              ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 20,
+                  child: Visibility(
+                    visible: isSecondBoxVisible,
+                    child: DefaultTextStyle(
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        fontFamily: 'Poppins',
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            'Next-Gen Jewellery App',
+                            textAlign: TextAlign.center,
+                            speed: const Duration(
+                              milliseconds: 300,
                             ),
-                          ],
-                          repeatForever: false,
-                          totalRepeatCount: 1,
-                        ),
+                          ),
+                        ],
+                        repeatForever: false,
+                        totalRepeatCount: 1,
                       ),
                     ),
                   ),
-                ],
-              ),
-              Gap(size.height * 0.10),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "User Id:",
-                        style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
-                      ),
-                      TextFormField(
-                        controller: _userId,
-                        cursorColor: formBorderColor,
-                        cursorHeight: 25,
-                        decoration: userIdDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) return "User Id cannot be Empty!";
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      const Text(
-                        "Password:",
-                        style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
-                      ),
-                      TextFormField(
-                        controller: _password,
-                        obscureText: !isVisible,
-                        obscuringCharacter: "*",
-                        cursorColor: formBorderColor,
-                        cursorHeight: 25,
-                        decoration: passwordDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Password cannot be Empty!";
-                          }
-                          if (value.length < 6) {
-                            return "Password must be 6 character long!";
-                          }
-                          return null;
-                        },
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              isFormValid();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: greyColor,
-                            ),
-                            child: const Text(
-                              'LOGIN',
-                              style: TextStyle(
-                                fontSize: 18,
+                ),
+              ],
+            ),
+            Gap(size.height * 0.10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "User Id:",
+                      style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                    ),
+                    TextFormField(
+                      controller: _userId,
+                      cursorColor: formBorderColor,
+                      cursorHeight: 25,
+                      decoration: userIdDecoration(),
+                      validator: (value) {
+                        if (value!.isEmpty) return "User Id cannot be Empty!";
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Password:",
+                      style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                    ),
+                    TextFormField(
+                      controller: _password,
+                      obscureText: !isVisible,
+                      obscuringCharacter: "*",
+                      cursorColor: formBorderColor,
+                      cursorHeight: 25,
+                      decoration: passwordDecoration(),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Password cannot be Empty!";
+                        }
+                        if (value.length < 6) {
+                          return "Password must be 6 character long!";
+                        }
+                        return null;
+                      },
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: LoadingBtn(
+                          height: 50,
+                          borderRadius: 8,
+                          animate: true,
+                          color: greyColor,
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          loader: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: const Center(
+                              child: SpinKitDoubleBounce(
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
+                          child: const Text(
+                            "Login",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onTap: (startLoading, stopLoading, btnState) async {
+                            if (btnState == ButtonState.idle) {
+                              if (_formKey.currentState!.validate()) {
+                                startLoading();
+                                await _userService.userLogin(
+                                    _userId.text.trim(),
+                                    _password.text,
+                                    context);
+                                stopLoading();
+                              }
+                            }
+                          },
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const Divider(
-                color: Color(0xFFBDBCBC),
-                thickness: 1,
-                height: 1,
-                indent: 50,
-                endIndent: 50,
-              ),
-              QrButton(size: size),
-            ],
-          ),
+            ),
+            const Divider(
+              color: Color(0xFFBDBCBC),
+              thickness: 1,
+              height: 1,
+              indent: 50,
+              endIndent: 50,
+            ),
+            QrButton(size: size),
+          ],
         ),
-        bottomNavigationBar: Container(
-          height: 50,
-          padding: const EdgeInsets.only(bottom: 20),
-          child: const Align(
-            alignment: Alignment.bottomCenter,
-            child: Text(
-              'A product of Golden Nepal IT Solution',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                fontStyle: FontStyle.italic,
-              ),
+      ),
+      bottomNavigationBar: Container(
+        height: 50,
+        padding: const EdgeInsets.only(bottom: 20),
+        child: const Align(
+          alignment: Alignment.bottomCenter,
+          child: Text(
+            'A product of Golden Nepal IT Solution',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
             ),
           ),
         ),

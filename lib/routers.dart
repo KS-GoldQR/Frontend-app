@@ -29,10 +29,10 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         builder: (context) => const HomeScreen(),
       );
 
-    case ViewInventoryScreeen.routeName:
+    case ViewInventoryScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (context) => const ViewInventoryScreeen(),
+        builder: (context) => const ViewInventoryScreen(),
       );
 
     case SoldItemsScreen.routeName:
@@ -59,9 +59,9 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       );
 
     case ErrorPage.routeName:
-     final String message = routeSettings.arguments as String;
+      final String message = routeSettings.arguments as String;
       return MaterialPageRoute(
-        builder: (context) =>  ErrorPage(message: message),
+        builder: (context) => ErrorPage(message: message),
       );
 
     default:

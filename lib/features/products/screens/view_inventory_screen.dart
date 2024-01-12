@@ -1,35 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
+import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/utils/widgets/loader.dart';
+import 'package:provider/provider.dart';
+import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
 
-class ViewInventoryScreeen extends StatefulWidget {
+class ViewInventoryScreen extends StatefulWidget {
   static const String routeName = '/view-inventory-screen';
-  const ViewInventoryScreeen({super.key});
+  const ViewInventoryScreen({super.key});
 
   @override
-  State<ViewInventoryScreeen> createState() => _ViewInventoryScreeenState();
+  State<ViewInventoryScreen> createState() => _ViewInventoryScreenState();
 }
 
-class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
+class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final String avatar = 'assets/images/avtar.svg';
   List<Product>? products;
   final ProductService _productService = ProductService();
-  List<String> types = ['Chapawala', 'Tejabi', 'Chapi'];
-  String? selectedType;
+  List<String> types = ['All', 'Chapawala', 'Tejabi', 'Asal_chaadhi'];
+  String selectedType = 'All';
   Map<String, List<Product>> groupedProducts = {};
 
   Future<void> getInventory() async {
     products = await _productService.getInventory(context);
-    setState(() {});
-    // getGroupedProduct();
+    setState(() {
+      getGroupedProduct();
+    });
   }
 
   void getGroupedProduct() {
+    groupedProducts.clear();
     for (var product in products!) {
       if (!groupedProducts.containsKey(product.productType)) {
         groupedProducts[product.productType!] = [];
@@ -38,42 +46,60 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
     }
   }
 
+  List<Product> getFilteredProducts() {
+    return selectedType != 'All'
+        ? groupedProducts[selectedType] ?? []
+        : products ?? [];
+  }
+
   @override
   void initState() {
     getInventory();
     super.initState();
   }
 
+  Future<void> navigateToAboutProduct(Product product) async {
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    productProvider.setProduct(product);
+    await Navigator.of(context).pushNamed(AboutProduct.routeName, arguments: {
+      'product': product,
+    });
+    // Trigger refresh when returning from AboutProduct screen
+    await getInventory();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: SvgPicture.asset(
-              menuIcon,
-              colorFilter:const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+          icon: SvgPicture.asset(
+            menuIcon,
+            colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+          ),
+        ),
+        actions: [
+          CircleAvatar(
+            radius: 20,
+            child: SvgPicture.asset(
+              avatar,
+              fit: BoxFit.contain,
+              height: 55,
             ),
           ),
-          actions: [
-            CircleAvatar(
-              radius: 20,
-              child: SvgPicture.asset(
-                avatar,
-                fit: BoxFit.contain,
-                height: 55,
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          const SizedBox(
+            width: 30,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -105,14 +131,6 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
-                        hint: const Text(
-                          "Category Name",
-                          style: TextStyle(
-                            color: Color(0xFFA4A1A1),
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
                         value: selectedType,
                         icon: const Icon(Icons.arrow_drop_down),
                         iconSize: 24,
@@ -145,79 +163,67 @@ class _ViewInventoryScreeenState extends State<ViewInventoryScreeen> {
                       ? const Center(
                           child: Text("No Product in Inventory"),
                         )
-                      : Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: groupedProducts.entries.map((entry) {
-                              String category = entry.key;
-                              List<Product> categoryProducts = entry.value;
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    category,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
+                      : getFilteredProducts().isEmpty
+                          ? const Center(
+                              child: Text("No Products found"),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var entry in groupedProducts.entries)
+                                  if (selectedType == 'All' ||
+                                      entry.key == selectedType)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          entry.key,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        ...entry.value.map((product) {
+                                          return ListTile(
+                                            onTap: () async {
+                                              await navigateToAboutProduct(
+                                                  product);
+                                            },
+                                            contentPadding:
+                                                const EdgeInsets.all(10),
+                                            title: Text(
+                                              product.name!,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            subtitle: Text(product.stone!),
+                                            trailing: Text(product.stone_price!
+                                                .toString()),
+                                            leading: CachedNetworkImage(
+                                              height: 250,
+                                              imageUrl: product.image!,
+                                              fit: BoxFit.cover,
+                                              progressIndicatorBuilder:
+                                                  (context, url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
+                                              errorWidget: (context, url,
+                                                      error) =>
+                                                  const Icon(
+                                                      Remix.error_warning_fill),
+                                            ),
+                                          );
+                                        }),
+                                      ],
                                     ),
-                                  ),
-                                  GridView.builder(
-                                    shrinkWrap: true,
-                                    // physics:
-                                    //     const NeverScrollableScrollPhysics(),
-                                    itemCount: categoryProducts.length,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 8.0,
-                                      mainAxisSpacing: 8.0,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: const EdgeInsets.all(8.0),
-                                        child:
-                                            Text(categoryProducts[index].image!),
-                                        // TODO(dhiraj): Make cards as in fighma
-                                      );
-                                    },
-                                  ),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                              ],
+                            ),
             ],
           ),
-        ));
-  }
-
-  InputDecoration customTextfieldDecoration() {
-    return const InputDecoration(
-      isDense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color(0xFFC3C3C3),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
         ),
       ),
     );
