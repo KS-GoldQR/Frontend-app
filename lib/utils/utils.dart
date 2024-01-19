@@ -20,7 +20,13 @@ void showSnackBar(
       message: message,
       contentType: contentType,
       inMaterialBanner: true,
-      color: blueColor,
+      color: contentType == ContentType.success
+          ? Colors.green
+          : contentType == ContentType.failure
+              ? Colors.red
+              : contentType == ContentType.warning
+                  ? Colors.red
+                  : blueColor,
     ),
   );
   snackbarKey.currentState?.showSnackBar(snackBar);
@@ -105,3 +111,32 @@ InputDecoration customTextfieldDecoration() {
     ),
   );
 }
+
+double getWeight(double weight, String selectedWeightType) {
+  double result;
+
+  if (selectedWeightType == "Tola") {
+    result = weight * 11.664;
+  } else if (selectedWeightType == "Laal") {
+    result = weight * 0.1166;
+  } else {
+    result = weight;
+  }
+
+  return double.parse(result.toStringAsFixed(3));
+}
+
+double getTotalPrice(
+    {required double weight,
+    required double rate,
+    required double? jyalaPercent,
+    required double? jartiPercent,
+    required double stonePrice}) {
+  double itemPrice = weight * rate;
+
+  double jyala = jyalaPercent == null ? 0.0 : (itemPrice * jyalaPercent);
+  double jarti = jartiPercent == null ? 0.0 : (itemPrice * jartiPercent);
+  double result = itemPrice + jyala + jarti + stonePrice;
+  return double.parse(result.toStringAsFixed(3));
+}
+

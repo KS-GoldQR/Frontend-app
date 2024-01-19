@@ -7,10 +7,15 @@ import 'package:grit_qr_scanner/models/product_model.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_button.dart';
 
-class SoldItemDetails extends StatelessWidget {
+class SoldItemDetails extends StatefulWidget {
   final Product product;
-  SoldItemDetails({super.key, required this.product});
+  const SoldItemDetails({super.key, required this.product});
 
+  @override
+  State<SoldItemDetails> createState() => _SoldItemDetailsState();
+}
+
+class _SoldItemDetailsState extends State<SoldItemDetails> {
   int currentIndex = 0;
 
   final String productDescription =
@@ -34,7 +39,7 @@ class SoldItemDetails extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          product.name!,
+                          widget.product.name!,
                           style: const TextStyle(
                             color: blueColor,
                             fontSize: 20,
@@ -68,7 +73,7 @@ class SoldItemDetails extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
-                        imageUrl: product.image!,
+                        imageUrl: widget.product.image!,
                         fit: BoxFit.contain,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
@@ -81,18 +86,18 @@ class SoldItemDetails extends StatelessWidget {
                   ),
                 ),
                 const Gap(10),
-                ProductDetail(label: 'Product Name: ', value: product.name!),
-                ProductDetail(label: 'Type: ', value: product.productType!),
+                ProductDetail(label: 'Product Name: ', value: widget.product.name!),
+                ProductDetail(label: 'Type: ', value: widget.product.productType!),
                 ProductDetail(
-                    label: 'Weight: ', value: "${product.weight!} gm"),
-                ProductDetail(label: 'Stone: ', value: product.stone!),
+                    label: 'Weight: ', value: "${widget.product.weight!} gm"),
+                ProductDetail(label: 'Stone: ', value: widget.product.stone!),
                 ProductDetail(
                     label: 'Stone Price: ',
-                    value: product.stone_price.toString()),
+                    value: widget.product.stone_price.toString()),
                 ProductDetail(
-                    label: 'Jyala: ', value: product.jyala!.toString()),
+                    label: 'Jyala: ', value: widget.product.jyala!.toString()),
                 ProductDetail(
-                    label: 'Jarti: ', value: product.jarti!.toString()),
+                    label: 'Jarti: ', value: widget.product.jarti!.toString()),
                 const ProductDetail(
                     label: 'Price: ', value: "to be calculated"),
                 const Gap(10),
@@ -107,7 +112,7 @@ class SoldItemDetails extends StatelessWidget {
                           color: blueColor),
                     ),
                     Text(
-                      product.owned_by.toString(),
+                      widget.product.owned_by.toString(),
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,

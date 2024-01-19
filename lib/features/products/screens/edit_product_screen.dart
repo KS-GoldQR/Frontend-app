@@ -84,19 +84,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  double getWeight(double weight, String selectedWeightType) {
-    double result;
 
-    if (selectedWeightType == "Tola") {
-      result = weight * 11.664;
-    } else if (selectedWeightType == "Laal") {
-      result = weight * 0.1166;
-    } else {
-      result = weight;
-    }
-
-    return double.parse(result.toStringAsFixed(3));
-  }
 
   Future<void> _showChoiceDialog() async {
     AwesomeDialog(
@@ -302,6 +290,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             controller: _nameController,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
+                            validator: (value) {
+                              if (value!.isEmpty) return "name cannot be empty";
+                              return null;
+                            },
                           ),
                           const Gap(10),
                           Text(
@@ -431,7 +423,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Jyala",
+                            "Jyala (%)",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -457,7 +449,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Jarti",
+                            "Jarti (%)",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),

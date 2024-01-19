@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
+import 'package:grit_qr_scanner/features/products/widgets/customer_details_form.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../models/product_model.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../../utils/global_variables.dart';
 import '../widgets/product_detail_card.dart';
@@ -29,6 +31,13 @@ class _AboutProductState extends State<AboutProduct> {
   final String productDescription =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
       "Sed do eiusmod tempor incididunt ut";
+
+  void navigateToCustomerDetailsForm(BuildContext context, String productId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CustomerDetailsForm(productId: productId)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +105,23 @@ class _AboutProductState extends State<AboutProduct> {
               ProductDetail(
                   label: 'Stone Price: ',
                   value: product!.stone_price.toString()),
+              ProductDetail(label: 'Jyala: ', value: " ${product!.jyala!}%"),
+              ProductDetail(label: 'Jarti: ', value: "${product!.jarti!}%"),
               ProductDetail(
-                  label: 'Jyala: ', value: product!.jyala!.toString()),
-              ProductDetail(
-                  label: 'Jarti: ', value: product!.jarti!.toString()),
-              const ProductDetail(label: 'Price: ', value: "to be calculated"),
+                  label: 'Price: ',
+                  value: getTotalPrice(
+                          weight: product!.weight!,
+                          rate: 1000,
+                          jyalaPercent: product!.jyala!,
+                          jartiPercent: product!.jarti,
+                          stonePrice: product!.stone_price!)
+                      .toString()),
               const Gap(20),
 
               if (user.sessionToken.isNotEmpty) ...[
                 CustomButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      navigateToCustomerDetailsForm(context, product!.id),
                   text: "Sell Item",
                   backgroundColor: blueColor,
                   iconColor: Colors.white,

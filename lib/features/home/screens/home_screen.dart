@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
+import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 3:
-        Navigator.pushNamed(context, SoldItemsScreen.routeName);
+        Navigator.pushNamed(context, OrderScreen.routeName);
         break;
 
       default:

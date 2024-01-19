@@ -175,8 +175,28 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             subtitle: Text(product.stone!),
-                                            trailing: Text(product.stone_price!
-                                                .toString()),
+                                            trailing: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Text("Total Price"),
+                                                Text(
+                                                  getTotalPrice(
+                                                          weight:
+                                                              product.weight!,
+                                                          rate: 1000,
+                                                          jyalaPercent:
+                                                              product.jyala!,
+                                                          jartiPercent:
+                                                              product.jarti!,
+                                                          stonePrice: product
+                                                              .stone_price!)
+                                                      .toString(),
+                                                ),
+                                              ],
+                                            ),
                                             leading: CachedNetworkImage(
                                               height: 250,
                                               imageUrl: product.image!,

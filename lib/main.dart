@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
+import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:grit_qr_scanner/routers.dart';
@@ -13,6 +14,7 @@ Future main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => UserProvider()),
     ChangeNotifierProvider(create: (context) => ProductProvider()),
+    ChangeNotifierProvider(create: (context) => OrderProvider()),
   ], child: const MyApp()));
 }
 

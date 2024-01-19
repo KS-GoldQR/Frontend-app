@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
@@ -246,6 +247,56 @@ class ProductService {
           title: "Error Occurred",
           message: "A unknown error occurred",
           contentType: ContentType.failure);
+    }
+  }
+
+  Future<void> sellProduct(
+      {required BuildContext context,
+      required String productId,
+      required String customerName,
+      required String customerPhone,
+      required String customerAddress}) async {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$hostedUrl/prod/products/sellProduct"),
+        body: jsonEncode({
+          "sessionToken": testingSessionToken,
+          "product_id": productId,
+          "customer_name": customerName,
+          "customer_phone": customerPhone,
+          "customer_address": customerAddress,
+        }),
+        headers: <String, String>{'Content-Type': 'application/json'},
+      );
+
+      debugPrint(productId);
+      if (response.statusCode == 200) {
+        httpErrorHandle(
+            response: response,
+            onSuccess: () {
+              AwesomeDialog(
+                context: context,
+                dialogType: DialogType.success,
+                animType: AnimType.rightSlide,
+                title: 'Product Sold',
+                desc: 'your product has been sold',
+                btnOkText: 'OK',
+              ).show();
+              navigatorKey.currentState!.pop();
+            });
+      } else {
+        showSnackBar(
+            title: "Failed",
+            message: jsonDecode(response.body)['message'],
+            contentType: ContentType.failure);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      showSnackBar(
+          title: "Internal Error",
+          message: "an unknown error occurred!",
+          contentType: ContentType.warning);
     }
   }
 }
