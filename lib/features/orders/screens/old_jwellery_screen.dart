@@ -24,6 +24,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
+  final _itemNamefocus = FocusNode();
+  final _weightFocus = FocusNode();
+  final _stoneFocus = FocusNode();
+  final _stonePriceFocus = FocusNode();
 
   List<String> weight = ['Tola', 'Gram', 'Laal'];
   String selectedWeightType = 'Gram';
@@ -80,20 +84,17 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
         message: "your old jwellery is added to list",
         contentType: ContentType.success);
 
-    // orderProvider.oldJewelries.forEach((orderedItem) {
-    //   debugPrint('Item Name: ${orderedItem.itemName}');
-    //   debugPrint('Weight: ${orderedItem.wt}');
-    //   debugPrint('Order Type: ${orderedItem.type}');
-    //   debugPrint('Stone: ${orderedItem.stone}');
-    //   debugPrint('Stone Price: ${orderedItem.stonePrice}');
-    //   debugPrint('Total Price: ${orderedItem.price}');
-    //   debugPrint('---'); // Separating each item for clarity
-    // });
     if (isProceed) {
       Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
     } else {
       Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
     }
+  }
+
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -103,6 +104,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     _weightController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
+    _itemNamefocus.dispose();
+    _weightFocus.dispose();
+    _stoneFocus.dispose();
+    _stonePriceFocus.dispose();
   }
 
   @override
@@ -147,6 +152,11 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _itemNameController,
+                        focusNode: _itemNamefocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _itemNamefocus, _weightFocus),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -196,6 +206,13 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                             flex: 2,
                             child: TextFormField(
                               controller: _weightController,
+                              focusNode: _weightFocus,
+                              onFieldSubmitted: (value) => _fieldFocusChange(
+                                  context, _weightFocus, _stoneFocus),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              textInputAction: TextInputAction.next,
                               decoration: customTextfieldDecoration(),
                               validator: (value) {
                                 if (value!.isEmpty) {
@@ -252,6 +269,11 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _stoneController,
+                        focusNode: _stoneFocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _stoneFocus, _stonePriceFocus),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -271,6 +293,11 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _stonePriceController,
+                        focusNode: _stonePriceFocus,
+                        onFieldSubmitted: (value) => _stonePriceFocus.unfocus(),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textInputAction: TextInputAction.done,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {

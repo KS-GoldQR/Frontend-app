@@ -29,6 +29,10 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final TextEditingController _advancePaymentController =
       TextEditingController();
   DateTime expectedDeadline = DateTime.now();
+  final _nameFocus = FocusNode();
+  final _addressFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _advancePaymentFocus = FocusNode();
   final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
 
@@ -63,6 +67,12 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     return DateFormat.yMMMMd().format(dateTime);
   }
 
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -70,6 +80,10 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     _addressController.dispose();
     _phoneController.dispose();
     _advancePaymentController.dispose();
+    _nameFocus.dispose();
+    _addressFocus.dispose();
+    _phoneFocus.dispose();
+    _advancePaymentFocus.dispose();
   }
 
   @override
@@ -124,6 +138,11 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         const Gap(5),
                         TextFormField(
                           controller: _nameController,
+                          focusNode: _nameFocus,
+                          onFieldSubmitted: (value) => _fieldFocusChange(
+                              context, _nameFocus, _phoneFocus),
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
                           validator: (value) {
@@ -140,6 +159,11 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         const Gap(5),
                         TextFormField(
                           controller: _phoneController,
+                          focusNode: _phoneFocus,
+                          onFieldSubmitted: (value) => _fieldFocusChange(
+                              context, _phoneFocus, _addressFocus),
+                          keyboardType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
                           validator: (value) {
@@ -162,6 +186,11 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         const Gap(5),
                         TextFormField(
                           controller: _addressController,
+                          focusNode: _addressFocus,
+                          onFieldSubmitted: (value) => _fieldFocusChange(
+                              context, _addressFocus, _advancePaymentFocus),
+                          keyboardType: TextInputType.streetAddress,
+                          textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
                           validator: (value) {
@@ -180,6 +209,12 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         const Gap(5),
                         TextFormField(
                           controller: _advancePaymentController,
+                          focusNode: _advancePaymentFocus,
+                          onFieldSubmitted: (value) =>
+                              _advancePaymentFocus.unfocus(),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          textInputAction: TextInputAction.done,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
                           validator: (value) {

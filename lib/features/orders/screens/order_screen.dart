@@ -176,7 +176,8 @@ class _OrderScreenState extends State<OrderScreen> {
                         'order_number': PlutoCell(value: order.id),
                         'customer_name': PlutoCell(value: order.customer_name),
                         'deadline': PlutoCell(value: order.expected_deadline),
-                        'amount': PlutoCell(value: order.remaining_payment),
+                        'amount': PlutoCell(
+                            value: totalPrice - order.advanced_payment),
                         'see_details': PlutoCell(value: 'See Details'),
                         'delete': PlutoCell(value: "delete")
                       });

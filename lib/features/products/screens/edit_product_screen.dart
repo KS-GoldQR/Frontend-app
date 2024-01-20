@@ -35,6 +35,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final TextEditingController _stonePriceController = TextEditingController();
   final TextEditingController _jyalaController = TextEditingController();
   final TextEditingController _jartiController = TextEditingController();
+  final _descriptionFocus = FocusNode();
+  final _nameFocus = FocusNode();
+  final _weightFocus = FocusNode();
+  final _stoneFocus = FocusNode();
+  final _stonePriceFocus = FocusNode();
+  final _jyalaFocus = FocusNode();
+  final _jartiFocus = FocusNode();
 
   List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
   String selectedType = 'Chapawala';
@@ -44,6 +51,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   File? images;
   int currentIndex = 0;
   bool isSubmitting = false;
+  // bool _isMounted = false;
 
   Future<void> _pickImage(ImageSource source) async {
     images = await pickFile(context, source);
@@ -56,9 +64,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
         isSubmitting = true;
       });
       editProduct();
+      // if (mounted) {
       setState(() {
         isSubmitting = false;
       });
+      // }
     } else {
       debugPrint("error occured in edit form page");
     }
@@ -68,9 +78,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Future<void> editProduct() async {
     await _productService.editProduct(
       context: context,
-      sessionToken:
-          "f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b",
       productId: widget.args['product'].id,
+      // isMounted: _isMounted,
       image:
           "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
       name: _nameController.text.trim(),
@@ -83,8 +92,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
   }
-
-
 
   Future<void> _showChoiceDialog() async {
     AwesomeDialog(
@@ -133,9 +140,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
   @override
   void initState() {
     super.initState();
+    // _isMounted = true;
     if (widget.args['fromAboutProduct']) {
       _nameController.text = widget.args['product'].name;
       selectedType = widget.args['product'].productType;
@@ -150,6 +164,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void dispose() {
+    // _isMounted = false;
     _descriptionController.dispose();
     _nameController.dispose();
     _weightController.dispose();
@@ -157,6 +172,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _stonePriceController.dispose();
     _jyalaController.dispose();
     _jartiController.dispose();
+    _descriptionFocus.dispose();
+    _nameFocus.dispose();
+    _weightFocus.dispose();
+    _stoneFocus.dispose();
+    _stonePriceFocus.dispose();
+    _jyalaFocus.dispose();
+    _jartiFocus.dispose();
     super.dispose();
   }
 
@@ -220,6 +242,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(10),
                           TextFormField(
                             controller: _descriptionController,
+                            focusNode: _descriptionFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _descriptionFocus, _nameFocus),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
                             maxLines: null,
                             decoration: const InputDecoration.collapsed(
                               hintText: "Enter the description for the product",
@@ -288,6 +315,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(5),
                           TextFormField(
                             controller: _nameController,
+                            focusNode: _nameFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _nameFocus, _weightFocus),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
                             validator: (value) {
@@ -335,6 +367,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 flex: 2,
                                 child: TextFormField(
                                   controller: _weightController,
+                                  focusNode: _weightFocus,
+                                  onFieldSubmitted: (value) =>
+                                      _fieldFocusChange(
+                                          context, _weightFocus, _stoneFocus),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  textInputAction: TextInputAction.next,
                                   decoration: customTextfieldDecoration(),
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -389,6 +429,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(5),
                           TextFormField(
                             controller: _stoneController,
+                            focusNode: _stoneFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _stoneFocus, _stonePriceFocus),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
                             validator: (value) {
@@ -406,6 +451,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(5),
                           TextFormField(
                             controller: _stonePriceController,
+                            focusNode: _stonePriceFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _stonePriceFocus, _jyalaFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
                             validator: (value) {
@@ -429,6 +480,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(5),
                           TextFormField(
                             controller: _jyalaController,
+                            focusNode: _jyalaFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _jyalaFocus, _jartiFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
                             validator: (value) {
@@ -455,6 +512,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(5),
                           TextFormField(
                             controller: _jartiController,
+                            focusNode: _jartiFocus,
+                            onFieldSubmitted: (value) => _jartiFocus.unfocus(),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.done,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
                             validator: (value) {

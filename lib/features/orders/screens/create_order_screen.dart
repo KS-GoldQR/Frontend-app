@@ -22,12 +22,19 @@ class CreateOrderScreen extends StatefulWidget {
 
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _createOrderFormKey = GlobalKey<FormState>();
+
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _jyalaController = TextEditingController();
   final TextEditingController _jartiController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
+  final _itemNamefocus = FocusNode();
+  final _weightFocus = FocusNode();
+  final _jyalaFocus = FocusNode();
+  final _jartiFocus = FocusNode();
+  final _stoneFocus = FocusNode();
+  final _stonePriceFocus = FocusNode();
   bool _showTotalPrice = false;
 
   List<String> weight = ['Tola', 'Gram', 'Laal'];
@@ -37,24 +44,26 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
 
-  Future<void> _showChoiceDialog() async {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.question,
-      animType: AnimType.rightSlide,
-      title: 'Old Jwellery',
-      desc: 'any old jwellery deposited?',
-      btnOkText: 'Yes',
-      btnCancelText: 'No',
-      btnOkColor: blueColor,
-      btnCancelColor: blueColor,
-      btnCancelOnPress: () {
-        Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
-      },
-      btnOkOnPress: () {
-        Navigator.pushNamed(context, OldJwelleryScreen.routeName);
-      },
-    ).show();
+  void _showChoiceDialog() {
+    Future.delayed(Duration.zero, () {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.question,
+        animType: AnimType.rightSlide,
+        title: 'Old Jwellery',
+        desc: 'Any old jewelry deposited?',
+        btnOkText: 'Yes',
+        btnCancelText: 'No',
+        btnOkColor: blueColor,
+        btnCancelColor: blueColor,
+        btnCancelOnPress: () {
+          Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+        },
+        btnOkOnPress: () {
+          Navigator.pushNamed(context, OldJwelleryScreen.routeName);
+        },
+      ).show();
+    });
   }
 
   void calculateTotalPrice() {
@@ -112,22 +121,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         message: "your order is added to list",
         contentType: ContentType.success);
 
-    // orderProvider.orderedItems.forEach((orderedItem) {
-    //   debugPrint('Item Name: ${orderedItem.itemName}');
-    //   debugPrint('Weight: ${orderedItem.wt}');
-    //   debugPrint('Order Type: ${orderedItem.type}');
-    //   debugPrint('Jarti: ${orderedItem.jarti}');
-    //   debugPrint('Jyala: ${orderedItem.jyala}');
-    //   debugPrint('Stone: ${orderedItem.stone}');
-    //   debugPrint('Stone Price: ${orderedItem.stonePrice}');
-    //   debugPrint('Total Price: ${orderedItem.totalPrice}');
-    //   debugPrint('---'); // Separating each item for clarity
-    // }
-    // );
-
     if (!isProceed) {
       Navigator.pushReplacementNamed(context, CreateOrderScreen.routeName);
     }
+  }
+
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -139,6 +141,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     _jyalaController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
+    _itemNamefocus.dispose();
+    _weightFocus.dispose();
+    _jartiFocus.dispose();
+    _jyalaFocus.dispose();
+    _stoneFocus.dispose();
+    _stonePriceFocus.dispose();
   }
 
   @override
@@ -179,6 +187,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _itemNameController,
+                        focusNode: _itemNamefocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _itemNamefocus, _weightFocus),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -228,6 +241,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             flex: 2,
                             child: TextFormField(
                               controller: _weightController,
+                              focusNode: _weightFocus,
+                              onFieldSubmitted: (value) => _fieldFocusChange(
+                                  context, _weightFocus, _jyalaFocus),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              textInputAction: TextInputAction.next,
                               decoration: customTextfieldDecoration(),
                               validator: (value) {
                                 if (value!.isEmpty) {
@@ -284,6 +304,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _jyalaController,
+                        focusNode: _jyalaFocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _jyalaFocus, _jartiFocus),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -312,6 +338,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _jartiController,
+                        focusNode: _jartiFocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _jartiFocus, _stoneFocus),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -340,6 +372,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _stoneController,
+                        focusNode: _stoneFocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _stoneFocus, _stonePriceFocus),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -358,6 +395,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       const Gap(5),
                       TextFormField(
                         controller: _stonePriceController,
+                        focusNode: _stonePriceFocus,
+                        onFieldSubmitted: (value) => _stonePriceFocus.unfocus(),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textInputAction: TextInputAction.done,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -404,11 +446,24 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
                   child: _showTotalPrice
-                      ? Text(
-                          'Total Price: \$$totalPriceToShow',
-                          key: const ValueKey(true),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 20),
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Total Price: \$$totalPriceToShow',
+                              key: const ValueKey(true),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const Text(
+                              'Note: Total price is excluding current order price',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontStyle: FontStyle.italic,
+                                  color: greyColor),
+                            )
+                          ],
                         )
                       : ElevatedButton(
                           key: const ValueKey(false),

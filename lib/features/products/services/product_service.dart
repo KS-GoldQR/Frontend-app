@@ -21,13 +21,13 @@ String testingSessionToken =
 
 class ProductService {
   Future<List<Product>> getInventory(BuildContext context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = Provider.of<UserProvider>(context, listen: false).user;
     List<Product> products = [];
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewInventory'),
         body: jsonEncode({
-          'sessionToken': testingSessionToken,
+          'sessionToken': user.sessionToken,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -61,14 +61,15 @@ class ProductService {
   }
 
   Future<List<Product>> viewSoldItems(BuildContext context) async {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
+    final user = Provider.of<UserProvider>(context, listen: false).user;
     List<Product> products = [];
     try {
+      debugPrint(user.sessionToken);
+      
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
         body: jsonEncode({
-          'sessionToken': testingSessionToken,
+          'sessionToken': user.sessionToken,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -104,8 +105,7 @@ class ProductService {
   Future<Product?> viewProduct(
       BuildContext context, String productId, String sessionToken) async {
     debugPrint("product id is $productId");
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
+    final user = Provider.of<UserProvider>(context, listen: false).user;
 
     Product? product;
 
@@ -124,7 +124,7 @@ class ProductService {
           Uri.parse('$hostedUrl/prod/products/viewProduct'),
           body: jsonEncode({
             "product_id": productId,
-            'sessionToken': testingSessionToken,
+            'sessionToken': user.sessionToken,
           }),
           headers: {'Content-Type': 'application/json'},
         );
@@ -176,7 +176,6 @@ class ProductService {
 //image should be file type, stone_price will not be manual
   Future<void> editProduct({
     required BuildContext context,
-    required String sessionToken,
     required String productId,
     required String image,
     required String name,
@@ -187,14 +186,18 @@ class ProductService {
     required double jyala,
     required double jarti,
   }) async {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
+
     try {
+      debugPrint(user.sessionToken);
+      debugPrint(productId);
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/editProduct"),
         body: jsonEncode({
           "product_id": productId,
-          "sessionToken": sessionToken,
+          "sessionToken": user.sessionToken,
           "image": image,
           "name": name,
           "productType": productType,
@@ -207,42 +210,27 @@ class ProductService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      debugPrint(response.statusCode.toString());
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              showSnackBar(
-                  title: "Success",
-                  message: jsonDecode(response.body)['message'],
-                  contentType: ContentType.success);
-              // productProvider.setProduct(product);
-              Product product = productProvider.currentProduct!.copyWith(
-                  name: name,
-                  image: image,
-                  productType: productType,
-                  weight: weight,
-                  stone: stone,
-                  stone_price: stonePrice,
-                  jyala: jyala,
-                  jarti: jarti);
-              debugPrint("herer");
-              productProvider.setProduct(product);
-              navigatorKey.currentState!.pop();
-            });
-      } else {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              showSnackBar(
-                  title: "Failed",
-                  message: "product editing failed!",
-                  contentType: ContentType.failure);
-              navigatorKey.currentState!.pop();
-            });
-      }
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            showSnackBar(
+                title: "Success",
+                message: jsonDecode(response.body)['message'],
+                contentType: ContentType.success);
+            // productProvider.setProduct(product);
+            Product product = productProvider.currentProduct!.copyWith(
+                name: name,
+                image: image,
+                productType: productType,
+                weight: weight,
+                stone: stone,
+                stone_price: stonePrice,
+                jyala: jyala,
+                jarti: jarti);
+            productProvider.setProduct(product);
+            navigatorKey.currentState!.pop();
+          });
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
           title: "Error Occurred",
           message: "A unknown error occurred",
@@ -261,7 +249,7 @@ class ProductService {
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/sellProduct"),
         body: jsonEncode({
-          "sessionToken": testingSessionToken,
+          "sessionToken": user.sessionToken,
           "product_id": productId,
           "customer_name": customerName,
           "customer_phone": customerPhone,
@@ -270,27 +258,19 @@ class ProductService {
         headers: <String, String>{'Content-Type': 'application/json'},
       );
 
-      debugPrint(productId);
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              AwesomeDialog(
-                context: context,
-                dialogType: DialogType.success,
-                animType: AnimType.rightSlide,
-                title: 'Product Sold',
-                desc: 'your product has been sold',
-                btnOkText: 'OK',
-              ).show();
-              navigatorKey.currentState!.pop();
-            });
-      } else {
-        showSnackBar(
-            title: "Failed",
-            message: jsonDecode(response.body)['message'],
-            contentType: ContentType.failure);
-      }
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            AwesomeDialog(
+              context: context,
+              dialogType: DialogType.success,
+              animType: AnimType.rightSlide,
+              title: 'Product Sold',
+              desc: 'your product has been sold',
+              btnOkText: 'OK',
+            ).show();
+            navigatorKey.currentState!.pop();
+          });
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(

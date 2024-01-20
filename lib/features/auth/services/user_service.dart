@@ -69,30 +69,13 @@ class UserService {
   }
 
 // TODO(sulabh-backend): get session-token validation & user information api to proceed and maintain security
-  void getUserData(BuildContext context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('session-token');
-
-      if (token == null) {
-        prefs.setString('session-token', '');
-      }
-
-      //check session-token validation
-      //if validated, call api for userData and save to provider
-    } catch (e) {
-      showSnackBar(
-          title: "Failed to get user data",
-          message: e.toString(),
-          contentType: ContentType.failure);
-    }
-  }
 
   Future<void> userLogout({required BuildContext context}) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     try {
+      debugPrint(userProvider.user.sessionToken);
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/logout'),
         body: jsonEncode({
@@ -107,7 +90,7 @@ class UserService {
 
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.remove('session-token');
+        prefs.setString('session-token', "");
 
         User user = User(userId: '', password: '', sessionToken: '');
         userProvider.setUserFromModel(user);

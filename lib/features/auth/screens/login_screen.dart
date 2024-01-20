@@ -20,6 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final UserService _userService = UserService();
   final TextEditingController _userId = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final _userIdFocus = FocusNode();
+  final _passwordFocus = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool isVisible = false;
   bool isSecondBoxVisible = false;
@@ -28,6 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isVisible = !isVisible;
     });
+  }
+
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -45,6 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     _userId.dispose();
     _password.dispose();
+    _userIdFocus.dispose();
+    _passwordFocus.dispose();
   }
 
   @override
@@ -122,6 +132,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextFormField(
                       controller: _userId,
+                      focusNode: _userIdFocus,
+                      onFieldSubmitted: (value) {
+                        _fieldFocusChange(
+                            context, _userIdFocus, _passwordFocus);
+                      },
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
                       cursorColor: formBorderColor,
                       cursorHeight: 25,
                       decoration: userIdDecoration(),
@@ -137,6 +154,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextFormField(
                       controller: _password,
+                      focusNode: _passwordFocus,
+                      onFieldSubmitted: (value) {
+                        _passwordFocus.unfocus();
+                      },
+                      keyboardType: TextInputType.visiblePassword,
+                      textInputAction: TextInputAction.done,
                       obscureText: !isVisible,
                       obscuringCharacter: "*",
                       cursorColor: formBorderColor,

@@ -161,7 +161,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                   ? const Center(child: Loader())
                   : products!.isEmpty
                       ? const Center(
-                          child: Text("No Product in Inventory"),
+                          child: Text("No Inventory Found!"),
                         )
                       : getFilteredProducts().isEmpty
                           ? const Center(

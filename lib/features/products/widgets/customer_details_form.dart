@@ -21,6 +21,9 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final _nameFocus = FocusNode();
+  final _addressFocus = FocusNode();
+  final _phoneFocus = FocusNode();
   final ProductService _productService = ProductService();
   bool _isSelling = false;
 
@@ -40,12 +43,21 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
     });
   }
 
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
   @override
   void dispose() {
     super.dispose();
     _nameController.dispose();
     _addressController.dispose();
     _phoneController.dispose();
+    _nameFocus.dispose();
+    _addressFocus.dispose();
+    _phoneFocus.dispose();
   }
 
   @override
@@ -88,6 +100,11 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       const Gap(5),
                       TextFormField(
                         controller: _nameController,
+                        focusNode: _nameFocus,
+                        onFieldSubmitted: (value) =>
+                            _fieldFocusChange(context, _nameFocus, _phoneFocus),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -104,6 +121,11 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       const Gap(5),
                       TextFormField(
                         controller: _phoneController,
+                        focusNode: _phoneFocus,
+                        onFieldSubmitted: (value) => _fieldFocusChange(
+                            context, _phoneFocus, _addressFocus),
+                        keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -126,6 +148,10 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       const Gap(5),
                       TextFormField(
                         controller: _addressController,
+                        focusNode: _addressFocus,
+                        onFieldSubmitted: (value) => _addressFocus.unfocus(),
+                        keyboardType: TextInputType.streetAddress,
+                        textInputAction: TextInputAction.done,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         validator: (value) {
@@ -140,11 +166,15 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                 ),
                 const Gap(25),
                 CustomButton(
-                    onPressed: () => sellProduct(context),
+                    onPressed: () {
+                      if (_customerDetailsFormFormKey.currentState!
+                          .validate()) {
+                        sellProduct(context);
+                      }
+                    },
                     text: "Sell Product",
                     backgroundColor: blueColor,
                     textColor: Colors.white),
-
                 const Gap(10),
               ],
             ),

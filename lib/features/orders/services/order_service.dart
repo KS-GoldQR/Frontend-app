@@ -25,7 +25,7 @@ class OrderService {
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/orders/viewOrders"),
         body: jsonEncode({
-          'sessionToken': testingSessionToken,
+          'sessionToken': user.sessionToken,
         }),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -49,8 +49,6 @@ class OrderService {
 
               if (ordersJson is String) {
                 final modifiedOrdersJson = jsonDecode(ordersJson);
-
-                // debugPrint(modifiedOrdersJson.toString());
 
                 if (modifiedOrdersJson is List<dynamic>) {
                   orders = modifiedOrdersJson.map((orderJson) {
@@ -83,12 +81,12 @@ class OrderService {
 
   Future<void> addOrder(BuildContext context) async {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/orders/addOrder'),
         body: jsonEncode({
-          "sessionToken": testingSessionToken,
+          "sessionToken": user.sessionToken,
           "customer_name": orderProvider.customer!.name,
           "customer_phone": orderProvider.customer!.phone,
           "expected_deadline":
@@ -138,7 +136,7 @@ class OrderService {
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/orders/deleteOrder"),
         body: jsonEncode({
-          "sessionToken": testingSessionToken,
+          "sessionToken": user.sessionToken,
           "order_id": orderId,
         }),
         headers: <String, String>{

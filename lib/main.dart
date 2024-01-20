@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
-import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
@@ -26,11 +25,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-final  UserService _userService = UserService();
 
   @override
   void initState() {
-    _userService.getUserData(context);
     super.initState();
   }
 
@@ -47,8 +44,7 @@ final  UserService _userService = UserService();
         useMaterial3: true,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
-      //after loging persistence is ready
-      // home: Provider.of<UserProvider>(context).user.sessionToken.isEmpty ? const LoginScreen() : const HomeScreen();
+
       home: const LoginScreen(),
     );
   }
