@@ -16,14 +16,14 @@ import '../../../utils/global_variables.dart';
 
 class UserService {
   Future<void> userLogin(
-      String userId, String password, BuildContext context) async {
+      String phoneNo, String password, BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/login'),
         body: jsonEncode({
-          'phoneNo': userId,
+          'phoneNo': phoneNo,
           'password': password,
         }),
         headers: <String, String>{
@@ -46,7 +46,8 @@ class UserService {
               navigatorKey.currentState!.pushNamedAndRemoveUntil(
                   HomeScreen.routeName, (route) => false);
               User user = User(
-                  userId: userId,
+                  userId: jsonDecode(response.body)['userId'],
+                  phoneNo: phoneNo,
                   password: password,
                   sessionToken: jsonDecode(response.body)['sessionToken']);
 
@@ -68,14 +69,42 @@ class UserService {
     }
   }
 
-// TODO(sulabh-backend): get session-token validation & user information api to proceed and maintain security
+  Future<bool> validateSession(BuildContext context) async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('session-token');
+
+      if (token == null) return false;
+      debugPrint(token);
+
+      http.Response response = await http.post(
+        Uri.parse('$hostedUrl/prod/users/validateSession'),
+        body: jsonEncode({"sessionToken": token}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        User updatedUser = userProvider.user.copyWith(
+          userId: userProvider.user.userId,
+          sessionToken: token,
+        );
+        userProvider.setUserFromModel(updatedUser);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 
   Future<void> userLogout({required BuildContext context}) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     try {
-      debugPrint(userProvider.user.sessionToken);
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/logout'),
         body: jsonEncode({
@@ -90,10 +119,9 @@ class UserService {
 
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('session-token', "");
+        await prefs.remove('session-token');
 
-        User user = User(userId: '', password: '', sessionToken: '');
-        userProvider.setUserFromModel(user);
+        userProvider.removeUser();
         productProvider.resetCurrentProduct();
 
         showSnackBar(

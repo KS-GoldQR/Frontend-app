@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:lottie/lottie.dart';
 
 class ErrorPage extends StatelessWidget {
   static const String routeName = '/error-page';
@@ -16,11 +15,8 @@ class ErrorPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Lottie.asset(
-            'assets/icons/error_animation.json',
-            animate: true,
-            repeat: true,
-            reverse: false,
+          Image.asset(
+            'assets/images/error.png',
             width: size.width * 0.5,
           ),
           Text(

@@ -18,9 +18,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final UserService _userService = UserService();
-  final TextEditingController _userId = TextEditingController();
+  final TextEditingController _phoneNo = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  final _userIdFocus = FocusNode();
+  final _phoneNoFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool isVisible = false;
@@ -51,9 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     super.dispose();
-    _userId.dispose();
+    _phoneNo.dispose();
     _password.dispose();
-    _userIdFocus.dispose();
+    _phoneNoFocus.dispose();
     _passwordFocus.dispose();
   }
 
@@ -131,11 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                     ),
                     TextFormField(
-                      controller: _userId,
-                      focusNode: _userIdFocus,
+                      controller: _phoneNo,
+                      focusNode: _phoneNoFocus,
                       onFieldSubmitted: (value) {
                         _fieldFocusChange(
-                            context, _userIdFocus, _passwordFocus);
+                            context, _phoneNoFocus, _passwordFocus);
                       },
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.next,
@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_formKey.currentState!.validate()) {
                                 startLoading();
                                 await _userService.userLogin(
-                                    _userId.text.trim(),
+                                    _phoneNo.text.trim(),
                                     _password.text,
                                     context);
                                 stopLoading();

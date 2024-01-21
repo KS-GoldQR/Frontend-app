@@ -64,7 +64,6 @@ class ProductService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     List<Product> products = [];
     try {
-      debugPrint(user.sessionToken);
       
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
@@ -191,8 +190,6 @@ class ProductService {
         Provider.of<ProductProvider>(context, listen: false);
 
     try {
-      debugPrint(user.sessionToken);
-      debugPrint(productId);
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/editProduct"),
         body: jsonEncode({
