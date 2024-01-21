@@ -49,6 +49,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
 
   Future<void> showFullScreenDialog(
       BuildContext context, Product product) async {
+    debugPrint(product.rate!.toString());
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -96,7 +97,6 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                     const Text(
                       "Select Category",
                       style: TextStyle(
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF282828),
                       ),
@@ -162,6 +162,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
+                                          debugPrint(product.rate!.toString());
                                           return ListTile(
                                             onTap: () {
                                               showFullScreenDialog(
@@ -174,29 +175,9 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            subtitle: Text(product.stone!),
-                                            trailing: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const Text("Total Price"),
-                                                Text(
-                                                  getTotalPrice(
-                                                          weight:
-                                                              product.weight!,
-                                                          rate: 1000,
-                                                          jyalaPercent:
-                                                              product.jyala!,
-                                                          jartiPercent:
-                                                              product.jarti!,
-                                                          stonePrice: product
-                                                              .stone_price!)
-                                                      .toString(),
-                                                ),
-                                              ],
-                                            ),
+                                            subtitle: Text(
+                                                "₹${getTotalPrice(weight: product.weight!, rate: product.rate!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
+                                            trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,
                                               imageUrl: product.image!,

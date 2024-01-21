@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 import 'global_variables.dart';
 
@@ -77,7 +79,6 @@ TextStyle customTextDecoration() {
     color: Color(0xFF282828),
     fontSize: 15,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Inter',
   );
 }
 
@@ -112,6 +113,38 @@ InputDecoration customTextfieldDecoration() {
   );
 }
 
+Future<Map<String, double>> getRate() async {
+  Map<String, double> goldRates = {};
+  try {
+    http.Response response = await http.post(
+        Uri.parse("$hostedUrl/prod/users/getGoldRate"),
+        headers: {"Content-Type": "application/json"});
+
+    Map<String, dynamic> jsonData = json.decode(response.body);
+    Map<String, String> rawRates = Map<String, String>.from(jsonData['rate']);
+
+    rawRates.forEach((key, value) {
+      if (key == "cgold_10gram") {
+        goldRates["Chapawala"] = double.parse(value) / 10;
+      } else if (key == "tgold_10gram") {
+        goldRates["Tejabi"] = double.parse(value) / 10;
+      } else if (key == "achandi_10gram") {
+        goldRates["Asal_chaadhi"] = double.parse(value) / 10;
+      }
+    });
+  } catch (e) {
+    showSnackBar(
+        title: "Error",
+        message: "error fethching gold rates",
+        contentType: ContentType.warning);
+  }
+
+  lastUpdated = DateTime.now();
+
+  debugPrint(goldRates.toString());
+  return goldRates;
+}
+
 double getWeight(double weight, String selectedWeightType) {
   double result;
 
@@ -139,4 +172,3 @@ double getTotalPrice(
   double result = itemPrice + jyala + jarti + stonePrice;
   return double.parse(result.toStringAsFixed(3));
 }
-

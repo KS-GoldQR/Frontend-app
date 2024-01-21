@@ -22,12 +22,12 @@ class ViewInventoryScreen extends StatefulWidget {
 
 class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
-  final String avatar = 'assets/images/avtar.svg';
   List<Product>? products;
   final ProductService _productService = ProductService();
   List<String> types = ['All', 'Chapawala', 'Tejabi', 'Asal_chaadhi'];
   String selectedType = 'All';
   Map<String, List<Product>> groupedProducts = {};
+  Map<String, double> goldRates = {};
 
   Future<void> getInventory() async {
     products = await _productService.getInventory(context);
@@ -52,9 +52,15 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
         : products ?? [];
   }
 
+  Future<void> getGoldRates() async {
+    goldRates = await getRate();
+    setState(() {});
+  }
+
   @override
   void initState() {
     getInventory();
+    getGoldRates();
     super.initState();
   }
 
@@ -62,9 +68,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     productProvider.setProduct(product);
-    await Navigator.of(context).pushNamed(AboutProduct.routeName, arguments: {
-      'product': product,
-    });
+
+    //cannot show edit/sell option in about page, because from reponse in inventory, product didn't contain validSession argument
+    await Navigator.of(context).pushNamed(AboutProduct.routeName,
+        arguments: {'product': product, 'fromInventory': true});
+
     // Trigger refresh when returning from AboutProduct screen
     await getInventory();
   }
@@ -83,16 +91,16 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
             colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
           ),
         ),
-        actions: [
+        actions: const [
           CircleAvatar(
-            radius: 20,
-            child: SvgPicture.asset(
-              avatar,
-              fit: BoxFit.contain,
-              height: 55,
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: Icon(
+              Remix.user_line,
+              size: 30,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             width: 30,
           ),
         ],
@@ -119,7 +127,6 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                     const Text(
                       "Select Category",
                       style: TextStyle(
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF282828),
                       ),
@@ -197,29 +204,12 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            subtitle: Text(product.stone!),
-                                            trailing: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const Text("Total Price"),
-                                                Text(
-                                                  getTotalPrice(
-                                                          weight:
-                                                              product.weight!,
-                                                          rate: 1000,
-                                                          jyalaPercent:
-                                                              product.jyala!,
-                                                          jartiPercent:
-                                                              product.jarti!,
-                                                          stonePrice: product
-                                                              .stone_price!)
-                                                      .toString(),
-                                                ),
-                                              ],
-                                            ),
+                                            subtitle: goldRates.isEmpty
+                                                ? const Text(
+                                                    "fetching rates...")
+                                                : Text(
+                                                    "₹${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
+                                            trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,
                                               imageUrl: product.image!,

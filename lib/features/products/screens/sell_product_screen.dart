@@ -19,7 +19,6 @@ class SellProductScreen extends StatefulWidget {
 
 class _SellProductScreenState extends State<SellProductScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
-  final String avatar = 'assets/images/avtar.svg';
   final _sellProductFormKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -30,8 +29,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
   int currentIndex = 0;
 
   final String productDescription =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-      "Sed do eiusmod tempor incididunt ut";
+      "description not added yet!";
 
   @override
   void dispose() {
@@ -52,7 +50,6 @@ class _SellProductScreenState extends State<SellProductScreen> {
         ),
         child: CustomAppbar(
           menuIcon: menuIcon,
-          avatar: avatar,
         ),
       ),
       body: SingleChildScrollView(

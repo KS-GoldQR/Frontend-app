@@ -4,13 +4,15 @@ import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../../../models/product_model.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
-  final String productId;
-  const CustomerDetailsForm({super.key, required this.productId});
+  final Product product;
+  final double rate;
+  const CustomerDetailsForm({super.key, required this.product, required this.rate});
 
   @override
   State<CustomerDetailsForm> createState() => _CustomerDetailsFormState();
@@ -33,7 +35,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
     });
     await _productService.sellProduct(
       context: context,
-      productId: widget.productId,
+      productId: widget.product.id,
       customerName: _nameController.text.trim(),
       customerPhone: _phoneController.text.trim(),
       customerAddress: _addressController.text.trim(),

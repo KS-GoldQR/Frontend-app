@@ -23,20 +23,34 @@ class AboutProduct extends StatefulWidget {
 }
 
 class _AboutProductState extends State<AboutProduct> {
-  final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
-  final String avatar = 'assets/images/avtar.svg';
   Product? product;
   int currentIndex = 0;
+  Map<String, double> goldRates = {};
 
-  final String productDescription =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-      "Sed do eiusmod tempor incididunt ut";
+  final String productDescription = "Description not added yet!";
 
-  void navigateToCustomerDetailsForm(BuildContext context, String productId) {
+  void navigateToCustomerDetailsForm(
+      BuildContext context, Product product, double rate) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CustomerDetailsForm(productId: productId)));
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomerDetailsForm(
+          product: product,
+          rate: rate,
+        ),
+      ),
+    );
+  }
+
+  Future<void> getGoldRates() async {
+    goldRates = await getRate();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getGoldRates();
+    super.initState();
   }
 
   @override
@@ -48,6 +62,7 @@ class _AboutProductState extends State<AboutProduct> {
     } else {
       product = Provider.of<ProductProvider>(context).currentProduct;
     }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("View Product"),
@@ -109,25 +124,18 @@ class _AboutProductState extends State<AboutProduct> {
               ProductDetail(label: 'Jarti: ', value: "${product!.jarti!}%"),
               ProductDetail(
                   label: 'Price: ',
-                  value: getTotalPrice(
-                          weight: product!.weight!,
-                          rate: 1000,
-                          jyalaPercent: product!.jyala!,
-                          jartiPercent: product!.jarti,
-                          stonePrice: product!.stone_price!)
-                      .toString()),
+                  value: goldRates.isEmpty
+                      ? "fetching rate..."
+                      : getTotalPrice(
+                              weight: product!.weight!,
+                              rate: goldRates[product!.productType!]!,
+                              jyalaPercent: product!.jyala!,
+                              jartiPercent: product!.jarti,
+                              stonePrice: product!.stone_price!)
+                          .toString()),
               const Gap(20),
 
-              if (user.sessionToken.isNotEmpty) ...[
-                CustomButton(
-                  onPressed: () =>
-                      navigateToCustomerDetailsForm(context, product!.id),
-                  text: "Sell Item",
-                  backgroundColor: blueColor,
-                  iconColor: Colors.white,
-                  textColor: Colors.white,
-                  iconPath: 'assets/icons/material-symbols_sell.svg',
-                ),
+              if (product!.validSession == "1" || widget.args['fromInventory'])
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -150,17 +158,19 @@ class _AboutProductState extends State<AboutProduct> {
                     const Gap(5),
                     Expanded(
                       child: CustomButton(
-                        onPressed: () {},
-                        text: "Delete Item",
+                        onPressed: () {
+                          navigateToCustomerDetailsForm(context, product!,
+                              goldRates[product!.productType!]!);
+                        },
+                        text: "Sell Item",
                         iconColor: blueColor,
                         textColor: blueColor,
                         fontSize: 15,
-                        iconPath: 'assets/icons/ic_round-delete.svg',
+                        iconPath: 'assets/icons/material-symbols_sell.svg',
                       ),
                     ),
                   ],
                 )
-              ],
             ],
           ),
         ),

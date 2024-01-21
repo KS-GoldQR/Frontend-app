@@ -13,6 +13,7 @@ import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../../home/screens/home_screen.dart';
 
 String testingSessionToken =
     "f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b";
@@ -110,9 +111,13 @@ class OrderService {
                   title: "Order Added!",
                   message: jsonDecode(response.body)['message'],
                   contentType: ContentType.success);
-              navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                  OrderScreen.routeName, ModalRoute.withName('/home-screen'));
 
+              // Navigate to HomeScreen and remove all screens until HomeScreen
+              navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                  HomeScreen.routeName, (route) => false);
+
+              // Push OrdersScreen on top of the navigation stack
+              navigatorKey.currentState!.pushNamed(OrderScreen.routeName);
             });
       } else {
         showSnackBar(

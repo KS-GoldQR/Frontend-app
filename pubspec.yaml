@@ -108,10 +108,6 @@ flutter:
         - asset: assets/fonts/Poppins-Italic.ttf
         - asset: assets/fonts/Poppins-Bold.ttf
           style: italic
-          
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

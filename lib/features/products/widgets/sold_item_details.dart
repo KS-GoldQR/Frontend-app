@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/widgets/product_detail_card.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
+import 'package:grit_qr_scanner/utils/utils.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_button.dart';
@@ -18,9 +19,7 @@ class SoldItemDetails extends StatefulWidget {
 class _SoldItemDetailsState extends State<SoldItemDetails> {
   int currentIndex = 0;
 
-  final String productDescription =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-      "Sed do eiusmod tempor incididunt ut";
+  final String productDescription = "description not added yet!";
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +85,10 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                   ),
                 ),
                 const Gap(10),
-                ProductDetail(label: 'Product Name: ', value: widget.product.name!),
-                ProductDetail(label: 'Type: ', value: widget.product.productType!),
+                ProductDetail(
+                    label: 'Product Name: ', value: widget.product.name!),
+                ProductDetail(
+                    label: 'Type: ', value: widget.product.productType!),
                 ProductDetail(
                     label: 'Weight: ', value: "${widget.product.weight!} gm"),
                 ProductDetail(label: 'Stone: ', value: widget.product.stone!),
@@ -98,8 +99,12 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                     label: 'Jyala: ', value: widget.product.jyala!.toString()),
                 ProductDetail(
                     label: 'Jarti: ', value: widget.product.jarti!.toString()),
-                const ProductDetail(
-                    label: 'Price: ', value: "to be calculated"),
+                // TODO(dhiraj): dynamic rate/price for each sold product after change in api
+                ProductDetail(
+                  label: 'Price: ',
+                  value:
+                      "₹${getTotalPrice(weight: widget.product.weight!, rate: widget.product.rate!, jyalaPercent: widget.product.jyala!, jartiPercent: widget.product.jarti!, stonePrice: widget.product.stone_price!)}",
+                ),
                 const Gap(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

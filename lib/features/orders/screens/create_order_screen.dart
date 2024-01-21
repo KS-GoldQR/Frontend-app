@@ -36,13 +36,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
   bool _showTotalPrice = false;
-
   List<String> weight = ['Tola', 'Gram', 'Laal'];
   String selectedWeightType = 'Gram';
   List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
   String selectedType = 'Chapawala';
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
+  Map<String, double> goldRates = {};
 
   void _showChoiceDialog() {
     Future.delayed(Duration.zero, () {
@@ -76,7 +76,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: 1000,
+      rate: goldRates[selectedType]!,
       jyalaPercent: jyala,
       jartiPercent: jarti,
       stonePrice: stonePrice,
@@ -97,7 +97,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: 1000,
+      rate: goldRates[selectedType]!,
       jyalaPercent: jyala,
       jartiPercent: jarti,
       stonePrice: stonePrice,
@@ -130,6 +130,16 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
+  }
+
+  Future<void> getGoldRates() async {
+    goldRates = await getRate();
+  }
+
+  @override
+  void initState() {
+    getGoldRates();
+    super.initState();
   }
 
   @override

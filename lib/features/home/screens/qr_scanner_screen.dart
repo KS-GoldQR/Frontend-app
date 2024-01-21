@@ -169,11 +169,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         await getProductInfo(
                             barcodes[0].rawValue!, user.sessionToken);
 
+                        debugPrint(" hereee${product!.id}");
+
                         if (product != null) {
                           if (product!.name == null &&
                               user.sessionToken.isEmpty) {
                             _cannotEdit();
                           } else if (product!.name == null) {
+                            //use set product api
+                            debugPrint(" hereee${product!.id}");
                             navigatorKey.currentState!.pushReplacementNamed(
                                 EditProductScreen.routeName,
                                 arguments: {
@@ -185,6 +189,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                 AboutProduct.routeName,
                                 arguments: {
                                   'product': product,
+                                  'fromInventory': false,
                                 });
                           }
                         }

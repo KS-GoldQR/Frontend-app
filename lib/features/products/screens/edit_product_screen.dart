@@ -11,6 +11,7 @@ import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/utils.dart';
 
@@ -25,7 +26,6 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
-  final String avatar = 'assets/images/avtar.svg';
   final _addProductFormKey = GlobalKey<FormState>();
   final ProductService _productService = ProductService();
   final TextEditingController _descriptionController = TextEditingController();
@@ -51,7 +51,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   File? images;
   int currentIndex = 0;
   bool isSubmitting = false;
-  // bool _isMounted = false;
 
   Future<void> _pickImage(ImageSource source) async {
     images = await pickFile(context, source);
@@ -63,12 +62,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         isSubmitting = true;
       });
-      editProduct();
-      // if (mounted) {
+      if (!widget.args['fromAboutProduct']) {
+        setProduct();
+      } else {
+        editProduct();
+      }
       setState(() {
         isSubmitting = false;
       });
-      // }
     } else {
       debugPrint("error occured in edit form page");
     }
@@ -79,7 +80,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
     await _productService.editProduct(
       context: context,
       productId: widget.args['product'].id,
-      // isMounted: _isMounted,
+      image:
+          "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
+      name: _nameController.text.trim(),
+      productType: selectedType,
+      weight: getWeight(
+          double.tryParse(_weightController.text.trim())!, selectedWeight),
+      stone: _stoneController.text.trim(),
+      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
+      jyala: double.tryParse(_jyalaController.text.trim())!,
+      jarti: double.tryParse(_jartiController.text.trim())!,
+    );
+  }
+
+  Future<void> setProduct() async {
+    await _productService.setProduct(
+      context: context,
+      productId: widget.args['product'].id,
       image:
           "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
       name: _nameController.text.trim(),
@@ -205,16 +222,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   colorFilter:
                       const ColorFilter.mode(Colors.black, BlendMode.srcIn)),
             ),
-            actions: [
+            actions: const [
               CircleAvatar(
-                radius: 20,
-                child: SvgPicture.asset(
-                  avatar,
-                  fit: BoxFit.contain,
-                  height: 55,
+                radius: 30,
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Remix.user_line,
+                  size: 40,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 30,
               ),
             ],

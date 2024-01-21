@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:remixicon/remixicon.dart';
 
 class CustomAppbar extends StatelessWidget {
   const CustomAppbar({
     super.key,
     required this.menuIcon,
-    required this.avatar,
   });
 
   final String menuIcon;
-  final String avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -19,21 +18,19 @@ class CustomAppbar extends StatelessWidget {
         onPressed: () {
           Scaffold.of(context).openDrawer();
         },
-        icon: SvgPicture.asset(
-          menuIcon,
-          colorFilter:const ColorFilter.mode(Colors.black, BlendMode.srcIn)
-        ),
+        icon: SvgPicture.asset(menuIcon,
+            colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn)),
       ),
-      actions: [
+      actions: const [
         CircleAvatar(
-          radius: 20,
-          child: SvgPicture.asset(
-            avatar,
-            fit: BoxFit.contain,
-            height: 55,
+          radius: 30,
+          backgroundColor: Colors.white,
+          child: Icon(
+            Remix.user_line,
+            size: 40,
           ),
         ),
-        const SizedBox(
+        SizedBox(
           width: 30,
         ),
       ],

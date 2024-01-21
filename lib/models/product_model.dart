@@ -14,7 +14,7 @@ class Product {
   double? stone_price;
   String? productType;
   double? weight;
-  String? rate;
+  double? rate;
   String owner_name;
   String owner_phone;
   String validSession;
@@ -65,15 +65,16 @@ class Product {
       jyala: double.tryParse(map['jyala']) ?? 0.0,
       name: map['name'] as String?,
       owned_by: int.tryParse(map['owned_by']) ?? 0,
-      sold: int.tryParse(map['sold']) ?? 0,
+      sold: map['sold'] != null ? int.tryParse(map['sold']) ?? 0 : 0,
       stone: map['stone'] as String?,
       stone_price: double.tryParse(map['stone_price']) ?? 0.0,
       productType: map['productType'] as String?,
       weight: double.tryParse(map['weight']) ?? 0.0,
-      rate: map['rate'] ?? "",
-      owner_name: map['owner_name'] ?? "",
-      owner_phone: map['owner_phone'] ?? "",
-      validSession: map['validSession'] ?? "",
+      rate: map['rate'] != null ? double.tryParse(map['rate']) ?? 0.0 : 0.0,
+      owner_name: map['owner_name'] != null ? map['owner_name'] ?? "" : "",
+      owner_phone: map['owner_phone'] != null ? map['owner_phone'] ?? "" : "",
+      validSession:
+          map['validSession'] != null ? map['validSession'] ?? "" : "",
     );
   }
 
@@ -94,7 +95,7 @@ class Product {
     double? stone_price,
     String? productType,
     double? weight,
-    String? rate,
+    double? rate,
     String? owner_name,
     String? owner_phone,
     String? validSession,

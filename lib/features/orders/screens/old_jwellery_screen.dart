@@ -28,11 +28,14 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
+    bool _showTotalPrice = false;
+      Map<String, double> goldRates = {};
 
   List<String> weight = ['Tola', 'Gram', 'Laal'];
   String selectedWeightType = 'Gram';
   List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
   String selectedType = 'Chapawala';
+  double currentJwelleryPrice = 0.0;
   double totalPriceToShow = 0.0;
 
   void calculateTotalPrice() {
@@ -43,14 +46,14 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: 1000,
+      rate: goldRates[selectedType]!,
       jyalaPercent: null,
       jartiPercent: null,
       stonePrice: stonePrice,
     );
 
     setState(() {
-      totalPriceToShow = totalPrice;
+      currentJwelleryPrice = totalPrice;
     });
   }
 
@@ -62,12 +65,11 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: 1000,
+      rate: goldRates[selectedType]!,
       jyalaPercent: null,
       jartiPercent: null,
       stonePrice: stonePrice,
     );
-    totalPriceToShow = totalPrice;
 
     OldJwellery oldJwellery = OldJwellery(
       itemName: _itemNameController.text.trim(),
@@ -95,6 +97,16 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
+  }
+
+    Future<void> getGoldRates() async {
+    goldRates = await getRate();
+  }
+
+  @override
+  void initState() {
+    getGoldRates();
+    super.initState();
   }
 
   @override
@@ -318,21 +330,69 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                   ),
                 ),
                 const Gap(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Total Price: ",
-                      style: TextStyle(
-                          color: greyColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                    Text(
-                      totalPriceToShow.toString(),
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Total Price: ",
+                        style: TextStyle(
+                            color: greyColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                      Text(
+                        currentJwelleryPrice.toString(),
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(10),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: _showTotalPrice
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Total Price: \$$totalPriceToShow',
+                              key: const ValueKey(true),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const Text(
+                              'Note: Total price is excluding current old jewllery price',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontStyle: FontStyle.italic,
+                                  color: greyColor),
+                            )
+                          ],
+                        )
+                      : ElevatedButton(
+                          key: const ValueKey(false),
+                          onPressed: () {
+                            for (int i = 0;
+                                i < orderProvider.oldJewelries.length;
+                                i++) {
+                              totalPriceToShow +=
+                                  orderProvider.oldJewelries[i].price;
+                            }
+                            setState(() {
+                              _showTotalPrice = !_showTotalPrice;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: blueColor,
+                          ),
+                          child: const Text(
+                            'Total Price?',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                 ),
                 const Gap(15),
                 CustomButton(

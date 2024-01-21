@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
@@ -17,13 +16,13 @@ import '../../../utils/widgets/error_page.dart';
 String testingSessionToken =
     'f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b';
 
-// userProvider.user.sessionToken is used sessiontoken in actual
-
 class ProductService {
   Future<List<Product>> getInventory(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     List<Product> products = [];
     try {
+      debugPrint(user.sessionToken);
+      debugPrint(user.userId);
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewInventory'),
         body: jsonEncode({
@@ -33,14 +32,13 @@ class ProductService {
       );
 
       if (response.statusCode == 200) {
+        debugPrint(response.body);
         httpErrorHandle(
             response: response,
             onSuccess: () {
               for (int i = 0; i < jsonDecode(response.body).length; i++) {
                 products.add(
-                  Product.fromJson(
-                    jsonEncode(jsonDecode(response.body)[i]),
-                  ),
+                  Product.fromMap(jsonDecode(response.body)[i]),
                 );
               }
             });
@@ -51,6 +49,7 @@ class ProductService {
             contentType: ContentType.failure);
       }
     } catch (e) {
+      debugPrint(e.toString());
       showSnackBar(
           title: 'Internal Error',
           message: e.toString(),
@@ -64,7 +63,6 @@ class ProductService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     List<Product> products = [];
     try {
-      
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
         body: jsonEncode({
@@ -202,7 +200,7 @@ class ProductService {
           "stone": stone,
           "stone_price": stonePrice,
           "jyala": jyala,
-          "jarti": jarti
+          "jarti": jarti,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -216,14 +214,15 @@ class ProductService {
                 contentType: ContentType.success);
             // productProvider.setProduct(product);
             Product product = productProvider.currentProduct!.copyWith(
-                name: name,
-                image: image,
-                productType: productType,
-                weight: weight,
-                stone: stone,
-                stone_price: stonePrice,
-                jyala: jyala,
-                jarti: jarti);
+              name: name,
+              image: image,
+              productType: productType,
+              weight: weight,
+              stone: stone,
+              stone_price: stonePrice,
+              jyala: jyala,
+              jarti: jarti,
+            );
             productProvider.setProduct(product);
             navigatorKey.currentState!.pop();
           });
@@ -258,14 +257,10 @@ class ProductService {
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            AwesomeDialog(
-              context: context,
-              dialogType: DialogType.success,
-              animType: AnimType.rightSlide,
-              title: 'Product Sold',
-              desc: 'your product has been sold',
-              btnOkText: 'OK',
-            ).show();
+            showSnackBar(
+                title: 'Product Sold',
+                message: 'your product has been sold',
+                contentType: ContentType.success);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
@@ -274,6 +269,53 @@ class ProductService {
           title: "Internal Error",
           message: "an unknown error occurred!",
           contentType: ContentType.warning);
+    }
+  }
+
+  Future<void> setProduct({
+    required BuildContext context,
+    required String productId,
+    required String name,
+    required String image,
+    required String productType,
+    required double weight,
+    required String stone,
+    required double stonePrice,
+    required double jyala,
+    required double jarti,
+  }) async {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$hostedUrl/prod/products/setProduct"),
+        body: jsonEncode({
+          "sessionToken": user.sessionToken,
+          "product_id": productId,
+          "name": name,
+          "image": image,
+          "productType": productType,
+          "weight": weight,
+          "stone": stone,
+          "stone_price": stonePrice,
+          "jyala": jyala,
+          "jarti": jarti
+        }),
+        headers: {"Content-Type": 'application/json'},
+      );
+
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            showSnackBar(
+                title: "Success",
+                message: "product set successfully",
+                contentType: ContentType.success);
+          });
+    } catch (e) {
+      showSnackBar(
+          title: "Failed",
+          message: "an internal error occurred!",
+          contentType: ContentType.failure);
     }
   }
 }

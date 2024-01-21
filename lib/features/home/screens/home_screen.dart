@@ -8,6 +8,7 @@ import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -23,7 +24,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
-  final String avatar = 'assets/images/avtar.svg';
   final UserService _userService = UserService();
   bool isLoggingOut = false;
 
@@ -40,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
       size: 30,
       color: Colors.white,
     ),
-    const ImageIcon(
-      AssetImage('assets/icons/inventory.png'),
+    const Icon(
+      Remix.store_2_line,
       size: 30,
       color: Colors.white,
     ),
@@ -142,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Dashboard",
                         style: TextStyle(
                           color: Colors.white,
@@ -154,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Text(
-                        "Last update 15 Nov 2023",
-                        style: TextStyle(
+                        "Last update: ${DateFormat.yMMMd().format(lastUpdated)}",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
@@ -163,14 +163,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     ],
                   ),
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
-                    child: SvgPicture.asset(
-                      avatar,
-                      fit: BoxFit.contain,
-                      height: 55,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Remix.user_line,
+                      size: 40,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

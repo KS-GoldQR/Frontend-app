@@ -58,7 +58,11 @@ class _OrderScreenState extends State<OrderScreen> {
     for (int i = 0; i < order.ordered_items!.length; i++) {
       totalPrice += order.ordered_items![i].totalPrice;
     }
+    return totalPrice;
+  }
 
+  double getOldJwelleryTotalPrice(Order order) {
+    double totalPrice = 0;
     for (int i = 0; i < order.old_jwellery!.length; i++) {
       totalPrice += order.old_jwellery![i].price;
     }
@@ -168,16 +172,21 @@ class _OrderScreenState extends State<OrderScreen> {
                     mode: PlutoGridMode.selectWithOneTap,
                     columns: columns,
                     rows: orders!.map((order) {
-                      final totalPrice = getOrderTotalPrice(order);
+                      final totalOrderPrice = getOrderTotalPrice(order);
+                      final totalOldJwelleryPrice =
+                          getOldJwelleryTotalPrice(order);
                       order.copyWith(
-                          remaining_payment:
-                              totalPrice - order.advanced_payment);
+                          remaining_payment: totalOrderPrice -
+                              totalOldJwelleryPrice -
+                              order.advanced_payment);
                       return PlutoRow(cells: {
                         'order_number': PlutoCell(value: order.id),
                         'customer_name': PlutoCell(value: order.customer_name),
                         'deadline': PlutoCell(value: order.expected_deadline),
                         'amount': PlutoCell(
-                            value: totalPrice - order.advanced_payment),
+                            value: totalOrderPrice -
+                                totalOldJwelleryPrice -
+                                order.advanced_payment),
                         'see_details': PlutoCell(value: 'See Details'),
                         'delete': PlutoCell(value: "delete")
                       });
