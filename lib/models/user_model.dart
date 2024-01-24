@@ -3,20 +3,26 @@ import 'dart:convert';
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class User {
   String userId;
-  String phoneNo;
-  String password;
+  String? phoneNo;
+  String? name;
+  DateTime? subscriptionEndsAt;
+  String? password;
   String sessionToken;
   User({
     required this.userId,
-    required this.phoneNo,
-    required this.password,
+    this.phoneNo,
+    this.name,
+    this.subscriptionEndsAt,
+    this.password,
     required this.sessionToken,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'userId': userId,
-      'phoneNo':phoneNo,
+      'user_id': userId,
+      'phone': phoneNo,
+      'name': name,
+      'ends_at': subscriptionEndsAt?.millisecondsSinceEpoch,
       'password': password,
       'sessionToken': sessionToken,
     };
@@ -24,9 +30,13 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      userId: map['userId'] as String,
-      phoneNo: map['phoneNo'] as String,
-      password: map['password'] as String,
+      userId: map['user_id'] as String,
+      phoneNo: map['phone'] != null ? map['phone'] as String : null,
+      name: map['name'] != null ? map['name'] as String : null,
+      subscriptionEndsAt: map['ends_at'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['ends_at'] as int)
+          : null,
+      password: map['password'] != null ? map['password'] as String : null,
       sessionToken: map['sessionToken'] as String,
     );
   }
@@ -39,14 +49,20 @@ class User {
   User copyWith({
     String? userId,
     String? phoneNo,
+    String? name,
+    DateTime? subscriptionEndsAt,
     String? password,
     String? sessionToken,
   }) {
     return User(
       userId: userId ?? this.userId,
       phoneNo: phoneNo ?? this.phoneNo,
+      name: name ?? this.name,
+      subscriptionEndsAt: subscriptionEndsAt ?? this.subscriptionEndsAt,
       password: password ?? this.password,
       sessionToken: sessionToken ?? this.sessionToken,
     );
   }
 }
+
+

@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/widgets/sold_item_details.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
-import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
 import '../services/product_service.dart';
@@ -20,8 +21,8 @@ class SoldItemsScreen extends StatefulWidget {
 class _ViewSoldItemsState extends State<SoldItemsScreen> {
   List<Product>? products;
   final ProductService _productService = ProductService();
-  List<String> types = ['All', 'Chapawala', 'Tejabi', 'Asal_chaadhi'];
-  String selectedType = 'All';
+  late List<String> types;
+  late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
 
   Future<void> getSoldItems() async {
@@ -34,15 +35,21 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   void getGroupedProduct() {
     groupedProducts.clear();
     for (var product in products!) {
-      if (!groupedProducts.containsKey(product.productType)) {
-        groupedProducts[product.productType!] = [];
+      dynamic translatedType = product.productType == "Chapawala"
+          ? AppLocalizations.of(context)!.chapawala
+          : product.productType == "Tejabi"
+              ? AppLocalizations.of(context)!.tejabi
+              : AppLocalizations.of(context)!.asalChaadhi;
+
+      if (!groupedProducts.containsKey(translatedType)) {
+        groupedProducts[translatedType!] = [];
       }
-      groupedProducts[product.productType]!.add(product);
+      groupedProducts[translatedType]!.add(product);
     }
   }
 
   List<Product> getFilteredProducts() {
-    return selectedType != 'All'
+    return selectedType != AppLocalizations.of(context)!.all
         ? groupedProducts[selectedType] ?? []
         : products ?? [];
   }
@@ -63,6 +70,18 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    types = [
+      AppLocalizations.of(context)!.all,
+      AppLocalizations.of(context)!.chapawala,
+      AppLocalizations.of(context)!.tejabi,
+      AppLocalizations.of(context)!.asalChaadhi
+    ];
+    selectedType = AppLocalizations.of(context)!.all;
+    super.didChangeDependencies();
+  }
+
+  @override
   void initState() {
     getSoldItems();
     super.initState();
@@ -72,7 +91,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sold Items"),
+        title: Text(AppLocalizations.of(context)!.soldItems),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -81,22 +100,13 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "All Sold Items",
-                style: TextStyle(
-                  color: blueColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text("Collection of Sold items"),
-              const SizedBox(height: 15),
+              const Gap(15),
               Center(
                 child: Column(
                   children: [
-                    const Text(
-                      "Select Category",
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.selectCategory,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF282828),
                       ),
@@ -148,7 +158,8 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (var entry in groupedProducts.entries)
-                                  if (selectedType == 'All' ||
+                                  if (selectedType ==
+                                          AppLocalizations.of(context)!.all ||
                                       entry.key == selectedType)
                                     Column(
                                       crossAxisAlignment:
@@ -175,8 +186,8 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            subtitle: Text(
-                                                "₹${getTotalPrice(weight: product.weight!, rate: product.rate!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
+                                            subtitle:
+                                                Text("रु${product.price}"),
                                             trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,

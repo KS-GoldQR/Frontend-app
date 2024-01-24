@@ -48,9 +48,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
           double.infinity,
           MediaQuery.sizeOf(context).height * 0.06,
         ),
-        child: CustomAppbar(
-          menuIcon: menuIcon,
-        ),
+        child:const CustomAppbar(),
       ),
       body: SingleChildScrollView(
         child: Padding(

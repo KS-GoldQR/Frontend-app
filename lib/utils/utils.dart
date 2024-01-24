@@ -123,13 +123,16 @@ Future<Map<String, double>> getRate() async {
     Map<String, dynamic> jsonData = json.decode(response.body);
     Map<String, String> rawRates = Map<String, String>.from(jsonData['rate']);
 
+    debugPrint(rawRates.toString());
+
     rawRates.forEach((key, value) {
       if (key == "cgold_10gram") {
         goldRates["Chapawala"] = double.parse(value) / 10;
       } else if (key == "tgold_10gram") {
         goldRates["Tejabi"] = double.parse(value) / 10;
       } else if (key == "achandi_10gram") {
-        goldRates["Asal_chaadhi"] = double.parse(value) / 10;
+        goldRates["Asal_Chaadhi"] = double.parse(value) / 10;
+        debugPrint(goldRates["Asal_Chaadhi"].toString());
       }
     });
   } catch (e) {
@@ -152,6 +155,20 @@ double getWeight(double weight, String selectedWeightType) {
     result = weight * 11.664;
   } else if (selectedWeightType == "Laal") {
     result = weight * 0.1166;
+  } else {
+    result = weight;
+  }
+
+  return double.parse(result.toStringAsFixed(3));
+}
+
+double getWeightByType(double weight, String selectedWeightType) {
+  double result;
+
+  if (selectedWeightType == "Tola") {
+    result = weight / 11.664;
+  } else if (selectedWeightType == "Laal") {
+    result = weight / 0.1166;
   } else {
     result = weight;
   }

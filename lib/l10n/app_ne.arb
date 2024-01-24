@@ -1,0 +1,86 @@
+{
+    "dashboard":"ड्यासबोर्ड",
+    "lastUpdate":"अन्तिम अपडेट",
+    "scanQR":"QR स्क्यान",
+    "inventory":"गहना सूची",
+    "soldItems":"सेल्स सूची",
+    "orders":"ऑर्डर्स",
+    "language":"भाषा",
+    "choose":"छान्नुहोस्",
+    "english":"अंग्रेजी",
+    "nepali":"नेपाली",
+    "select":"चयन गर्नुहोस्",
+    "chooseLanguage":"भाषा छान्नुहोस्",
+    "selectALanguage":"भाषा चयन गर्नुहोस्",
+    "goodMorning":"शुभ - प्रभात",
+    "goodAfternoon":"शुभ दिन",
+    "goodEvening":"शुभ सन्ध्या",
+    "placeTheQRCodeInTheArea":"क्षेत्रमा QR कोड राख्नुहोस्",
+    "scanningWillBeStartedAutomatically":"स्क्यानिङ स्वतः सुरु हुनेछ",
+    "productInventory":"हाल भएका गहनाहरु",
+    "selectCategory": "धातु प्रकार",
+    "all": "सबै",
+    "chapawala": "चापावाला",
+    "tejabi": "तेजाबी",
+    "asalChaadhi": "असल चाढी",
+    "noProductsFoundInInventory": "सूचीमा कुनै उत्पादनहरू फेला परेनन्",
+    "noProductsFound": "कुनै पनि उत्पादहरू फेला परेन",
+    "name": "नाम",
+    "deadline": "म्याद",
+    "remaining": "बाँकी रकम",
+    "action":"कार्य",
+    "createOrder": "अर्डर सिर्जना गर्नुहोस्",
+    "itemName": "वस्तुको नाम",
+    "type": "प्रकार",
+    "weight": "वजन",
+    "jyala": "ज्याला",
+    "jarti": "जर्ती",
+    "stone": "पत्थर",
+    "stonePrice": "पत्थरको मूल्य",
+    "fillFormToCreateOrder": "अर्डर सिर्जनाको लागि फारम भर्नुहोस्",
+    "currentPrice": "हालको मूल्य",
+    "totalPrice": "कुल मूल्य",
+    "noteTotalPriceExcludingCurrentOrderPrice": "नोट: कुल मूल्यले हालको मूल्यलाई बाहेक गरेको छ",
+    "addOtherItem": "अन्य वस्तु थप्नुहोस्",
+    "proceed": "अगाडि बढ्नुहोस्",
+    "oldJewelryItem": "पुरानो गहना",
+    "fillFormToShowOldJewelry": "पुरानो गहना देखाउनको लागि फारम भर्नुहोस्",
+    "customerDetails": "ग्राहकको विवरण",
+    "contactNumber": "सम्पर्क नम्बर",
+    "address": "ठेगाना",
+    "advancePayment": "अग्रिम भुक्तान",
+    "submitOrder": "अर्डर सबमिट गर्नुहोस्",
+    "fillCustomerDetails": "ग्राहकको विवरण भर्नुहोस्",
+    "tola": "तोला",
+    "gram": "ग्राम",
+    "laal": "लाल",
+    "viewProduct": "बस्तु हेर्नुहोस्",
+    "productInfo": "बस्तु जानकारी",
+    "productName": "बस्तु नाम",
+    "price": "मूल्य",
+    "editItem": "सम्पादन",
+    "sellItem": "बेच्नुहोस्",
+    "alterFormToEditProduct": "बस्तु सम्पादन गर्नको लागि फारम बदल्नुहोस्",
+    "or": "अथवा",
+    "subscriptionEndsAt": "सदस्यता अन्त",
+    "userId": "प्रयोगकर्ता आइडी",
+    "success": "सफल",
+    "successfullyLoggedIn": "लग इन सफल भयो",
+    "error": "समस्या",
+    "unauthorizedIncorrectPhoneNumberOrPassword": "अनधिकृत: गलत फोन नम्बर वा पासवर्ड"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

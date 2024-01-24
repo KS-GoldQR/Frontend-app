@@ -4,8 +4,10 @@ import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.da
 import 'package:grit_qr_scanner/features/products/widgets/customer_details_form.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
 import '../../../utils/utils.dart';
@@ -30,13 +32,13 @@ class _AboutProductState extends State<AboutProduct> {
   final String productDescription = "Description not added yet!";
 
   void navigateToCustomerDetailsForm(
-      BuildContext context, Product product, double rate) {
+      BuildContext context, Product product, double price) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CustomerDetailsForm(
           product: product,
-          rate: rate,
+          price: price,
         ),
       ),
     );
@@ -65,7 +67,10 @@ class _AboutProductState extends State<AboutProduct> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View Product"),
+        title: Text(
+          AppLocalizations.of(context)!.viewProduct,
+          style: const TextStyle(fontSize: 20),
+        ),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -74,9 +79,9 @@ class _AboutProductState extends State<AboutProduct> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Product Info",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.productInfo,
+                style: const TextStyle(
                   color: blueColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -113,26 +118,42 @@ class _AboutProductState extends State<AboutProduct> {
                 ),
               ),
               const Gap(10),
-              ProductDetail(label: 'Product Name: ', value: product!.name!),
-              ProductDetail(label: 'Type: ', value: product!.productType!),
-              ProductDetail(label: 'Weight: ', value: "${product!.weight!} gm"),
-              ProductDetail(label: 'Stone: ', value: product!.stone!),
               ProductDetail(
-                  label: 'Stone Price: ',
-                  value: product!.stone_price.toString()),
-              ProductDetail(label: 'Jyala: ', value: " ${product!.jyala!}%"),
-              ProductDetail(label: 'Jarti: ', value: "${product!.jarti!}%"),
+                  label: '${AppLocalizations.of(context)!.productName}: ',
+                  value: product!.name!),
               ProductDetail(
-                  label: 'Price: ',
+                  label: '${AppLocalizations.of(context)!.type}: ',
+                  value: product!.productType!),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.weight}: ',
+                  value:
+                      "${getWeightByType(product!.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.weight}: ',
+                  value:
+                      "${getWeightByType(product!.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.weight}: ',
+                  value:
+                      "${getWeightByType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.stone}: ',
+                  value: product!.stone!),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.stonePrice} : ',
+                  value:
+                      "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.jyala}: ',
+                  value: " ${product!.jyala!}%"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.jarti}: ',
+                  value: "${product!.jarti!}%"),
+              ProductDetail(
+                  label: '${AppLocalizations.of(context)!.price}: ',
                   value: goldRates.isEmpty
                       ? "fetching rate..."
-                      : getTotalPrice(
-                              weight: product!.weight!,
-                              rate: goldRates[product!.productType!]!,
-                              jyalaPercent: product!.jyala!,
-                              jartiPercent: product!.jarti,
-                              stonePrice: product!.stone_price!)
-                          .toString()),
+                      : "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti, stonePrice: product!.stone_price!))}"),
               const Gap(20),
 
               if (product!.validSession == "1" || widget.args['fromInventory'])
@@ -142,13 +163,15 @@ class _AboutProductState extends State<AboutProduct> {
                   children: [
                     Expanded(
                       child: CustomButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, EditProductScreen.routeName,
-                            arguments: {
-                              'product': product,
-                              'fromAboutProduct': true,
-                            }),
-                        text: "Edit Item",
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, EditProductScreen.routeName,
+                              arguments: {
+                                'product': product,
+                                'fromAboutProduct': true,
+                              });
+                        },
+                        text: AppLocalizations.of(context)!.editItem,
                         iconColor: blueColor,
                         textColor: blueColor,
                         iconPath: 'assets/icons/bx_edit.svg',
@@ -159,10 +182,18 @@ class _AboutProductState extends State<AboutProduct> {
                     Expanded(
                       child: CustomButton(
                         onPressed: () {
-                          navigateToCustomerDetailsForm(context, product!,
-                              goldRates[product!.productType!]!);
+                          debugPrint(product!.price!.toString());
+                          navigateToCustomerDetailsForm(
+                              context,
+                              product!,
+                              getTotalPrice(
+                                  weight: product!.weight!,
+                                  rate: goldRates[product!.productType!]!,
+                                  jyalaPercent: product!.jyala!,
+                                  jartiPercent: product!.jarti,
+                                  stonePrice: product!.stone_price!));
                         },
-                        text: "Sell Item",
+                        text: AppLocalizations.of(context)!.sellItem,
                         iconColor: blueColor,
                         textColor: blueColor,
                         fontSize: 15,

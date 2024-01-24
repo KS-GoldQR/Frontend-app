@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
-  User _user = User(userId: '', password: '', sessionToken: '', phoneNo: '');
+  User _user = User(userId: '', sessionToken: '');
 
   User get user => _user;
 
@@ -17,7 +17,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void removeUser() {
-    _user = User(userId: "", password: "", sessionToken: "", phoneNo: "");
+    _user = User(userId: "", password: null, sessionToken: "", phoneNo: null, name: null, subscriptionEndsAt: null);
     notifyListeners();
   }
 }

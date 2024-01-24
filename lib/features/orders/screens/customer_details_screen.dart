@@ -8,6 +8,7 @@ import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
@@ -114,9 +115,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text(
-              "Customer Details",
-              style: TextStyle(color: blueColor, fontWeight: FontWeight.bold),
+            title: Text(
+              AppLocalizations.of(context)!.customerDetails,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             centerTitle: false,
           ),
@@ -125,13 +126,24 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Column(
                 children: [
+                  const Gap(10),
+                  Text(
+                    AppLocalizations.of(context)!.fillCustomerDetails,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: blueColor),
+                  ),
+                  const Gap(10),
                   Form(
                     key: _customerDetailsFormKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Name: ",
+                          AppLocalizations.of(context)!.name,
                           style: customTextDecoration()
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -152,7 +164,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         ),
                         const Gap(10),
                         Text(
-                          "Phone Number",
+                          AppLocalizations.of(context)!.contactNumber,
                           style: customTextDecoration()
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -179,7 +191,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         ),
                         const Gap(10),
                         Text(
-                          "Address",
+                          AppLocalizations.of(context)!.address,
                           style: customTextDecoration()
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -202,7 +214,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         ),
                         const Gap(10),
                         Text(
-                          "Advance Payment",
+                          AppLocalizations.of(context)!.advancePayment,
                           style: customTextDecoration()
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -234,7 +246,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         ),
                         const Gap(10),
                         Text(
-                          "Expected Deadline",
+                          AppLocalizations.of(context)!.deadline,
                           style: customTextDecoration()
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -272,7 +284,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                         submitOrder();
                       }
                     },
-                    text: "Submit Order",
+                    text: AppLocalizations.of(context)!.submitOrder,
                     textColor: Colors.white,
                     backgroundColor: blueColor,
                   ),

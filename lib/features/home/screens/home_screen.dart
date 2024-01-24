@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
+import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/utils/widgets/custom_drawer.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../utils/widgets/custom_card.dart';
 
@@ -23,16 +25,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final UserService _userService = UserService();
   bool isLoggingOut = false;
 
-  List<String> cardsText = [
-    "Scan Qr",
-    "Inventory",
-    "Sold Items",
-    "Orders",
-  ];
+  List<String> cardsText = [];
 
   List<Widget> cardsIcon = [
     const Icon(
@@ -91,6 +87,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    cardsText = [
+      AppLocalizations.of(context)!.scanQR,
+      AppLocalizations.of(context)!.inventory,
+      AppLocalizations.of(context)!.soldItems,
+      AppLocalizations.of(context)!.orders,
+    ];
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return ModalProgressHUD(
@@ -101,20 +108,25 @@ class _HomeScreenState extends State<HomeScreen> {
         size: 70,
       ),
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: blueColor,
-        drawer: const Drawer(),
+        drawer: const CustomDrawer(),
         appBar: AppBar(
           backgroundColor: blueColor,
-          leading: IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(menuIcon,
-                colorFilter:
-                    const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+          leading: GestureDetector(
+            onTap: () {
+              scaffoldKey.currentState?.openDrawer(); // Open drawer directly
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                Remix.menu_2_fill,
+              ),
+            ),
           ),
           title: const Text(
             "Smart Sunar",
             style: TextStyle(
-              color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -123,14 +135,12 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: userLogout,
               icon: const Icon(
                 Remix.logout_box_r_line,
-                color: Colors.white,
               ),
             ),
             IconButton(
               onPressed: () {},
               icon: const Icon(
                 Remix.settings_3_line,
-                color: Colors.white,
               ),
             ),
           ],
@@ -145,16 +155,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Dashboard",
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.dashboard,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
                       Text(
-                        "Last update: ${DateFormat.yMMMd().format(lastUpdated)}",
+                        "${AppLocalizations.of(context)!.lastUpdate}: ${DateFormat.yMMMd().format(lastUpdated)}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -163,12 +173,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     ],
                   ),
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Remix.user_line,
-                      size: 40,
+                  GestureDetector(
+                    onTap: () => navigatorKey.currentState!
+                        .pushNamed(UserDetailsScreen.routeName),
+                    child: const CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Remix.user_line,
+                        size: 40,
+                      ),
                     ),
                   ),
                 ],
@@ -192,8 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: size.width / (size.height / 2),
+                      crossAxisSpacing: 5,
+                      childAspectRatio: size.width / (size.height / 1.8),
                     ),
                     itemBuilder: (context, index) {
                       return GestureDetector(

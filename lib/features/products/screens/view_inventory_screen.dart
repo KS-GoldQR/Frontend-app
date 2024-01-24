@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
@@ -9,7 +8,8 @@ import 'package:grit_qr_scanner/utils/widgets/loader.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../../../utils/global_variables.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../../../utils/utils.dart';
 
 class ViewInventoryScreen extends StatefulWidget {
@@ -21,13 +21,13 @@ class ViewInventoryScreen extends StatefulWidget {
 }
 
 class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
-  final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   List<Product>? products;
   final ProductService _productService = ProductService();
-  List<String> types = ['All', 'Chapawala', 'Tejabi', 'Asal_chaadhi'];
-  String selectedType = 'All';
+  late List<String> types;
+  late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
   Map<String, double> goldRates = {};
+  bool _didDependenciesChanged = false;
 
   Future<void> getInventory() async {
     products = await _productService.getInventory(context);
@@ -39,15 +39,21 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   void getGroupedProduct() {
     groupedProducts.clear();
     for (var product in products!) {
-      if (!groupedProducts.containsKey(product.productType)) {
-        groupedProducts[product.productType!] = [];
+      dynamic translatedType = product.productType == "Chapawala"
+          ? AppLocalizations.of(context)!.chapawala
+          : product.productType == "Tejabi"
+              ? AppLocalizations.of(context)!.tejabi
+              : AppLocalizations.of(context)!.asalChaadhi;
+
+      if (!groupedProducts.containsKey(translatedType)) {
+        groupedProducts[translatedType!] = [];
       }
-      groupedProducts[product.productType]!.add(product);
+      groupedProducts[translatedType]!.add(product);
     }
   }
 
   List<Product> getFilteredProducts() {
-    return selectedType != 'All'
+    return selectedType != AppLocalizations.of(context)!.all
         ? groupedProducts[selectedType] ?? []
         : products ?? [];
   }
@@ -55,6 +61,21 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   Future<void> getGoldRates() async {
     goldRates = await getRate();
     setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_didDependenciesChanged) {
+      types = [
+        AppLocalizations.of(context)!.all,
+        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.tejabi,
+        AppLocalizations.of(context)!.asalChaadhi
+      ];
+      selectedType = AppLocalizations.of(context)!.all;
+      _didDependenciesChanged = true;
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -81,29 +102,14 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-          icon: SvgPicture.asset(
-            menuIcon,
-            colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+        centerTitle: false,
+        title: Text(
+          AppLocalizations.of(context)!.productInventory,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        actions: const [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.white,
-            child: Icon(
-              Remix.user_line,
-              size: 30,
-            ),
-          ),
-          SizedBox(
-            width: 30,
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -111,22 +117,13 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Product Inventory",
-                style: TextStyle(
-                  color: blueColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text("Collection of Products"),
               const SizedBox(height: 15),
               Center(
                 child: Column(
                   children: [
-                    const Text(
-                      "Select Category",
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.selectCategory,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF282828),
                       ),
@@ -149,6 +146,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                         onChanged: (String? newValue) {
                           setState(() {
                             selectedType = newValue!;
+                            debugPrint(selectedType);
                           });
                         },
                         items:
@@ -167,18 +165,21 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
               products == null
                   ? const Center(child: Loader())
                   : products!.isEmpty
-                      ? const Center(
-                          child: Text("No Inventory Found!"),
+                      ? Center(
+                          child: Text(
+                              "${AppLocalizations.of(context)!.noProductsFoundInInventory}!"),
                         )
                       : getFilteredProducts().isEmpty
-                          ? const Center(
-                              child: Text("No Products found"),
+                          ? Center(
+                              child: Text(AppLocalizations.of(context)!
+                                  .noProductsFound),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (var entry in groupedProducts.entries)
-                                  if (selectedType == 'All' ||
+                                  if (selectedType ==
+                                          AppLocalizations.of(context)!.all ||
                                       entry.key == selectedType)
                                     Column(
                                       crossAxisAlignment:
@@ -192,6 +193,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
+                                          debugPrint(product.image);
                                           return ListTile(
                                             onTap: () async {
                                               await navigateToAboutProduct(
@@ -208,10 +210,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                                 ? const Text(
                                                     "fetching rates...")
                                                 : Text(
-                                                    "₹${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
+                                                    "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
                                             trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,
+                                              width: 50,
                                               imageUrl: product.image!,
                                               fit: BoxFit.cover,
                                               progressIndicatorBuilder:

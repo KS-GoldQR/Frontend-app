@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/utils/env.dart';
 
 String hostedUrl = Env.hostedUrl;
+String s3ImageUrl = Env.s3ImageUrl;
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

@@ -63,7 +63,7 @@ class UserService {
     } catch (e) {
       showSnackBar(
           title: "Internal Error",
-          message: e.toString(),
+          message: "an unknown error occurred",
           contentType: ContentType.warning);
       debugPrint(e.toString());
     }
@@ -86,10 +86,17 @@ class UserService {
       );
 
       if (response.statusCode == 200) {
+        String endsAtString = jsonDecode(response.body)['ends_at'];
+        DateTime endsAt = DateTime.parse(endsAtString);
+
         User updatedUser = userProvider.user.copyWith(
-          userId: userProvider.user.userId,
+          userId: jsonDecode(response.body)['user_id'],
           sessionToken: token,
+          name: jsonDecode(response.body)['name'],
+          phoneNo: jsonDecode(response.body)['phone'],
+          subscriptionEndsAt: endsAt,
         );
+
         userProvider.setUserFromModel(updatedUser);
         return true;
       } else {
@@ -140,7 +147,7 @@ class UserService {
     } catch (e) {
       showSnackBar(
           title: "Internal Error",
-          message: e.toString(),
+          message: "an unknown error occurred",
           contentType: ContentType.warning);
       debugPrint(e.toString());
     }

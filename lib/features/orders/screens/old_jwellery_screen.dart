@@ -4,7 +4,9 @@ import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
 import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
@@ -28,25 +30,44 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
-    bool _showTotalPrice = false;
-      Map<String, double> goldRates = {};
-
-  List<String> weight = ['Tola', 'Gram', 'Laal'];
-  String selectedWeightType = 'Gram';
-  List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
-  String selectedType = 'Chapawala';
+  bool _showTotalPrice = false;
+  Map<String, double> goldRates = {};
+  late List<String> weight;
+  late String selectedWeightType;
+  late List<String> types;
+  late String selectedType;
+  bool _dependenciesInitialized = false;
   double currentJwelleryPrice = 0.0;
   double totalPriceToShow = 0.0;
 
   void calculateTotalPrice() {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeightType;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeightType = selectedWeightType == "ग्राम"
+          ? "Gram"
+          : selectedWeightType == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
+    debugPrint(rselectedType);
+
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
-      selectedWeightType,
+      rselectedWeightType ?? selectedWeightType,
     );
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[selectedType]!,
+      rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: null,
       jartiPercent: null,
       stonePrice: stonePrice,
@@ -58,14 +79,31 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeightType;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeightType = selectedWeightType == "ग्राम"
+          ? "Gram"
+          : selectedWeightType == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
-      selectedWeightType,
+      rselectedWeightType ?? selectedWeightType,
     );
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[selectedType]!,
+      rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: null,
       jartiPercent: null,
       stonePrice: stonePrice,
@@ -74,7 +112,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     OldJwellery oldJwellery = OldJwellery(
       itemName: _itemNameController.text.trim(),
       wt: weight,
-      type: selectedType,
+      type: rselectedType ?? selectedType,
       stone: _stoneController.text.trim(),
       stonePrice: stonePrice,
       price: totalPrice,
@@ -91,6 +129,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     } else {
       Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
     }
+
+    debugPrint(orderProvider.oldJewelries.toString());
   }
 
   void _fieldFocusChange(
@@ -99,8 +139,33 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
-    Future<void> getGoldRates() async {
+  Future<void> getGoldRates() async {
     goldRates = await getRate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_dependenciesInitialized) {
+      weight = [
+        AppLocalizations.of(context)!.tola,
+        AppLocalizations.of(context)!.gram,
+        AppLocalizations.of(context)!.laal,
+      ];
+
+      types = [
+        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.tejabi,
+        AppLocalizations.of(context)!.asalChaadhi
+      ];
+
+      selectedType = AppLocalizations.of(context)!.chapawala;
+
+      selectedWeightType = AppLocalizations.of(context)!.gram;
+      _dependenciesInitialized = true;
+      debugPrint("dependency chagned bro");
+    }
+    debugPrint("dependency chagned sisi");
+    super.didChangeDependencies();
   }
 
   @override
@@ -140,9 +205,9 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Old Jwellery Item",
-            style: TextStyle(color: blueColor, fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context)!.oldJewelryItem,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           centerTitle: false,
         ),
@@ -151,13 +216,24 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(
               children: [
+                const Gap(10),
+                Text(
+                  AppLocalizations.of(context)!.fillFormToShowOldJewelry,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: blueColor),
+                ),
+                const Gap(10),
                 Form(
                   key: _oldJwelleryFormKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Item Name: ",
+                        AppLocalizations.of(context)!.itemName,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -178,7 +254,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Type",
+                        AppLocalizations.of(context)!.type,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -201,13 +277,14 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                         onChanged: (value) {
                           setState(() {
                             selectedType = value!;
+                            calculateTotalPrice();
                           });
                         },
                         decoration: customTextfieldDecoration(),
                       ),
                       const Gap(10),
                       Text(
-                        "Weight ",
+                        AppLocalizations.of(context)!.weight,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -265,6 +342,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                               onChanged: (value) {
                                 setState(() {
                                   selectedWeightType = value!;
+                                  calculateTotalPrice();
                                 });
                               },
                               decoration: customTextfieldDecoration(),
@@ -274,7 +352,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Stone",
+                        AppLocalizations.of(context)!.stone,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -298,7 +376,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Stone Price",
+                        AppLocalizations.of(context)!.stonePrice,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -335,15 +413,15 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Total Price: ",
-                        style: TextStyle(
+                      Text(
+                        "${AppLocalizations.of(context)!.currentPrice}: ",
+                        style: const TextStyle(
                             color: greyColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20),
                       ),
                       Text(
-                        currentJwelleryPrice.toString(),
+                        "रु${NumberFormat('#,##,###.00').format(currentJwelleryPrice)}",
                         style: const TextStyle(fontSize: 20),
                       ),
                     ],
@@ -358,14 +436,15 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Total Price: \$$totalPriceToShow',
+                              '${AppLocalizations.of(context)!.totalPrice}: रु$totalPriceToShow',
                               key: const ValueKey(true),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 20),
                             ),
-                            const Text(
-                              'Note: Total price is excluding current old jewllery price',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .noteTotalPriceExcludingCurrentOrderPrice,
+                              style: const TextStyle(
                                   fontSize: 10,
                                   fontStyle: FontStyle.italic,
                                   color: greyColor),
@@ -388,9 +467,9 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: blueColor,
                           ),
-                          child: const Text(
-                            'Total Price?',
-                            style: TextStyle(color: Colors.white),
+                          child: Text(
+                            '${AppLocalizations.of(context)!.totalPrice}?',
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                 ),
@@ -401,7 +480,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       addOtherItem(orderProvider, false);
                     }
                   },
-                  text: "Add Other Old Jwellery",
+                  text: AppLocalizations.of(context)!.addOtherItem,
                   textColor: Colors.white,
                   backgroundColor: blueColor,
                 ),
@@ -412,7 +491,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       addOtherItem(orderProvider, true);
                     }
                   },
-                  text: "Proceed",
+                  text: AppLocalizations.of(context)!.proceed,
                   textColor: Colors.white,
                   backgroundColor: blueColor,
                 ),

@@ -1,17 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:remixicon/remixicon.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../utils/utils.dart';
 
@@ -42,22 +45,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _stonePriceFocus = FocusNode();
   final _jyalaFocus = FocusNode();
   final _jartiFocus = FocusNode();
+  bool _dependenciesInitialized = false;
 
-  List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
-  String selectedType = 'Chapawala';
+  late List<String> types;
+  late String selectedType;
 
-  List<String> weight = ['Tola', 'Gram', 'Laal'];
-  String selectedWeight = 'Gram';
-  File? images;
+  late List<String> weight;
+  late String selectedWeight;
+  File? image;
   int currentIndex = 0;
   bool isSubmitting = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    images = await pickFile(context, source);
+    image = await pickFile(context, source);
     setState(() {});
   }
 
-  void isFormValid() {
+  void isFormValid() async {
     if (_addProductFormKey.currentState!.validate()) {
       setState(() {
         isSubmitting = true;
@@ -65,7 +69,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if (!widget.args['fromAboutProduct']) {
         setProduct();
       } else {
-        editProduct();
+        await editProduct();
       }
       setState(() {
         isSubmitting = false;
@@ -77,15 +81,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
 //image will be file type, sessiontoken will be dynamic
   Future<void> editProduct() async {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeight;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeight = selectedWeight == "ग्राम"
+          ? "Gram"
+          : selectedWeight == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
     await _productService.editProduct(
       context: context,
       productId: widget.args['product'].id,
-      image:
-          "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
+      image: image,
       name: _nameController.text.trim(),
-      productType: selectedType,
-      weight: getWeight(
-          double.tryParse(_weightController.text.trim())!, selectedWeight),
+      productType: rselectedType ?? selectedType,
+      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+          rselectedWeight ?? selectedWeight),
       stone: _stoneController.text.trim(),
       stonePrice: double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
@@ -94,15 +114,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> setProduct() async {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeight;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeight = selectedWeight == "ग्राम"
+          ? "Gram"
+          : selectedWeight == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
     await _productService.setProduct(
       context: context,
       productId: widget.args['product'].id,
       image:
           "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
       name: _nameController.text.trim(),
-      productType: selectedType,
-      weight: getWeight(
-          double.tryParse(_weightController.text.trim())!, selectedWeight),
+      productType: rselectedType ?? selectedType,
+      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+          rselectedWeight ?? selectedWeight),
       stone: _stoneController.text.trim(),
       stonePrice: double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
@@ -164,9 +201,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    if (!_dependenciesInitialized) {
+      weight = [
+        AppLocalizations.of(context)!.tola,
+        AppLocalizations.of(context)!.gram,
+        AppLocalizations.of(context)!.laal,
+      ];
+
+      types = [
+        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.tejabi,
+        AppLocalizations.of(context)!.asalChaadhi
+      ];
+
+      selectedType = selectedType == "Tejabi"
+          ? AppLocalizations.of(context)!.tejabi
+          : selectedType == "Chapawala"
+              ? AppLocalizations.of(context)!.tejabi
+              : AppLocalizations.of(context)!.asalChaadhi;
+      selectedWeight = AppLocalizations.of(context)!.gram;
+      _dependenciesInitialized = true;
+      debugPrint("dependency chagned bro");
+    }
+    debugPrint("dependency chagned sisi");
+    super.didChangeDependencies();
+  }
+
+  @override
   void initState() {
     super.initState();
-    // _isMounted = true;
+
+    debugPrint(widget.args['product'].productType);
+
     if (widget.args['fromAboutProduct']) {
       _nameController.text = widget.args['product'].name;
       selectedType = widget.args['product'].productType;
@@ -181,7 +248,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void dispose() {
-    // _isMounted = false;
     _descriptionController.dispose();
     _nameController.dispose();
     _weightController.dispose();
@@ -213,37 +279,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
         progressIndicator: const SpinKitRotatingCircle(color: blueColor),
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              icon: SvgPicture.asset(menuIcon,
-                  colorFilter:
-                      const ColorFilter.mode(Colors.black, BlendMode.srcIn)),
+            title: Text(
+              AppLocalizations.of(context)!.editItem,
+              style: const TextStyle(fontSize: 20),
             ),
-            actions: const [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Remix.user_line,
-                  size: 40,
-                ),
-              ),
-              SizedBox(
-                width: 30,
-              ),
-            ],
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Add/Edit Product",
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.alterFormToEditProduct,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
                     color: blueColor,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -281,7 +330,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(10),
                           GestureDetector(
                             onTap: _showChoiceDialog,
-                            child: images == null
+                            child: widget.args['product'].image == null
                                 ? DottedBorder(
                                     strokeWidth: 1,
                                     borderType: BorderType.RRect,
@@ -317,16 +366,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       ),
                                     ),
                                   )
-                                : Image.file(
-                                    images!,
-                                    fit: BoxFit.contain,
-                                    height: size.height * 0.2,
-                                    width: double.infinity,
-                                  ),
+                                : image != null
+                                    ? Image.file(
+                                        image!,
+                                        fit: BoxFit.contain,
+                                        height: size.height * 0.2,
+                                        width: double.infinity,
+                                      )
+                                    : CachedNetworkImage(
+                                        imageUrl: widget.args['product'].image,
+                                        fit: BoxFit.contain,
+                                        height: size.height * 0.2,
+                                        width: double.infinity,
+                                      ),
                           ),
                           const Gap(10),
                           Text(
-                            "Name of Product",
+                            AppLocalizations.of(context)!.productName,
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -346,7 +402,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Type",
+                            AppLocalizations.of(context)!.type,
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -374,7 +430,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Weight",
+                            AppLocalizations.of(context)!.weight,
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -440,7 +496,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Stone",
+                            AppLocalizations.of(context)!.stone,
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -462,7 +518,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Stone Price",
+                            AppLocalizations.of(context)!.stonePrice,
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -491,7 +547,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Jyala (%)",
+                            "${AppLocalizations.of(context)!.jyala} (%)",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -523,7 +579,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "Jarti (%)",
+                            "${AppLocalizations.of(context)!.jarti} (%)",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),

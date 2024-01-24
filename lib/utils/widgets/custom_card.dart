@@ -33,11 +33,14 @@ class CustomCard extends StatelessWidget {
             child: Center(child: icon),
           ),
           const SizedBox(height: 10),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          FittedBox(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

@@ -1,0 +1,85 @@
+{
+    "dashboard": "Dashboard",
+    "lastUpdate": "last update",
+    "scanQR": "Scan QR",
+    "inventory": "Inventory",
+    "soldItems": "Sold Items",
+    "orders": "Orders",
+    "language": "Language",
+    "choose": "Choose",
+    "english": "English",
+    "nepali": "Nepali",
+    "select": "Select",
+    "chooseLanguage": "Choose Language",
+    "selectALanguage": "Select a Language",
+    "goodMorning": "Good Morning",
+    "goodAfternoon": "Good Afternoon",
+    "goodEvening": "Good Evening",
+    "placeTheQRCodeInTheArea": "Place the QR Code in the area",
+    "scanningWillBeStartedAutomatically": "Scanning will be started automatically",
+    "productInventory": "Product Inventory",
+    "selectCategory": "Select Category",
+    "all": "All",
+    "chapawala": "Chapawala",
+    "tejabi": "Tejabi",
+    "asalChaadhi": "Asal_Chaadhi",
+    "noProductsFoundInInventory": "No products found in inventory",
+    "noProductsFound": "No Products found",
+    "name": "Name",
+    "deadline": "Deadline",
+    "remaining": "Remaining",
+    "action":"Action",
+    "createOrder": "Create Order",
+    "itemName": "Item Name",
+    "type": "Type",
+    "weight": "Weight",
+    "jyala": "Jyala",
+    "jarti": "Jarti",
+    "stone": "Stone",
+    "stonePrice": "Stone Price",
+    "fillFormToCreateOrder": "Fill form to create order",
+    "currentPrice": "Current Price",
+    "totalPrice": "Total Price",
+    "noteTotalPriceExcludingCurrentOrderPrice": "Note: Total price is excluding current order price",
+    "addOtherItem": "Add Other Item",
+    "proceed": "Proceed",
+    "oldJewelryItem": "Old Jewelry Item",
+    "fillFormToShowOldJewelry": "Fill form to show old jewelry",
+    "customerDetails": "Customer Details",
+    "contactNumber": "Contact Number",
+    "address": "Address",
+    "advancePayment": "Advance Payment",
+    "submitOrder": "Submit Order",
+    "fillCustomerDetails": "Fill Customer Details",
+    "tola": "Tola",
+    "gram": "Gram",
+    "laal": "Laal",
+    "viewProduct": "View Product",
+    "productInfo": "Product Info",
+    "productName": "Product Name",
+    "price": "Price",
+    "editItem": "Edit Item",
+    "sellItem": "Sell Item",
+    "alterFormToEditProduct": "Alter form to edit product",
+    "or": "or",
+    "subscriptionEndsAt": "Subscription Ends At",
+    "userId": "User ID",
+    "success": "Success",
+    "successfullyLoggedIn": "Successfully logged in",
+    "error": "Error",
+    "unauthorizedIncorrectPhoneNumberOrPassword": "Unauthorized: Incorrect phone number or password"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

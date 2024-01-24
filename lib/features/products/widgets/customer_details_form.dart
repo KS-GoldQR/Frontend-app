@@ -1,8 +1,12 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
 import '../../../utils/global_variables.dart';
@@ -11,8 +15,9 @@ import '../../../utils/widgets/custom_button.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
   final Product product;
-  final double rate;
-  const CustomerDetailsForm({super.key, required this.product, required this.rate});
+  final double price;
+  const CustomerDetailsForm(
+      {super.key, required this.product, required this.price});
 
   @override
   State<CustomerDetailsForm> createState() => _CustomerDetailsFormState();
@@ -33,13 +38,14 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
     setState(() {
       _isSelling = true;
     });
+    debugPrint(widget.price.toString());
     await _productService.sellProduct(
-      context: context,
-      productId: widget.product.id,
-      customerName: _nameController.text.trim(),
-      customerPhone: _phoneController.text.trim(),
-      customerAddress: _addressController.text.trim(),
-    );
+        context: context,
+        productId: widget.product.id,
+        customerName: _nameController.text.trim(),
+        customerPhone: _phoneController.text.trim(),
+        customerAddress: _addressController.text.trim(),
+        productPrice: widget.price);
     setState(() {
       _isSelling = false;
     });
@@ -49,6 +55,28 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
+  }
+
+  Future<void> _showChoiceDialog() async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: 'Sell Another?',
+      desc: 'how do you want to sell',
+      btnOkText: 'Inventory',
+      btnCancelText: 'Scan QR',
+      btnOkColor: blueColor,
+      btnCancelColor: blueColor,
+      btnCancelOnPress: () {
+        debugPrint("from qr");
+        navigatorKey.currentState!.pushNamed(QRScannerScreen.routeName);
+      },
+      btnOkOnPress: () {
+        debugPrint("from inventory");
+        navigatorKey.currentState!.pushNamed(ViewInventoryScreen.routeName);
+      },
+    ).show();
   }
 
   @override
@@ -71,7 +99,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Sell Product"),
+          title: Text(AppLocalizations.of(context)!.sellItem),
           centerTitle: false,
         ),
         body: SingleChildScrollView(
@@ -79,10 +107,10 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(
               children: [
-                const Text(
-                  "Fill Customer Details to Sell product",
+                Text(
+                  AppLocalizations.of(context)!.fillCustomerDetails,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 30,
                     color: blueColor,
                     fontWeight: FontWeight.w600,
@@ -91,11 +119,12 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                 const Gap(20),
                 Form(
                   key: _customerDetailsFormFormKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Name: ",
+                        AppLocalizations.of(context)!.name,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -116,7 +145,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       ),
                       const Gap(10),
                       Text(
-                        "Phone Number",
+                        AppLocalizations.of(context)!.contactNumber,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -143,7 +172,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       ),
                       const Gap(10),
                       Text(
-                        "Address",
+                        AppLocalizations.of(context)!.address,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -174,10 +203,24 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         sellProduct(context);
                       }
                     },
-                    text: "Sell Product",
+                    text: AppLocalizations.of(context)!.sellItem,
                     backgroundColor: blueColor,
                     textColor: Colors.white),
-                const Gap(10),
+                const Gap(20),
+                Text(
+                  AppLocalizations.of(context)!.or.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
+                ),
+                const Gap(20),
+                CustomButton(
+                    onPressed: () {
+                      _showChoiceDialog();
+                    },
+                    text: AppLocalizations.of(context)!.addOtherItem,
+                    backgroundColor: blueColor,
+                    textColor: Colors.white),
               ],
             ),
           ),

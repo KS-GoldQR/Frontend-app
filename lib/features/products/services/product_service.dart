@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
@@ -45,14 +46,14 @@ class ProductService {
       } else {
         showSnackBar(
             title: 'Error',
-            message: jsonDecode(response.body)['message'],
+            message: "No products in Inventory",
             contentType: ContentType.failure);
       }
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
           title: 'Internal Error',
-          message: e.toString(),
+          message: "an unknown error occurred",
           contentType: ContentType.failure);
     }
 
@@ -92,7 +93,7 @@ class ProductService {
     } catch (e) {
       showSnackBar(
           title: 'Internal Error',
-          message: e.toString(),
+          message: "an unkown error occurred",
           contentType: ContentType.failure);
     }
 
@@ -159,7 +160,7 @@ class ProductService {
       debugPrint(e.toString());
       showSnackBar(
         title: 'Internal Error',
-        message: e.toString(),
+        message: "An unknown error occurred",
         contentType: ContentType.failure,
       );
       navigatorKey.currentState!.popAndPushNamed(
@@ -174,7 +175,7 @@ class ProductService {
   Future<void> editProduct({
     required BuildContext context,
     required String productId,
-    required String image,
+    File? image,
     required String name,
     required String productType,
     required double weight,
@@ -188,12 +189,31 @@ class ProductService {
         Provider.of<ProductProvider>(context, listen: false);
 
     try {
+      String? imageNameFromS3;
+      String? imageUrl;
+      if (image != null) {
+        imageNameFromS3 = await uploadImageToS3(context: context, file: image);
+
+        if (imageNameFromS3 == null) {
+          showSnackBar(
+              title: "Upload Failed",
+              message: "failed to upload image!",
+              contentType: ContentType.failure);
+          return;
+        } else {
+          imageUrl = "$s3ImageUrl/$imageNameFromS3";
+        }
+      }
+
+      debugPrint("hello");
+
+      // debugPrint("from service : ${imageUrl}");
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/editProduct"),
         body: jsonEncode({
           "product_id": productId,
           "sessionToken": user.sessionToken,
-          "image": image,
+          "image": imageUrl ?? productProvider.currentProduct!.image,
           "name": name,
           "productType": productType,
           "weight": weight,
@@ -215,7 +235,7 @@ class ProductService {
             // productProvider.setProduct(product);
             Product product = productProvider.currentProduct!.copyWith(
               name: name,
-              image: image,
+              image: imageUrl,
               productType: productType,
               weight: weight,
               stone: stone,
@@ -239,9 +259,12 @@ class ProductService {
       required String productId,
       required String customerName,
       required String customerPhone,
-      required String customerAddress}) async {
+      required String customerAddress,
+      required double productPrice}) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
+      debugPrint("here");
+      debugPrint(productPrice.toString());
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/sellProduct"),
         body: jsonEncode({
@@ -250,6 +273,7 @@ class ProductService {
           "customer_name": customerName,
           "customer_phone": customerPhone,
           "customer_address": customerAddress,
+          "price": productPrice.toString(),
         }),
         headers: <String, String>{'Content-Type': 'application/json'},
       );
@@ -314,8 +338,38 @@ class ProductService {
     } catch (e) {
       showSnackBar(
           title: "Failed",
-          message: "an internal error occurred!",
+          message: "an unknown error occurred!",
           contentType: ContentType.failure);
     }
+  }
+
+  Future<String?> uploadImageToS3(
+      {required BuildContext context, required File file}) async {
+    String? fileName;
+    try {
+      List<int> imageBytes = file.readAsBytesSync();
+      String base64Image = base64Encode(imageBytes);
+
+      http.Response response = await http.put(
+          Uri.parse("$hostedUrl/prod/upload"),
+          body: jsonEncode({"file": base64Image}),
+          headers: {"Content-Type": "application/json"});
+
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            fileName = jsonDecode(response.body)['fileName'];
+            showSnackBar(
+                title: "image Upload Success",
+                message: "",
+                contentType: ContentType.success);
+          });
+    } catch (e) {
+      showSnackBar(
+          title: "Error",
+          message: "An Internal Error Occurred!",
+          contentType: ContentType.failure);
+    }
+    return fileName!;
   }
 }

@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/create_order_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
@@ -82,6 +83,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
     case CustomerDetailsScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => const CustomerDetailsScreen(),
+      );
+
+    case UserDetailsScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const UserDetailsScreen(),
       );
 
     case ErrorPage.routeName:

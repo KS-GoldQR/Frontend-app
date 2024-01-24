@@ -4,9 +4,11 @@ import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/widgets/product_detail_card.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
+import 'package:intl/intl.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SoldItemDetails extends StatefulWidget {
   final Product product;
@@ -86,45 +88,43 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                 ),
                 const Gap(10),
                 ProductDetail(
-                    label: 'Product Name: ', value: widget.product.name!),
+                    label: '${AppLocalizations.of(context)!.name}: ',
+                    value: widget.product.name!),
                 ProductDetail(
-                    label: 'Type: ', value: widget.product.productType!),
+                    label: '${AppLocalizations.of(context)!.type}: ',
+                    value: widget.product.productType!),
                 ProductDetail(
-                    label: 'Weight: ', value: "${widget.product.weight!} gm"),
-                ProductDetail(label: 'Stone: ', value: widget.product.stone!),
+                    label: '${AppLocalizations.of(context)!.weight}: ',
+                    value:
+                        "${getWeightByType(widget.product.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
                 ProductDetail(
-                    label: 'Stone Price: ',
-                    value: widget.product.stone_price.toString()),
+                    label: '${AppLocalizations.of(context)!.weight}: ',
+                    value:
+                        "${getWeightByType(widget.product.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
                 ProductDetail(
-                    label: 'Jyala: ', value: widget.product.jyala!.toString()),
+                    label: '${AppLocalizations.of(context)!.weight}: ',
+                    value:
+                        "${getWeightByType(widget.product.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                 ProductDetail(
-                    label: 'Jarti: ', value: widget.product.jarti!.toString()),
-                // TODO(dhiraj): dynamic rate/price for each sold product after change in api
+                    label: '${AppLocalizations.of(context)!.stone}: ',
+                    value: widget.product.stone!),
                 ProductDetail(
-                  label: 'Price: ',
+                    label: '${AppLocalizations.of(context)!.stonePrice}: ',
+                    value:
+                        "रु${NumberFormat('#,##,###.00').format(widget.product.stone_price)}"),
+                ProductDetail(
+                    label: '${AppLocalizations.of(context)!.jyala}: ',
+                    value: widget.product.jyala!.toString()),
+                ProductDetail(
+                    label: '${AppLocalizations.of(context)!.jarti}: ',
+                    value: widget.product.jarti!.toString()),
+                ProductDetail(
+                  label: '${AppLocalizations.of(context)!.price}: ',
                   value:
-                      "₹${getTotalPrice(weight: widget.product.weight!, rate: widget.product.rate!, jyalaPercent: widget.product.jyala!, jartiPercent: widget.product.jarti!, stonePrice: widget.product.stone_price!)}",
+                      "रु${NumberFormat('#,##,###.00').format(widget.product.price)}",
                 ),
                 const Gap(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text(
-                      "Owned By",
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: blueColor),
-                    ),
-                    Text(
-                      widget.product.owned_by.toString(),
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+
                 const Gap(10),
                 Center(
                   child: ElevatedButton(

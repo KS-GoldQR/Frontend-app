@@ -57,8 +57,13 @@ dependencies:
   modal_progress_hud_nsn: ^0.4.0
   loading_btn: ^1.0.3
   calendar_date_picker2: ^0.5.3
-  intl: ^0.18.1
+  intl: 
   pluto_grid: ^7.0.2
+  flutter_localizations:
+    sdk: flutter
+  aws_s3_upload: ^1.5.0
+  dio: ^5.4.0
+  gtext: ^0.0.3
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +83,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

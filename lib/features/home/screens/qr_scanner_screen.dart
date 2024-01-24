@@ -8,6 +8,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
 import '../../../utils/global_variables.dart';
@@ -81,19 +82,19 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "QR Scanner",
+          title: Text(
+            AppLocalizations.of(context)!.scanQR,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
-              color: Colors.black,
+              color: Colors.white,
               icon: ValueListenableBuilder(
                 valueListenable: cameraController.torchState,
                 builder: (context, state, child) {
                   switch (state) {
                     case TorchState.off:
-                      return const Icon(Icons.flash_off, color: Colors.black);
+                      return const Icon(Icons.flash_off, color: Colors.white);
                     case TorchState.on:
                       return const Icon(Icons.flash_on, color: Colors.red);
                   }
@@ -103,7 +104,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               onPressed: () => cameraController.toggleTorch(),
             ),
             IconButton(
-              color: Colors.black,
+              color: Colors.white,
               icon: ValueListenableBuilder(
                 valueListenable: cameraController.cameraFacingState,
                 builder: (context, state, child) {
@@ -128,17 +129,18 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Place the QR Code in the area",
+                      AppLocalizations.of(context)!.placeTheQRCodeInTheArea,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Scanning will be started automatically",
+                      AppLocalizations.of(context)!
+                          .scanningWillBeStartedAutomatically,
                       style: TextStyle(fontSize: 15),
                     ),
                   ],

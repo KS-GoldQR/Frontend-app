@@ -8,7 +8,9 @@ import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../utils/utils.dart';
 
@@ -36,15 +38,16 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
   bool _showTotalPrice = false;
-  List<String> weight = ['Tola', 'Gram', 'Laal'];
-  String selectedWeightType = 'Gram';
-  List<String> types = ['Chapawala', 'Tejabi', 'Asal_chaadhi'];
-  String selectedType = 'Chapawala';
+  late List<String> weight;
+  late String selectedWeightType;
+  late List<String> types;
+  late String selectedType;
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
   Map<String, double> goldRates = {};
+  bool _dependenciesInitialized = false;
 
-  void _showChoiceDialog() {
+  void _showChoiceDialog(OrderProvider orderProvider) {
     Future.delayed(Duration.zero, () {
       AwesomeDialog(
         context: context,
@@ -56,6 +59,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         btnCancelText: 'No',
         btnOkColor: blueColor,
         btnCancelColor: blueColor,
+        onDismissCallback: (type) {
+          if (orderProvider.orderedItems.isNotEmpty) {
+            orderProvider.orderedItems
+                .removeAt(orderProvider.orderedItems.length - 1);
+          }
+        },
         btnCancelOnPress: () {
           Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
         },
@@ -67,16 +76,36 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void calculateTotalPrice() {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeightType;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeightType = selectedWeightType == "ग्राम"
+          ? "Gram"
+          : selectedWeightType == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
+    debugPrint(rselectedType);
+    debugPrint(goldRates.toString());
+
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
-      selectedWeightType,
+      rselectedWeightType ?? selectedWeightType,
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[selectedType]!,
+      rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: jyala,
       jartiPercent: jarti,
       stonePrice: stonePrice,
@@ -88,16 +117,35 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeightType;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeightType = selectedWeightType == "ग्राम"
+          ? "Gram"
+          : selectedWeightType == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "चापावाला"
+          ? "Chapawala"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal_Chaadhi";
+    }
+
+    debugPrint(rselectedType);
+
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
-      selectedWeightType,
+      rselectedWeightType ?? selectedWeightType,
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
     double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[selectedType]!,
+      rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: jyala,
       jartiPercent: jarti,
       stonePrice: stonePrice,
@@ -106,7 +154,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     OrderedItems orderedItem = OrderedItems(
       itemName: _itemNameController.text.trim(),
       wt: weight,
-      type: selectedType,
+      type: rselectedType ?? selectedType,
       jarti: jarti,
       jyala: jyala,
       stone: _stoneController.text.trim(),
@@ -124,6 +172,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     if (!isProceed) {
       Navigator.pushReplacementNamed(context, CreateOrderScreen.routeName);
     }
+
+    debugPrint(orderProvider.orderedItems.toString());
   }
 
   void _fieldFocusChange(
@@ -134,6 +184,31 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   Future<void> getGoldRates() async {
     goldRates = await getRate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_dependenciesInitialized) {
+      weight = [
+        AppLocalizations.of(context)!.tola,
+        AppLocalizations.of(context)!.gram,
+        AppLocalizations.of(context)!.laal,
+      ];
+
+      types = [
+        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.tejabi,
+        AppLocalizations.of(context)!.asalChaadhi
+      ];
+
+      selectedType = AppLocalizations.of(context)!.chapawala;
+
+      selectedWeightType = AppLocalizations.of(context)!.gram;
+      _dependenciesInitialized = true;
+      debugPrint("dependency chagned bro");
+    }
+    debugPrint("dependency chagned sisi");
+    super.didChangeDependencies();
   }
 
   @override
@@ -173,9 +248,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Create Order",
-            style: TextStyle(color: blueColor, fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context)!.createOrder,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           centerTitle: false,
         ),
@@ -184,13 +259,24 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(
               children: [
+                const Gap(10),
+                Text(
+                  AppLocalizations.of(context)!.fillFormToCreateOrder,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: blueColor),
+                ),
+                const Gap(10),
                 Form(
                   key: _createOrderFormKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Item Name: ",
+                        AppLocalizations.of(context)!.name,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -211,7 +297,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Type",
+                        AppLocalizations.of(context)!.type,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -234,13 +320,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         onChanged: (value) {
                           setState(() {
                             selectedType = value!;
+                            calculateTotalPrice();
                           });
                         },
                         decoration: customTextfieldDecoration(),
                       ),
                       const Gap(10),
                       Text(
-                        "Weight ",
+                        AppLocalizations.of(context)!.weight,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -298,6 +385,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               onChanged: (value) {
                                 setState(() {
                                   selectedWeightType = value!;
+                                  calculateTotalPrice();
                                 });
                               },
                               decoration: customTextfieldDecoration(),
@@ -307,7 +395,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Jyala (%) ",
+                        "${AppLocalizations.of(context)!.jyala} (%) ",
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -341,7 +429,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Jarti (%) ",
+                        "${AppLocalizations.of(context)!.jarti} (%) ",
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -375,7 +463,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Stone",
+                        AppLocalizations.of(context)!.stone,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -398,7 +486,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "Stone Price",
+                        AppLocalizations.of(context)!.stonePrice,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -435,15 +523,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Current Order Price: ",
-                        style: TextStyle(
+                      Text(
+                        "${AppLocalizations.of(context)!.currentPrice}: ",
+                        style: const TextStyle(
                             color: greyColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20),
                       ),
                       Text(
-                        currentOrderPrice.toString(),
+                        "रु${NumberFormat('#,##,###.00').format(currentOrderPrice)}",
                         style: const TextStyle(
                           fontSize: 20,
                           overflow: TextOverflow.ellipsis,
@@ -461,14 +549,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Total Price: \$$totalPriceToShow',
+                              '${AppLocalizations.of(context)!.totalPrice}: रु$totalPriceToShow',
                               key: const ValueKey(true),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 20),
                             ),
-                            const Text(
-                              'Note: Total price is excluding current order price',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .noteTotalPriceExcludingCurrentOrderPrice,
+                              style: const TextStyle(
                                   fontSize: 10,
                                   fontStyle: FontStyle.italic,
                                   color: greyColor),
@@ -491,9 +580,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: blueColor,
                           ),
-                          child: const Text(
-                            'Total Price?',
-                            style: TextStyle(color: Colors.white),
+                          child: Text(
+                            '${AppLocalizations.of(context)!.totalPrice}?',
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                 ),
@@ -504,7 +593,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       addOtherItem(orderProvider, false);
                     }
                   },
-                  text: "Add Other Item",
+                  text: AppLocalizations.of(context)!.addOtherItem,
                   textColor: Colors.white,
                   backgroundColor: blueColor,
                 ),
@@ -513,10 +602,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   onPressed: () {
                     if (_createOrderFormKey.currentState!.validate()) {
                       addOtherItem(orderProvider, true);
-                      _showChoiceDialog();
+                      _showChoiceDialog(orderProvider);
                     }
                   },
-                  text: "Proceed",
+                  text: AppLocalizations.of(context)!.proceed,
                   textColor: Colors.white,
                   backgroundColor: blueColor,
                 ),

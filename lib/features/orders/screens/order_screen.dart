@@ -8,6 +8,7 @@ import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/widgets/loader.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OrderScreen extends StatefulWidget {
   static const String routeName = '/order-screen';
@@ -86,55 +87,39 @@ class _OrderScreenState extends State<OrderScreen> {
     final width = MediaQuery.sizeOf(context).width;
     return columns = [
       PlutoColumn(
-        title: 'Order No.',
-        field: 'order_number',
-        type: PlutoColumnType.text(),
-        width: width / 6,
-        readOnly: true,
-      ),
-      PlutoColumn(
-        title: 'Customer Name',
+        title: AppLocalizations.of(context)!.name,
         field: 'customer_name',
         type: PlutoColumnType.text(),
-        width: width / 6,
+        width: width / 4,
         readOnly: true,
       ),
       PlutoColumn(
-        title: 'Deadline',
+        title: AppLocalizations.of(context)!.deadline,
         field: 'deadline',
         type: PlutoColumnType.date(),
-        width: width / 6,
+        width: width / 4,
         readOnly: true,
         sort: PlutoColumnSort.ascending,
       ),
       PlutoColumn(
-        title: 'Remaining Amount',
+        title: AppLocalizations.of(context)!.remaining,
         field: 'amount',
         type: PlutoColumnType.number(
           allowFirstDot: true,
-          negative: false,
         ),
-        width: width / 6,
+        width: width / 4,
         readOnly: true,
       ),
       PlutoColumn(
-        title: 'See Details',
-        field: 'see_details',
-        type: PlutoColumnType.text(),
-        width: width / 6,
-        readOnly: true,
-      ),
-      PlutoColumn(
-        title: "Delete",
-        field: "delete",
+        title: AppLocalizations.of(context)!.action,
+        field: "action",
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
           return const Icon(
-            Icons.delete,
-            color: Colors.red,
+            Icons.remove_red_eye,
           );
         },
-        width: width / 6,
+        width: width / 10,
         readOnly: true,
       )
     ];
@@ -147,11 +132,10 @@ class _OrderScreenState extends State<OrderScreen> {
       progressIndicator: const SpinKitDoubleBounce(color: blueColor),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Orders",
-            style: TextStyle(
+          title: Text(
+            AppLocalizations.of(context)!.orders,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: blueColor,
             ),
           ),
         ),
@@ -172,6 +156,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     mode: PlutoGridMode.selectWithOneTap,
                     columns: columns,
                     rows: orders!.map((order) {
+                      final orderId = order.id;
                       final totalOrderPrice = getOrderTotalPrice(order);
                       final totalOldJwelleryPrice =
                           getOldJwelleryTotalPrice(order);
@@ -180,27 +165,28 @@ class _OrderScreenState extends State<OrderScreen> {
                               totalOldJwelleryPrice -
                               order.advanced_payment);
                       return PlutoRow(cells: {
-                        'order_number': PlutoCell(value: order.id),
                         'customer_name': PlutoCell(value: order.customer_name),
                         'deadline': PlutoCell(value: order.expected_deadline),
                         'amount': PlutoCell(
                             value: totalOrderPrice -
                                 totalOldJwelleryPrice -
                                 order.advanced_payment),
-                        'see_details': PlutoCell(value: 'See Details'),
-                        'delete': PlutoCell(value: "delete")
+                        'action': PlutoCell(value: "Action")
                       });
                     }).toList(),
                     onSelected: (event) {
-                      if (event.cell!.column.field == 'delete') {
-                        final orderId = event.row!.cells['order_number']!.value;
-                        _showChoiceDialog(orderId, context);
-                        debugPrint(orderId);
+                      if (event.cell!.column.field == 'action') {
+                        // final orderId = event.row!.cells['order_number']!.value;
+                        // _showChoiceDialog(orderId, context);
+                        // debugPrint(event.row!.cells.toString());
                       }
 
-                      if (event.cell!.column.field == 'see_details') {
-                        final order = event.row!.cells;
-                        debugPrint(order.toString());
+                      if (event.cell!.column.field == 'action') {
+                        final ordere = event.row!.cells;
+
+                        debugPrint(ordere.toString());
+                        debugPrint(event.rowIdx!.toString());
+                        debugPrint(orders!.elementAt(event.rowIdx!).toString());
                         // TODO(dhiraj): implement invoice after requestion an api
                         Navigator.push(
                             context,
@@ -217,9 +203,9 @@ class _OrderScreenState extends State<OrderScreen> {
           onPressed: () {
             Navigator.pushNamed(context, CreateOrderScreen.routeName);
           },
-          label: const Text(
-            "Create Order",
-            style: TextStyle(
+          label: Text(
+            AppLocalizations.of(context)!.createOrder,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),

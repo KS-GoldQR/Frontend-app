@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
@@ -15,6 +16,7 @@ class Product {
   String? productType;
   double? weight;
   double? rate;
+  double? price;
   String owner_name;
   String owner_phone;
   String validSession;
@@ -32,6 +34,7 @@ class Product {
     this.productType,
     this.weight,
     this.rate,
+    this.price,
     required this.owner_name,
     required this.owner_phone,
     required this.validSession,
@@ -51,6 +54,7 @@ class Product {
       'productType': productType,
       'weight': weight,
       'rate': rate,
+      'price': price,
       'owner_name': owner_name,
       'owner_phone': owner_phone,
       'validSession': validSession,
@@ -71,6 +75,7 @@ class Product {
       productType: map['productType'] as String?,
       weight: double.tryParse(map['weight']) ?? 0.0,
       rate: map['rate'] != null ? double.tryParse(map['rate']) ?? 0.0 : 0.0,
+      price: map['price'] != null ? double.tryParse(map['price']) : 0.0,
       owner_name: map['owner_name'] != null ? map['owner_name'] ?? "" : "",
       owner_phone: map['owner_phone'] != null ? map['owner_phone'] ?? "" : "",
       validSession:
@@ -96,6 +101,7 @@ class Product {
     String? productType,
     double? weight,
     double? rate,
+    double? price,
     String? owner_name,
     String? owner_phone,
     String? validSession,
@@ -113,6 +119,7 @@ class Product {
       productType: productType ?? this.productType,
       weight: weight ?? this.weight,
       rate: rate ?? this.rate,
+      price: price ?? this.price,
       owner_name: owner_name ?? this.owner_name,
       owner_phone: owner_phone ?? this.owner_phone,
       validSession: validSession ?? this.validSession,
