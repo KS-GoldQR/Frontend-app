@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:remixicon/remixicon.dart';
 
 import '../../../models/product_model.dart';
 import '../../../utils/utils.dart';
@@ -27,22 +28,33 @@ class AboutProduct extends StatefulWidget {
 class _AboutProductState extends State<AboutProduct> {
   Product? product;
   int currentIndex = 0;
+  final TextEditingController _jyalaController = TextEditingController();
+  final TextEditingController _jartiController = TextEditingController();
+  final TextEditingController _totalPriceController = TextEditingController();
 
   final String productDescription = "Description not added yet!";
 
   void navigateToCustomerDetailsForm(
-      BuildContext context, Product product, double price) {
+      BuildContext context, Product product, double jyala, double jarti, double totalPrice) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CustomerDetailsForm(
           product: product,
-          price: price,
+          jyala: jyala,
+          jarti: jarti,
+          totalPrice: totalPrice,
         ),
       ),
     );
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _jyalaController.dispose();
+    _jartiController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,22 +141,181 @@ class _AboutProductState extends State<AboutProduct> {
                   label: '${AppLocalizations.of(context)!.stone}: ',
                   value: product!.stone!),
               ProductDetail(
-                  label: '${AppLocalizations.of(context)!.stonePrice} : ',
+                  label: '${AppLocalizations.of(context)!.stonePrice}: ',
                   value:
                       "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
-              ProductDetail(
-                  label: '${AppLocalizations.of(context)!.jyala}: ',
-                  value: "${product!.jyala!}%"),
-              ProductDetail(
-                  label: '${AppLocalizations.of(context)!.jarti}: ',
-                  value: "${product!.jarti!}%"),
-              ProductDetail(
-                  label: '${AppLocalizations.of(context)!.price}: ',
-                  value: goldRates.isEmpty
-                      ? "error fetching rate..."
-                      : "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti, stonePrice: product!.stone_price!))}"),
-              const Gap(20),
+              Row(
+                children: [
+                  Text(
+                    '${AppLocalizations.of(context)!.jyala} (%): ',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Gap(8),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.5,
+                    child: TextFormField(
+                      controller: _jyalaController
+                        ..text = product!.jyala.toString(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onTapOutside: (event) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      cursorColor: Colors.black,
+                      cursorOpacityAnimates: false,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        isCollapsed: true,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        _jyalaController.text = value;
+                        _totalPriceController.text =
+                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "jyala cannot be empty!";
+                        }
 
+                        if (double.tryParse(value) == null) {
+                          return "enter a valid number";
+                        }
+
+                        if (double.tryParse(value)! < 0) {
+                          return "jyala cannot be negative/zero";
+                        }
+
+                        return null;
+                      },
+                    ),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Remix.edit_2_line,
+                    size: 16,
+                  ),
+                ],
+              ),
+              const Gap(10),
+              Row(
+                children: [
+                  Text(
+                    '${AppLocalizations.of(context)!.jarti} (%): ',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Gap(8),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.5,
+                    child: TextFormField(
+                      controller: _jartiController
+                        ..text = product!.jarti.toString(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onTapOutside: (event) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      cursorColor: Colors.black,
+                      cursorOpacityAnimates: false,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        isCollapsed: true,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        _jartiController.text = value;
+                        _totalPriceController.text =
+                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                        debugPrint("inside jayala ${_jartiController.text}");
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "jarti cannot be empty!";
+                        }
+
+                        if (double.tryParse(value) == null) {
+                          return "enter a valid number";
+                        }
+
+                        if (double.tryParse(value)! < 0) {
+                          return "jarti cannot be negative/zero";
+                        }
+
+                        return null;
+                      },
+                    ),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Remix.edit_2_line,
+                    size: 16,
+                  ),
+                ],
+              ),
+              const Gap(10),
+              Row(
+                children: [
+                  Text(
+                    '${AppLocalizations.of(context)!.price}: ',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Gap(8),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.5,
+                    child: TextFormField(
+                      controller: _totalPriceController
+                        ..text =
+                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti!, stonePrice: product!.stone_price!))}",
+                      enabled: false, // Disable user input
+                      style: const TextStyle(color: Colors.black),
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        isCollapsed: true,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        disabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        _totalPriceController.text =
+                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(20),
               if (product!.validSession == "1" || widget.args['fromInventory'])
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,15 +343,21 @@ class _AboutProductState extends State<AboutProduct> {
                       child: CustomButton(
                         onPressed: () {
                           debugPrint(product!.price!.toString());
+                          debugPrint(_jyalaController.text);
+                          debugPrint(_jartiController.text);
+                          debugPrint(_totalPriceController.text);
                           navigateToCustomerDetailsForm(
                               context,
                               product!,
-                              getTotalPrice(
+                              double.tryParse(_jyalaController.text) ?? product!.jyala!,
+                              double.tryParse(_jartiController.text) ?? product!.jarti!,
+                              double.tryParse(_totalPriceController.text) ??  getTotalPrice(
                                   weight: product!.weight!,
                                   rate: goldRates[product!.productType!]!,
-                                  jyalaPercent: product!.jyala!,
-                                  jartiPercent: product!.jarti,
-                                  stonePrice: product!.stone_price!));
+                                  jyalaPercent:double.tryParse(_jyalaController.text) ?? product!.jyala!,
+                                  jartiPercent:double.tryParse(_jartiController.text) ?? product!.jarti,
+                                  stonePrice:product!.stone_price!)
+                             );
                         },
                         text: AppLocalizations.of(context)!.sellItem,
                         iconColor: blueColor,

@@ -270,13 +270,17 @@ class ProductService {
       required String customerName,
       required String customerPhone,
       required String customerAddress,
-      required double productPrice}) async {
+      required double productTotalPrice,
+      required double jyala,
+      required double jarti}) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       debugPrint("here");
-      debugPrint(productPrice.toString());
+
+      //after modification in api sent jyala, jarti too in api
+      debugPrint(productTotalPrice.toString());
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/sellProduct"),
         body: jsonEncode({
@@ -285,7 +289,7 @@ class ProductService {
           "customer_name": customerName,
           "customer_phone": customerPhone,
           "customer_address": customerAddress,
-          "price": productPrice.toString(),
+          "price": productTotalPrice.toString(),
         }),
         headers: <String, String>{'Content-Type': 'application/json'},
       );

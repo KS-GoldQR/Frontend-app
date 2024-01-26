@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
@@ -17,6 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   await dotenv.load(fileName: "apikeys.env");
   SharedPreferences preferences = await SharedPreferences.getInstance();
   final String languageCode = preferences.getString("language_code") ?? "";

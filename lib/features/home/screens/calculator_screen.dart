@@ -59,7 +59,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ? "Tola"
               : "Laal";
 
-      rselectedType = selectedType == "चापावाला"
+      rselectedType = selectedType == "छापावाल"
           ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
@@ -67,7 +67,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
 
     debugPrint(rselectedType);
-    debugPrint(goldRates.toString());
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -75,7 +74,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
-    double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
+    double stonePrice =
+        double.tryParse(_stonePriceController.text.trim()) ?? 0.0;
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
@@ -104,7 +104,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.calculator,
-          style:const TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 20),
         ),
       ),
       body: SingleChildScrollView(
@@ -288,13 +288,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return "stone price cannot be empty!";
-                        }
-                        if (double.tryParse(value) == null) {
+                        if (value!.isNotEmpty &&
+                            double.tryParse(value) == null) {
                           return "enter a valid number";
                         }
-                        if (double.tryParse(value)! <= 0) {
+                        if (value.isNotEmpty && double.tryParse(value)! <= 0) {
                           return "stone price cannot be negative/zero";
                         }
                         return null;

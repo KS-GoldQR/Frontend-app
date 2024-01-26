@@ -173,6 +173,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
                         debugPrint(" hereee${product!.id}");
 
+                       
+
                         if (product != null) {
                           if (product!.name == null &&
                               user.sessionToken.isEmpty) {

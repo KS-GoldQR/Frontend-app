@@ -88,7 +88,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ? "Tola"
               : "Laal";
 
-      rselectedType = selectedType == "चापावाला"
+      rselectedType = selectedType == "छापावाल"
           ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
@@ -121,7 +121,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ? "Tola"
               : "Laal";
 
-      rselectedType = selectedType == "चापावाला"
+      rselectedType = selectedType == "छापावाल"
           ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
@@ -298,6 +298,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 Expanded(
                   child: Form(
                     key: _addProductFormKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

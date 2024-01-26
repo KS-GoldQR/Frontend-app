@@ -15,9 +15,15 @@ import '../../../utils/widgets/custom_button.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
   final Product product;
-  final double price;
+  final double jyala;
+  final double jarti;
+  final double totalPrice;
   const CustomerDetailsForm(
-      {super.key, required this.product, required this.price});
+      {super.key,
+      required this.product,
+      required this.jyala,
+      required this.jarti,
+      required this.totalPrice});
 
   @override
   State<CustomerDetailsForm> createState() => _CustomerDetailsFormState();
@@ -38,14 +44,17 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
     setState(() {
       _isSelling = true;
     });
-    debugPrint(widget.price.toString());
+    debugPrint(widget.totalPrice.toString());
     await _productService.sellProduct(
-        context: context,
-        productId: widget.product.id,
-        customerName: _nameController.text.trim(),
-        customerPhone: _phoneController.text.trim(),
-        customerAddress: _addressController.text.trim(),
-        productPrice: widget.price);
+      context: context,
+      productId: widget.product.id,
+      customerName: _nameController.text.trim(),
+      customerPhone: _phoneController.text.trim(),
+      customerAddress: _addressController.text.trim(),
+      productTotalPrice: widget.totalPrice,
+      jyala: widget.jyala,
+      jarti: widget.jarti,
+    );
     setState(() {
       _isSelling = false;
     });

@@ -50,7 +50,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
               ? "Tola"
               : "Laal";
 
-      rselectedType = selectedType == "चापावाला"
+      rselectedType = selectedType == "छापावाल"
           ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
@@ -88,7 +88,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
               ? "Tola"
               : "Laal";
 
-      rselectedType = selectedType == "चापावाला"
+      rselectedType = selectedType == "छापावाल"
           ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
