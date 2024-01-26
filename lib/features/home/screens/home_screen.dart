@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
+import 'package:grit_qr_scanner/features/home/screens/calculator_screen.dart';
+import 'package:grit_qr_scanner/features/home/screens/gold_rates_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/utils/widgets/custom_drawer.dart';
+import 'package:grit_qr_scanner/features/home/widgets/custom_drawer.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,6 +53,16 @@ class _HomeScreenState extends State<HomeScreen> {
       size: 30,
       color: Colors.white,
     ),
+    const Icon(
+      Remix.money_dollar_box_line,
+      size: 30,
+      color: Colors.white,
+    ),
+    const Icon(
+      Remix.calculator_line,
+      size: 30,
+      color: Colors.white,
+    )
   ];
 
   void onCardsTapped(int index) {
@@ -70,6 +82,16 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         Navigator.pushNamed(context, OrderScreen.routeName);
         break;
+
+      case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GoldRatesScreen()),
+        );
+
+      case 5:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const CalculatorScreen()));
 
       default:
         Navigator.pushNamed(context, ErrorPage.routeName);
@@ -93,8 +115,18 @@ class _HomeScreenState extends State<HomeScreen> {
       AppLocalizations.of(context)!.inventory,
       AppLocalizations.of(context)!.soldItems,
       AppLocalizations.of(context)!.orders,
+      AppLocalizations.of(context)!.rates,
+      AppLocalizations.of(context)!.calculator,
     ];
     super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      getRate(context);
+    });
   }
 
   @override

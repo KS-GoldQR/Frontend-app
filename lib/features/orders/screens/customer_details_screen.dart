@@ -99,9 +99,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         canPop: true,
         onPopInvoked: (didPop) {
           orderProvider.resetCustomer();
-          if (orderProvider.oldJewelries.isNotEmpty) {
-            orderProvider.oldJewelries
-                .removeAt(orderProvider.oldJewelries.length - 1);
+          if (orderProvider.oldJweleries.isNotEmpty) {
+            orderProvider.oldJweleries
+                .removeAt(orderProvider.oldJweleries.length - 1);
           }
 
           if (orderProvider.orderedItems.isNotEmpty) {

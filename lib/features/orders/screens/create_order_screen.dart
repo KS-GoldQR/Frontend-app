@@ -44,7 +44,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late String selectedType;
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
-  Map<String, double> goldRates = {};
   bool _dependenciesInitialized = false;
 
   void _showChoiceDialog(OrderProvider orderProvider) {
@@ -59,16 +58,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         btnCancelText: 'No',
         btnOkColor: blueColor,
         btnCancelColor: blueColor,
-        onDismissCallback: (type) {
-          if (orderProvider.orderedItems.isNotEmpty) {
-            orderProvider.orderedItems
-                .removeAt(orderProvider.orderedItems.length - 1);
-          }
-        },
         btnCancelOnPress: () {
+          addOtherItem(orderProvider, true);
           Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
         },
         btnOkOnPress: () {
+          addOtherItem(orderProvider, true);
           Navigator.pushNamed(context, OldJwelleryScreen.routeName);
         },
       ).show();
@@ -87,10 +82,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     debugPrint(rselectedType);
@@ -128,10 +123,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     debugPrint(rselectedType);
@@ -182,10 +177,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
-  Future<void> getGoldRates() async {
-    goldRates = await getRate();
-  }
-
   @override
   void didChangeDependencies() {
     if (!_dependenciesInitialized) {
@@ -196,12 +187,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       ];
 
       types = [
-        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.chhapawal,
         AppLocalizations.of(context)!.tejabi,
-        AppLocalizations.of(context)!.asalChaadhi
+        AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = AppLocalizations.of(context)!.chapawala;
+      selectedType = AppLocalizations.of(context)!.chhapawal;
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
       _dependenciesInitialized = true;
@@ -209,12 +200,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     }
     debugPrint("dependency chagned sisi");
     super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    getGoldRates();
-    super.initState();
   }
 
   @override
@@ -601,7 +586,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 CustomButton(
                   onPressed: () {
                     if (_createOrderFormKey.currentState!.validate()) {
-                      addOtherItem(orderProvider, true);
                       _showChoiceDialog(orderProvider);
                     }
                   },

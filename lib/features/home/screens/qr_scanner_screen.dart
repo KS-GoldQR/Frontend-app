@@ -84,7 +84,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         appBar: AppBar(
           title: Text(
             AppLocalizations.of(context)!.scanQR,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
@@ -136,12 +136,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     Text(
                       AppLocalizations.of(context)!.placeTheQRCodeInTheArea,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       AppLocalizations.of(context)!
                           .scanningWillBeStartedAutomatically,
-                      style: TextStyle(fontSize: 15),
+                      style: const TextStyle(fontSize: 15),
                     ),
                   ],
                 ),

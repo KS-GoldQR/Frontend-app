@@ -74,7 +74,7 @@ import 'dart:convert';
 // }
 
 class OrderedItems {
-      String itemName;
+    String itemName;
     double wt;
     String type;
     double jarti;

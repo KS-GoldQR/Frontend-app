@@ -107,6 +107,22 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(
               children: [
+                const Gap(20),
+                CustomButton(
+                    onPressed: () {
+                      _showChoiceDialog();
+                    },
+                    text: AppLocalizations.of(context)!.addOtherItem,
+                    backgroundColor: blueColor,
+                    textColor: Colors.white),
+                const Gap(20),
+                Text(
+                  AppLocalizations.of(context)!.or.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 30,
+                  ),
+                ),
+                const Gap(20),
                 Text(
                   AppLocalizations.of(context)!.fillCustomerDetails,
                   textAlign: TextAlign.center,
@@ -204,21 +220,6 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                       }
                     },
                     text: AppLocalizations.of(context)!.sellItem,
-                    backgroundColor: blueColor,
-                    textColor: Colors.white),
-                const Gap(20),
-                Text(
-                  AppLocalizations.of(context)!.or.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                const Gap(20),
-                CustomButton(
-                    onPressed: () {
-                      _showChoiceDialog();
-                    },
-                    text: AppLocalizations.of(context)!.addOtherItem,
                     backgroundColor: blueColor,
                     textColor: Colors.white),
               ],

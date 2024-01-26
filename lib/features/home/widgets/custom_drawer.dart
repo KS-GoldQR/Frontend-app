@@ -5,7 +5,7 @@ import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../../features/home/widgets/select_language.dart';
+import 'select_language.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomDrawer extends StatelessWidget {

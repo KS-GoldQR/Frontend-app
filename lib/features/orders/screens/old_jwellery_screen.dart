@@ -31,7 +31,6 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
   bool _showTotalPrice = false;
-  Map<String, double> goldRates = {};
   late List<String> weight;
   late String selectedWeightType;
   late List<String> types;
@@ -52,10 +51,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     debugPrint(rselectedType);
@@ -90,10 +89,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     double weight = getWeight(
@@ -130,17 +129,13 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
     }
 
-    debugPrint(orderProvider.oldJewelries.toString());
+    debugPrint(orderProvider.oldJweleries.toString());
   }
 
   void _fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
-  }
-
-  Future<void> getGoldRates() async {
-    goldRates = await getRate();
   }
 
   @override
@@ -153,12 +148,12 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       ];
 
       types = [
-        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.chhapawal,
         AppLocalizations.of(context)!.tejabi,
-        AppLocalizations.of(context)!.asalChaadhi
+        AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = AppLocalizations.of(context)!.chapawala;
+      selectedType = AppLocalizations.of(context)!.chhapawal;
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
       _dependenciesInitialized = true;
@@ -166,12 +161,6 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     }
     debugPrint("dependency chagned sisi");
     super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    getGoldRates();
-    super.initState();
   }
 
   @override
@@ -455,10 +444,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                           key: const ValueKey(false),
                           onPressed: () {
                             for (int i = 0;
-                                i < orderProvider.oldJewelries.length;
+                                i < orderProvider.oldJweleries.length;
                                 i++) {
                               totalPriceToShow +=
-                                  orderProvider.oldJewelries[i].price;
+                                  orderProvider.oldJweleries[i].price;
                             }
                             setState(() {
                               _showTotalPrice = !_showTotalPrice;

@@ -11,6 +11,7 @@ import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import '../../home/screens/home_screen.dart';
@@ -21,6 +22,9 @@ String testingSessionToken =
 class OrderService {
   Future<List<Order>> getAllOrders(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Order> orders = [];
     try {
       http.Response response = await http.post(
@@ -33,48 +37,40 @@ class OrderService {
         },
       );
 
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              //Response is modified to convert it as valid json object: Should be removed if json is valid & not a good practice
-              final jsonResponse = jsonDecode(response.body);
-              dynamic ordersJson = jsonResponse['orders']
-                  .replaceAll("'", '"')
-                  .replaceAll('Decimal(', '')
-                  .replaceAll(')', '')
-                  .replaceAll('["', '[')
-                  .replaceAll('"]', ']')
-                  .replaceAll('"{', '{')
-                  .replaceAll('}"', '}');
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            //Response is modified to convert it as valid json object: Should be removed if json is valid & not a good practice
+            final jsonResponse = jsonDecode(response.body);
+            dynamic ordersJson = jsonResponse['orders']
+                .replaceAll("'", '"')
+                .replaceAll('Decimal(', '')
+                .replaceAll(')', '')
+                .replaceAll('["', '[')
+                .replaceAll('"]', ']')
+                .replaceAll('"{', '{')
+                .replaceAll('}"', '}');
 
-              if (ordersJson is String) {
-                final modifiedOrdersJson = jsonDecode(ordersJson);
+            if (ordersJson is String) {
+              final modifiedOrdersJson = jsonDecode(ordersJson);
 
-                if (modifiedOrdersJson is List<dynamic>) {
-                  orders = modifiedOrdersJson.map((orderJson) {
-                    debugPrint(orderJson.toString());
-                    if (orderJson is Map<String, dynamic>) {
-                      return Order.fromMap(orderJson);
-                    } else {
-                      return Order.fromJson(orderJson.toString());
-                    }
-                  }).toList();
-                }
+              if (modifiedOrdersJson is List<dynamic>) {
+                orders = modifiedOrdersJson.map((orderJson) {
+                  debugPrint(orderJson.toString());
+                  if (orderJson is Map<String, dynamic>) {
+                    return Order.fromMap(orderJson);
+                  } else {
+                    return Order.fromJson(orderJson.toString());
+                  }
+                }).toList();
               }
-            });
-      } else {
-        showSnackBar(
-            title: "Failed",
-            message: "failed to fetch orders",
-            contentType: ContentType.warning);
-      }
+            }
+          });
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
-          title: "Internal Error",
-          message: "An unknown error occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
 
     return orders;
@@ -83,6 +79,9 @@ class OrderService {
   Future<void> addOrder(BuildContext context) async {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/orders/addOrder'),
@@ -94,7 +93,7 @@ class OrderService {
               orderProvider.customer!.expectedDeadline.toIso8601String(),
           "advance_payment": orderProvider.customer!.advance,
           "ordered_items": orderProvider.orderedItems,
-          "old_jwellery": orderProvider.oldJewelries,
+          "old_jwellery": orderProvider.oldJweleries,
           "address": orderProvider.customer!.address,
         }),
         headers: <String, String>{
@@ -102,41 +101,39 @@ class OrderService {
         },
       );
 
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              debugPrint(jsonDecode(response.body)['id']);
-              showSnackBar(
-                  title: "Order Added!",
-                  message: jsonDecode(response.body)['message'],
-                  contentType: ContentType.success);
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            debugPrint(jsonDecode(response.body)['id']);
+            showSnackBar(
+                title: "Order Added!",
+                message: jsonDecode(response.body)['message'],
+                contentType: ContentType.success);
 
-              // Navigate to HomeScreen and remove all screens until HomeScreen
-              navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                  HomeScreen.routeName, (route) => false);
+            orderProvider.resetOrders();
 
-              // Push OrdersScreen on top of the navigation stack
-              navigatorKey.currentState!.pushNamed(OrderScreen.routeName);
-            });
-      } else {
-        showSnackBar(
-            title: "Order Failed!",
-            message: "failed to add order",
-            contentType: ContentType.failure);
-      }
+            // Navigate to HomeScreen and remove all screens until HomeScreen
+            navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                HomeScreen.routeName, (route) => false);
+
+            // Push OrdersScreen on top of the navigation stack
+            navigatorKey.currentState!.pushNamed(OrderScreen.routeName);
+          });
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
-          title: "Error Occurred!",
-          message: "Internal Error Occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
   }
 
   Future<void> deleteOrder(
       {required BuildContext context, required String orderId}) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     try {
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/orders/deleteOrder"),
@@ -149,26 +146,19 @@ class OrderService {
         },
       );
 
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              showSnackBar(
-                  title: "Order Deleted",
-                  message: "order is been delete form list",
-                  contentType: ContentType.success);
-            });
-      } else {
-        showSnackBar(
-            title: "Deletion Failed!",
-            message: "order has not been deleted",
-            contentType: ContentType.failure);
-      }
+      httpErrorHandle(
+          response: response,
+          onSuccess: () {
+            showSnackBar(
+                title: "Order Deleted",
+                message: "order is been delete form list",
+                contentType: ContentType.success);
+          });
     } catch (e) {
       showSnackBar(
-          title: "Error Occurred!",
-          message: "Internal Error Occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
   }
 }

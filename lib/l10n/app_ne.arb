@@ -20,9 +20,9 @@
     "productInventory":"हाल भएका गहनाहरु",
     "selectCategory": "धातु प्रकार",
     "all": "सबै",
-    "chapawala": "चापावाला",
+    "chhapawal": "छापावाल",
     "tejabi": "तेजाबी",
-    "asalChaadhi": "असल चाढी",
+    "asalChandi": "असल चांदी",
     "noProductsFoundInInventory": "सूचीमा कुनै उत्पादनहरू फेला परेनन्",
     "noProductsFound": "कुनै पनि उत्पादहरू फेला परेन",
     "name": "नाम",
@@ -67,20 +67,16 @@
     "success": "सफल",
     "successfullyLoggedIn": "लग इन सफल भयो",
     "error": "समस्या",
-    "unauthorizedIncorrectPhoneNumberOrPassword": "अनधिकृत: गलत फोन नम्बर वा पासवर्ड"
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "unauthorizedIncorrectPhoneNumberOrPassword": "अनधिकृत: गलत फोन नम्बर वा पासवर्ड",
+    "internalError": "आन्तरिक समस्या",
+    "unknownErrorOccurred": "आन्तरिक समस्या देखा पर्यो",
+    "orderDetails": "अर्डर विवरण",
+    "orderedItems": "अर्डर गरिएका वस्तुहरू",
+    "orderedItemsTotalPrice": "बस्तुहरुको कुल रकम ",
+    "oldJewelryTotalPrice": "पुरानो ज्वेलरीको कुल रकम",
+    "differencePrice": "फरक रकम",
+    "rates": "दरहरु",
+    "calculator": "क्याल्कुलेटर"
 
 
 }

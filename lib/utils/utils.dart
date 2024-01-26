@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import 'global_variables.dart';
@@ -35,6 +36,8 @@ void showSnackBar(
 }
 
 Future<File?> pickFile(BuildContext context, ImageSource source) async {
+  String internalError = AppLocalizations.of(context)!.internalError;
+  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   File? image;
   try {
     final pickedImage = await ImagePicker().pickImage(
@@ -47,14 +50,16 @@ Future<File?> pickFile(BuildContext context, ImageSource source) async {
     }
   } catch (e) {
     showSnackBar(
-        title: "Error Occurred",
-        message: e.toString(),
-        contentType: ContentType.failure);
+        title: internalError,
+        message: unknownError,
+        contentType: ContentType.warning);
   }
   return image!;
 }
 
 Future<List<File>> pickFiles(BuildContext context) async {
+  String internalError = AppLocalizations.of(context)!.internalError;
+  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   List<File> files = [];
   try {
     final pickedFiles = await ImagePicker().pickMultiImage(
@@ -67,9 +72,9 @@ Future<List<File>> pickFiles(BuildContext context) async {
     }
   } catch (e) {
     showSnackBar(
-        title: 'Error Occurred',
-        message: e.toString(),
-        contentType: ContentType.failure);
+        title: internalError,
+        message: unknownError,
+        contentType: ContentType.warning);
   }
   return files;
 }
@@ -113,39 +118,37 @@ InputDecoration customTextfieldDecoration() {
   );
 }
 
-Future<Map<String, double>> getRate() async {
-  Map<String, double> goldRates = {};
+Future<void> getRate(BuildContext context) async {
+  String internalError = AppLocalizations.of(context)!.internalError;
+  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   try {
+    debugPrint("hitted getrates");
     http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/users/getGoldRate"),
         headers: {"Content-Type": "application/json"});
 
-    Map<String, dynamic> jsonData = json.decode(response.body);
-    Map<String, String> rawRates = Map<String, String>.from(jsonData['rate']);
-
-    debugPrint(rawRates.toString());
+    Map<String, dynamic> rawRates = json.decode(response.body);
+    // debugPrint(jsonDecode(response.body)['Date']); //date is null so not implemented
 
     rawRates.forEach((key, value) {
-      if (key == "cgold_10gram") {
-        goldRates["Chapawala"] = double.parse(value) / 10;
-      } else if (key == "tgold_10gram") {
-        goldRates["Tejabi"] = double.parse(value) / 10;
-      } else if (key == "achandi_10gram") {
-        goldRates["Asal_Chaadhi"] = double.parse(value) / 10;
-        debugPrint(goldRates["Asal_Chaadhi"].toString());
+      if (key == "Chappawala") {
+        goldRates["Chhapawal"] = double.parse(value);
+      } else if (key == "Tejabi") {
+        goldRates["Tejabi"] = double.parse(value);
+      } else if (key == "Asal") {
+        goldRates["Asal Chandi"] = double.parse(value);
       }
     });
   } catch (e) {
     showSnackBar(
-        title: "Error",
-        message: "error fethching gold rates",
+        title: internalError,
+        message: unknownError,
         contentType: ContentType.warning);
   }
 
   lastUpdated = DateTime.now();
 
   debugPrint(goldRates.toString());
-  return goldRates;
 }
 
 double getWeight(double weight, String selectedWeightType) {

@@ -35,11 +35,11 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   void getGroupedProduct() {
     groupedProducts.clear();
     for (var product in products!) {
-      dynamic translatedType = product.productType == "Chapawala"
-          ? AppLocalizations.of(context)!.chapawala
+      dynamic translatedType = product.productType == "Chhapawal"
+          ? AppLocalizations.of(context)!.chhapawal
           : product.productType == "Tejabi"
               ? AppLocalizations.of(context)!.tejabi
-              : AppLocalizations.of(context)!.asalChaadhi;
+              : AppLocalizations.of(context)!.asalChandi;
 
       if (!groupedProducts.containsKey(translatedType)) {
         groupedProducts[translatedType!] = [];
@@ -73,9 +73,9 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   void didChangeDependencies() {
     types = [
       AppLocalizations.of(context)!.all,
-      AppLocalizations.of(context)!.chapawala,
+      AppLocalizations.of(context)!.chhapawal,
       AppLocalizations.of(context)!.tejabi,
-      AppLocalizations.of(context)!.asalChaadhi
+      AppLocalizations.of(context)!.asalChandi
     ];
     selectedType = AppLocalizations.of(context)!.all;
     super.didChangeDependencies();
@@ -83,8 +83,8 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
 
   @override
   void initState() {
-    getSoldItems();
     super.initState();
+    Future.delayed(Duration.zero, getSoldItems);
   }
 
   @override
@@ -191,6 +191,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                             trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,
+                                              width: 80,
                                               imageUrl: product.image!,
                                               fit: BoxFit.cover,
                                               progressIndicatorBuilder:

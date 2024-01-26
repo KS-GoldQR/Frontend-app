@@ -20,9 +20,9 @@
     "productInventory": "Product Inventory",
     "selectCategory": "Select Category",
     "all": "All",
-    "chapawala": "Chapawala",
+    "chhapawal": "Chhapawal",
     "tejabi": "Tejabi",
-    "asalChaadhi": "Asal_Chaadhi",
+    "asalChandi": "Asal Chandi",
     "noProductsFoundInInventory": "No products found in inventory",
     "noProductsFound": "No Products found",
     "name": "Name",
@@ -67,19 +67,16 @@
     "success": "Success",
     "successfullyLoggedIn": "Successfully logged in",
     "error": "Error",
-    "unauthorizedIncorrectPhoneNumberOrPassword": "Unauthorized: Incorrect phone number or password"
-
-
-
-
-
-
-
-
-
-
-
-
+    "unauthorizedIncorrectPhoneNumberOrPassword": "Unauthorized: Incorrect phone number or password",
+    "internalError": "Internal Error",
+    "unknownErrorOccurred": "An unknown error occurred",
+    "orderDetails": "Order Details",
+    "orderedItems": "Ordered Items",
+    "orderedItemsTotalPrice": "Ordered Items Total Price",
+    "oldJewelryTotalPrice": "Old Jewelry Total Price",
+    "differencePrice": "Difference Price",
+    "rates": "Rates",
+    "calculator": "Calculator"
 
 
 }

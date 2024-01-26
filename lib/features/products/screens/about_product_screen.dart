@@ -27,7 +27,6 @@ class AboutProduct extends StatefulWidget {
 class _AboutProductState extends State<AboutProduct> {
   Product? product;
   int currentIndex = 0;
-  Map<String, double> goldRates = {};
 
   final String productDescription = "Description not added yet!";
 
@@ -44,16 +43,6 @@ class _AboutProductState extends State<AboutProduct> {
     );
   }
 
-  Future<void> getGoldRates() async {
-    goldRates = await getRate();
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    getGoldRates();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,14 +134,14 @@ class _AboutProductState extends State<AboutProduct> {
                       "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
               ProductDetail(
                   label: '${AppLocalizations.of(context)!.jyala}: ',
-                  value: " ${product!.jyala!}%"),
+                  value: "${product!.jyala!}%"),
               ProductDetail(
                   label: '${AppLocalizations.of(context)!.jarti}: ',
                   value: "${product!.jarti!}%"),
               ProductDetail(
                   label: '${AppLocalizations.of(context)!.price}: ',
                   value: goldRates.isEmpty
-                      ? "fetching rate..."
+                      ? "error fetching rate..."
                       : "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti, stonePrice: product!.stone_price!))}"),
               const Gap(20),
 

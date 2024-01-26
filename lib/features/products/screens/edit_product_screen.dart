@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +12,6 @@ import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../utils/utils.dart';
 
@@ -92,10 +89,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     await _productService.editProduct(
@@ -125,10 +122,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
               : "Laal";
 
       rselectedType = selectedType == "चापावाला"
-          ? "Chapawala"
+          ? "Chhapawal"
           : selectedType == "तेजाबी"
               ? "Tejabi"
-              : "Asal_Chaadhi";
+              : "Asal Chandi";
     }
 
     await _productService.setProduct(
@@ -210,16 +207,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ];
 
       types = [
-        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.chhapawal,
         AppLocalizations.of(context)!.tejabi,
-        AppLocalizations.of(context)!.asalChaadhi
+        AppLocalizations.of(context)!.asalChandi
       ];
 
       selectedType = selectedType == "Tejabi"
           ? AppLocalizations.of(context)!.tejabi
-          : selectedType == "Chapawala"
+          : selectedType == "Chhapawal"
               ? AppLocalizations.of(context)!.tejabi
-              : AppLocalizations.of(context)!.asalChaadhi;
+              : AppLocalizations.of(context)!.asalChandi;
       selectedWeight = AppLocalizations.of(context)!.gram;
       _dependenciesInitialized = true;
       debugPrint("dependency chagned bro");

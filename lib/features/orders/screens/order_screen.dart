@@ -1,7 +1,7 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grit_qr_scanner/features/orders/screens/create_order_screen.dart';
+import 'package:grit_qr_scanner/features/orders/screens/order_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
 import 'package:grit_qr_scanner/models/order_model.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
@@ -29,29 +29,40 @@ class _OrderScreenState extends State<OrderScreen> {
     setState(() {});
   }
 
-  Future<void> _showChoiceDialog(String orderId, BuildContext context) async {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.question,
-      animType: AnimType.rightSlide,
-      title: 'Delete Order',
-      desc: 'deleteing order is irreversible action!',
-      btnOkText: 'Yes',
-      btnCancelText: 'No',
-      btnOkColor: Colors.green,
-      btnCancelColor: Colors.red,
-      btnCancelOnPress: () {},
-      btnOkOnPress: () async {
-        setState(() {
-          _isDeleting = true;
-        });
-        await _orderService.deleteOrder(context: context, orderId: orderId);
-        orders!.removeWhere((element) => element.id == orderId);
-        setState(() {
-          _isDeleting = false;
-        });
-      },
-    ).show();
+  // Future<void> _showChoiceDialog(String orderId, BuildContext context) async {
+  //   AwesomeDialog(
+  //     context: context,
+  //     dialogType: DialogType.question,
+  //     animType: AnimType.rightSlide,
+  //     title: 'Delete Order',
+  //     desc: 'deleteing order is irreversible action!',
+  //     btnOkText: 'Yes',
+  //     btnCancelText: 'No',
+  //     btnOkColor: Colors.green,
+  //     btnCancelColor: Colors.red,
+  //     btnCancelOnPress: () {},
+  //     btnOkOnPress: () async {
+  //       setState(() {
+  //         _isDeleting = true;
+  //       });
+  //       await _orderService.deleteOrder(context: context, orderId: orderId);
+  //       orders!.removeWhere((element) => element.id == orderId);
+  //       setState(() {
+  //         _isDeleting = false;
+  //       });
+  //     },
+  //   ).show();
+  // }
+
+  Future<void> deleteOrder(String orderId, BuildContext context) async {
+    setState(() {
+      _isDeleting = true;
+    });
+    await _orderService.deleteOrder(context: context, orderId: orderId);
+    orders!.removeWhere((element) => element.id == orderId);
+    setState(() {
+      _isDeleting = false;
+    });
   }
 
   double getOrderTotalPrice(Order order) {
@@ -73,7 +84,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     super.initState();
-    getAllOrders();
+    Future.delayed(Duration.zero, getAllOrders);
   }
 
   @override
@@ -156,14 +167,10 @@ class _OrderScreenState extends State<OrderScreen> {
                     mode: PlutoGridMode.selectWithOneTap,
                     columns: columns,
                     rows: orders!.map((order) {
-                      final orderId = order.id;
                       final totalOrderPrice = getOrderTotalPrice(order);
                       final totalOldJwelleryPrice =
                           getOldJwelleryTotalPrice(order);
-                      order.copyWith(
-                          remaining_payment: totalOrderPrice -
-                              totalOldJwelleryPrice -
-                              order.advanced_payment);
+
                       return PlutoRow(cells: {
                         'customer_name': PlutoCell(value: order.customer_name),
                         'deadline': PlutoCell(value: order.expected_deadline),
@@ -176,26 +183,47 @@ class _OrderScreenState extends State<OrderScreen> {
                     }).toList(),
                     onSelected: (event) {
                       if (event.cell!.column.field == 'action') {
-                        // final orderId = event.row!.cells['order_number']!.value;
-                        // _showChoiceDialog(orderId, context);
-                        // debugPrint(event.row!.cells.toString());
-                      }
+                        final rowOrder = orders!.elementAt(event.rowIdx!);
+                        double totalOrderedPrice = getOrderTotalPrice(rowOrder);
+                        double totalOldJwelleryPrice =
+                            getOldJwelleryTotalPrice(rowOrder);
 
-                      if (event.cell!.column.field == 'action') {
-                        final ordere = event.row!.cells;
+                        // Update the order with copyWith
+                        final updatedOrder = rowOrder.copyWith(
+                          remaining_payment: totalOrderedPrice -
+                              totalOldJwelleryPrice -
+                              rowOrder.advanced_payment,
+                        );
 
-                        debugPrint(ordere.toString());
-                        debugPrint(event.rowIdx!.toString());
-                        debugPrint(orders!.elementAt(event.rowIdx!).toString());
-                        // TODO(dhiraj): implement invoice after requestion an api
+                        //if you want to get updates orders list
+                        /*
+                        // Find the index of the order in the list
+                        final index = orders!
+                            .indexWhere((order) => order.id == updatedOrder.id);
+
+                        if (index != -1) {
+                          // Create a new list with the updated order
+                          final updatedOrders = List<Order>.from(orders!);
+                          updatedOrders[index] = updatedOrder;
+
+                          // Assign the updated list back to 'orders'
+                          orders = updatedOrders;
+                        }
+                        */
+
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Scaffold(
-                                      body: Center(
-                                        child: Text("To Be Implemented"),
-                                      ),
-                                    )));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrderDetailsScreen(
+                              order: updatedOrder,
+                              totalOrderedPrice: totalOrderedPrice,
+                              totalOldJwelleryPrice: totalOldJwelleryPrice,
+                              deleteOrder: () async {
+                                await deleteOrder(updatedOrder.id, context);
+                              },
+                            ),
+                          ),
+                        );
                       }
                     },
                   ),

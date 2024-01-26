@@ -10,6 +10,7 @@ import 'package:remixicon/remixicon.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 
 class ViewInventoryScreen extends StatefulWidget {
@@ -26,7 +27,6 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   late List<String> types;
   late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
-  Map<String, double> goldRates = {};
   bool _didDependenciesChanged = false;
 
   Future<void> getInventory() async {
@@ -39,11 +39,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   void getGroupedProduct() {
     groupedProducts.clear();
     for (var product in products!) {
-      dynamic translatedType = product.productType == "Chapawala"
-          ? AppLocalizations.of(context)!.chapawala
+      dynamic translatedType = product.productType == "Chhapawal"
+          ? AppLocalizations.of(context)!.chhapawal
           : product.productType == "Tejabi"
               ? AppLocalizations.of(context)!.tejabi
-              : AppLocalizations.of(context)!.asalChaadhi;
+              : AppLocalizations.of(context)!.asalChandi;
 
       if (!groupedProducts.containsKey(translatedType)) {
         groupedProducts[translatedType!] = [];
@@ -58,19 +58,14 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
         : products ?? [];
   }
 
-  Future<void> getGoldRates() async {
-    goldRates = await getRate();
-    setState(() {});
-  }
-
   @override
   void didChangeDependencies() {
     if (!_didDependenciesChanged) {
       types = [
         AppLocalizations.of(context)!.all,
-        AppLocalizations.of(context)!.chapawala,
+        AppLocalizations.of(context)!.chhapawal,
         AppLocalizations.of(context)!.tejabi,
-        AppLocalizations.of(context)!.asalChaadhi
+        AppLocalizations.of(context)!.asalChandi
       ];
       selectedType = AppLocalizations.of(context)!.all;
       _didDependenciesChanged = true;
@@ -80,9 +75,8 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
 
   @override
   void initState() {
-    getInventory();
-    getGoldRates();
     super.initState();
+    Future.delayed(Duration.zero, getInventory);
   }
 
   Future<void> navigateToAboutProduct(Product product) async {
@@ -193,7 +187,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
-                                          debugPrint(product.image);
+                                          debugPrint(product.productType);
                                           return ListTile(
                                             onTap: () async {
                                               await navigateToAboutProduct(
@@ -208,13 +202,13 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                             ),
                                             subtitle: goldRates.isEmpty
                                                 ? const Text(
-                                                    "fetching rates...")
+                                                    "error fetching rates...")
                                                 : Text(
                                                     "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
                                             trailing: Text(product.stone!),
                                             leading: CachedNetworkImage(
                                               height: 250,
-                                              width: 50,
+                                              width: 80,
                                               imageUrl: product.image!,
                                               fit: BoxFit.cover,
                                               progressIndicatorBuilder:

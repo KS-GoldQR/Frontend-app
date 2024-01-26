@@ -10,6 +10,7 @@ import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../utils/widgets/error_page.dart';
@@ -20,6 +21,9 @@ String testingSessionToken =
 class ProductService {
   Future<List<Product>> getInventory(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Product> products = [];
     try {
       debugPrint(user.sessionToken);
@@ -52,9 +56,9 @@ class ProductService {
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
-          title: 'Internal Error',
-          message: "an unknown error occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
 
     return products;
@@ -62,6 +66,9 @@ class ProductService {
 
   Future<List<Product>> viewSoldItems(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
+
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Product> products = [];
     try {
       http.Response response = await http.post(
@@ -92,9 +99,9 @@ class ProductService {
       }
     } catch (e) {
       showSnackBar(
-          title: 'Internal Error',
-          message: "an unkown error occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
 
     return products;
@@ -102,6 +109,8 @@ class ProductService {
 
   Future<Product?> viewProduct(
       BuildContext context, String productId, String sessionToken) async {
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     debugPrint("product id is $productId");
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
@@ -159,10 +168,9 @@ class ProductService {
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
-        title: 'Internal Error',
-        message: "An unknown error occurred",
-        contentType: ContentType.failure,
-      );
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
       navigatorKey.currentState!.popAndPushNamed(
         ErrorPage.routeName,
         arguments: "Error Occurred - Bad Request",
@@ -184,6 +192,8 @@ class ProductService {
     required double jyala,
     required double jarti,
   }) async {
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
@@ -248,9 +258,9 @@ class ProductService {
           });
     } catch (e) {
       showSnackBar(
-          title: "Error Occurred",
-          message: "A unknown error occurred",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
   }
 
@@ -261,6 +271,8 @@ class ProductService {
       required String customerPhone,
       required String customerAddress,
       required double productPrice}) async {
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       debugPrint("here");
@@ -290,8 +302,8 @@ class ProductService {
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
-          title: "Internal Error",
-          message: "an unknown error occurred!",
+          title: internalError,
+          message: unknownError,
           contentType: ContentType.warning);
     }
   }
@@ -308,6 +320,8 @@ class ProductService {
     required double jyala,
     required double jarti,
   }) async {
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       http.Response response = await http.post(
@@ -337,14 +351,16 @@ class ProductService {
           });
     } catch (e) {
       showSnackBar(
-          title: "Failed",
-          message: "an unknown error occurred!",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
   }
 
   Future<String?> uploadImageToS3(
       {required BuildContext context, required File file}) async {
+    String internalError = AppLocalizations.of(context)!.internalError;
+    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     String? fileName;
     try {
       List<int> imageBytes = file.readAsBytesSync();
@@ -366,9 +382,9 @@ class ProductService {
           });
     } catch (e) {
       showSnackBar(
-          title: "Error",
-          message: "An Internal Error Occurred!",
-          contentType: ContentType.failure);
+          title: internalError,
+          message: unknownError,
+          contentType: ContentType.warning);
     }
     return fileName!;
   }
