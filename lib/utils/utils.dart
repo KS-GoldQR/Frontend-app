@@ -127,28 +127,31 @@ Future<void> getRate(BuildContext context) async {
         Uri.parse("$hostedUrl/prod/users/getGoldRate"),
         headers: {"Content-Type": "application/json"});
 
-    Map<String, dynamic> rawRates = json.decode(response.body);
-    // debugPrint(jsonDecode(response.body)['Date']); //date is null so not implemented
+    if (response.statusCode == 200) {
+      Map<String, dynamic> rawRates = json.decode(response.body);
+      // debugPrint(jsonDecode(response.body)['Date']); //date is null so not implemented
 
-    rawRates.forEach((key, value) {
-      if (key == "Chappawala") {
-        goldRates["Chhapawal"] = double.parse(value);
-      } else if (key == "Tejabi") {
-        goldRates["Tejabi"] = double.parse(value);
-      } else if (key == "Asal") {
-        goldRates["Asal Chandi"] = double.parse(value);
-      }
-    });
+      rawRates.forEach((key, value) {
+        if (key == "Chappawala") {
+          goldRates["Chhapawal"] = double.parse(value);
+        } else if (key == "Tejabi") {
+          goldRates["Tejabi"] = double.parse(value);
+        } else if (key == "Asal") {
+          goldRates["Asal Chandi"] = double.parse(value);
+        }
+      });
+      lastUpdated = DateTime.now();
+      return;
+    } else {
+      debugPrint(response.statusCode.toString());
+      return;
+    }
   } catch (e) {
     showSnackBar(
         title: internalError,
         message: unknownError,
         contentType: ContentType.warning);
   }
-
-  lastUpdated = DateTime.now();
-
-  debugPrint(goldRates.toString());
 }
 
 double getWeight(double weight, String selectedWeightType) {

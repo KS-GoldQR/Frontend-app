@@ -163,6 +163,14 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     super.didChangeDependencies();
   }
 
+    @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      await getRate(context);
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();

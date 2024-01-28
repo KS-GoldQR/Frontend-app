@@ -18,8 +18,6 @@ import '../../../utils/global_variables.dart';
 class UserService {
   Future<void> userLogin(
       String phoneNo, String password, BuildContext context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     String successTitle = AppLocalizations.of(context)!.success;
@@ -44,19 +42,27 @@ class UserService {
             await prefs.setString(
                 'session-token', jsonDecode(response.body)['sessionToken']);
 
+            // ignore: use_build_context_synchronously
+            bool isValidated = await validateSession(context);
+
+            if (isValidated) {
+              navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                  HomeScreen.routeName, (route) => false);
+            } else {
+              navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                  LoginScreen.routeName, (route) => false);
+            }
             showSnackBar(
                 title: successTitle,
                 message: successMessage,
                 contentType: ContentType.success);
-            navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                HomeScreen.routeName, (route) => false);
-            User user = User(
-                userId: jsonDecode(response.body)['userId'],
-                phoneNo: phoneNo,
-                password: password,
-                sessionToken: jsonDecode(response.body)['sessionToken']);
+            // User user = User(
+            //     userId: jsonDecode(response.body)['userId'],
+            //     phoneNo: phoneNo,
+            //     password: password,
+            //     sessionToken: jsonDecode(response.body)['sessionToken']);
 
-            userProvider.setUserFromModel(user);
+            // userProvider.setUserFromModel(user);
           });
     } catch (e) {
       showSnackBar(
@@ -95,6 +101,7 @@ class UserService {
                 sessionToken: token,
                 name: jsonDecode(response.body)['name'],
                 phoneNo: jsonDecode(response.body)['phone'],
+                appVersion: jsonDecode(response.body)['app_version'],
                 subscriptionEndsAt: endsAt,
               );
 
@@ -143,7 +150,7 @@ class UserService {
                 title: "Success",
                 message: "successfully logged out",
                 contentType: ContentType.success);
-            navigatorKey.currentState!.pushNamedAndRemoveUntil(
+            Navigator.of(context).pushNamedAndRemoveUntil(
                 LoginScreen.routeName, (route) => false);
           });
     } catch (e) {

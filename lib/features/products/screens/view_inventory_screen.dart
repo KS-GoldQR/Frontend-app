@@ -30,10 +30,12 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   bool _didDependenciesChanged = false;
 
   Future<void> getInventory() async {
-    products = await _productService.getInventory(context);
-    setState(() {
-      getGroupedProduct();
-    });
+    if (mounted) {
+      products = await _productService.getInventory(context);
+      setState(() {
+        getGroupedProduct();
+      });
+    }
   }
 
   void getGroupedProduct() {
@@ -76,7 +78,12 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, getInventory);
+    Future.delayed(Duration.zero, () async {
+      await getRate(context);
+      if(mounted) {
+        getInventory();
+      }
+    });
   }
 
   Future<void> navigateToAboutProduct(Product product) async {
@@ -89,7 +96,9 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
         arguments: {'product': product, 'fromInventory': true});
 
     // Trigger refresh when returning from AboutProduct screen
-    await getInventory();
+    if (mounted) {
+      getInventory();
+    }
   }
 
   @override

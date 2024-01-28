@@ -7,6 +7,7 @@ class User {
   String? name;
   DateTime? subscriptionEndsAt;
   String? password;
+  String? appVersion;
   String sessionToken;
   User({
     required this.userId,
@@ -14,6 +15,7 @@ class User {
     this.name,
     this.subscriptionEndsAt,
     this.password,
+    this.appVersion,
     required this.sessionToken,
   });
 
@@ -24,6 +26,7 @@ class User {
       'name': name,
       'ends_at': subscriptionEndsAt?.millisecondsSinceEpoch,
       'password': password,
+      'app_version': appVersion,
       'sessionToken': sessionToken,
     };
   }
@@ -37,6 +40,8 @@ class User {
           ? DateTime.fromMillisecondsSinceEpoch(map['ends_at'] as int)
           : null,
       password: map['password'] != null ? map['password'] as String : null,
+      appVersion:
+          map['app_version'] != null ? map['app_version'] as String : null,
       sessionToken: map['sessionToken'] as String,
     );
   }
@@ -52,6 +57,7 @@ class User {
     String? name,
     DateTime? subscriptionEndsAt,
     String? password,
+    String? appVersion,
     String? sessionToken,
   }) {
     return User(
@@ -60,9 +66,8 @@ class User {
       name: name ?? this.name,
       subscriptionEndsAt: subscriptionEndsAt ?? this.subscriptionEndsAt,
       password: password ?? this.password,
+      appVersion: appVersion ?? this.appVersion,
       sessionToken: sessionToken ?? this.sessionToken,
     );
   }
 }
-
-

@@ -1,14 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/products/widgets/sold_item_details.dart';
+import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
+import 'package:grit_qr_scanner/features/sales/widgets/sold_item_details.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
-import '../services/product_service.dart';
 
 class SoldItemsScreen extends StatefulWidget {
   static const String routeName = '/sold-items-screen';
@@ -20,13 +20,13 @@ class SoldItemsScreen extends StatefulWidget {
 
 class _ViewSoldItemsState extends State<SoldItemsScreen> {
   List<Product>? products;
-  final ProductService _productService = ProductService();
+  final SalesService _salesService = SalesService();
   late List<String> types;
   late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
 
   Future<void> getSoldItems() async {
-    products = await _productService.viewSoldItems(context);
+    products = await _salesService.viewSoldItems(context);
     setState(() {
       getGroupedProduct();
     });

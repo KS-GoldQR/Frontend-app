@@ -128,7 +128,7 @@ class OrderService {
     }
   }
 
-  Future<void> deleteOrder(
+  Future<bool> deleteOrder(
       {required BuildContext context, required String orderId}) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
@@ -146,19 +146,25 @@ class OrderService {
         },
       );
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            showSnackBar(
-                title: "Order Deleted",
-                message: "order is been delete form list",
-                contentType: ContentType.success);
-          });
+      if (response.statusCode == 200) {
+        httpErrorHandle(
+            response: response,
+            onSuccess: () {
+              showSnackBar(
+                  title: "Order Deleted",
+                  message: "order is been delete form list",
+                  contentType: ContentType.success);
+            });
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       showSnackBar(
           title: internalError,
           message: unknownError,
           contentType: ContentType.warning);
     }
+    return false;
   }
 }

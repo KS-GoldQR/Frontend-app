@@ -1,4 +1,5 @@
 {
+    "@@locale": "en",
     "dashboard": "Dashboard",
     "lastUpdate": "last update",
     "scanQR": "Scan QR",
@@ -76,7 +77,29 @@
     "oldJewelryTotalPrice": "Old Jewelry Total Price",
     "differencePrice": "Difference Price",
     "rates": "Rates",
-    "calculator": "Calculator"
+    "calculator": "Calculator",
+    "sellAnother": "Sell Another?",
+    "howDoYouWantToSell": "How do you want to sell?",
+    "clearSales": "Clear Sales?",
+    "allProductsWillBeCleared": "All products will be cleared",
+    "no": "No",
+    "yes": "Yes",
+    "salesDetails": "Sales Details",
+    "yourSalesProductList": "Your Sales Product List",
+    "noProductHasBeenSold": "No product has been sold",
+    "close": "Close",
+    "appVersion": "App Version"
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

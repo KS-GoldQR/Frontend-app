@@ -4,6 +4,7 @@ import 'package:grit_qr_scanner/features/products/screens/about_product_screen.d
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
+// import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -42,6 +43,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         isScanning = false;
       });
     } catch (e) {
+      debugPrint("inside catch bolock.....................\n\n\n\n\n");
+      debugPrint(e.toString());
       navigatorKey.currentState!.popAndPushNamed(
         ErrorPage.routeName,
         arguments: "Error Occurred - Bad Request",
@@ -135,8 +138,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   children: [
                     Text(
                       AppLocalizations.of(context)!.placeTheQRCodeInTheArea,
-                      style:
-                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       AppLocalizations.of(context)!
@@ -157,9 +160,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   borderRadius: BorderRadius.circular(15),
                   child: MobileScanner(
                     controller: cameraController,
-                    onScannerStarted: (arguments) {
-                      debugPrint(arguments.toString());
-                    },
+                    // onScannerStarted: (arguments) {
+                    //   debugPrint(arguments.toString());
+                    // },
                     onDetect: (capture) async {
                       final List<Barcode> barcodes = capture.barcodes;
                       for (final barcode in barcodes) {
@@ -171,9 +174,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         await getProductInfo(
                             barcodes[0].rawValue!, user.sessionToken);
 
-                        debugPrint(" hereee${product!.id}");
-
-                       
+                        // debugPrint(" hereee${product!.id}");
 
                         if (product != null) {
                           if (product!.name == null &&
@@ -181,7 +182,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                             _cannotEdit();
                           } else if (product!.name == null) {
                             //use set product api
-                            debugPrint(" hereee${product!.id}");
+
+                            // debugPrint(" hereee${product!.id}");
                             navigatorKey.currentState!.pushReplacementNamed(
                                 EditProductScreen.routeName,
                                 arguments: {
@@ -189,12 +191,11 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                   'fromAboutProduct': false,
                                 });
                           } else {
-                            navigatorKey.currentState!.pushReplacementNamed(
-                                AboutProduct.routeName,
-                                arguments: {
-                                  'product': product,
-                                  'fromInventory': false,
-                                });
+                            navigatorKey.currentState!
+                                .pushNamed(AboutProduct.routeName, arguments: {
+                              'product': product,
+                              'fromInventory': false,
+                            });
                           }
                         }
                       } catch (e) {

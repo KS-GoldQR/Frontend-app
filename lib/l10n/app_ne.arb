@@ -1,4 +1,5 @@
 {
+    "@@locale": "ne",
     "dashboard":"ड्यासबोर्ड",
     "lastUpdate":"अन्तिम अपडेट",
     "scanQR":"QR स्क्यान",
@@ -76,7 +77,29 @@
     "oldJewelryTotalPrice": "पुरानो ज्वेलरीको कुल रकम",
     "differencePrice": "फरक रकम",
     "rates": "दरहरु",
-    "calculator": "क्याल्कुलेटर"
+    "calculator": "क्याल्कुलेटर",
+    "sellAnother": "अरू बेच्नुहोस्?",
+    "howDoYouWantToSell": "कसरी बेच्न चाहनुहुन्छ?",
+    "clearSales": "बिक्री साफ गर्नुहोस्?",
+    "allProductsWillBeCleared": "सबै बस्तुहरू साफ हुनेछ",
+    "no": "होइन",
+    "yes": "हो",
+    "salesDetails": "बिक्री विवरण",
+    "yourSalesProductList": "तपाईंको बिक्री बस्तुहरूको सूची",
+    "noProductHasBeenSold": "कुनै पनि बस्तुहरूको बिक्री गरिएको छैन",
+    "close": "बन्द गर्नुहोस्",
+    "appVersion": "अ‍्‍‍‍‍‍‍‍‍‍‍‍‍‍प भर्सन"
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

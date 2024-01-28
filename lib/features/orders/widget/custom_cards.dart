@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order_model.dart';
-import '../../../utils/global_variables.dart';
+import '../../../utils/widgets/build_row_info.dart';
 
 Widget buildUserInfoCard(Order order, BuildContext context,
     double totalOrderedPrice, double totalOldJwelleryPrice) {
@@ -115,32 +115,4 @@ Widget buildOldJwelleryList(Order order, BuildContext context) {
   );
 }
 
-Widget buildInfoRow(String label, String value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 15),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: const TextStyle(
-                fontSize: 16.0, color: blueColor, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+

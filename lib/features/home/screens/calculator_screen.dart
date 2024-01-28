@@ -89,6 +89,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
   }
 
+    @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      await getRate(context);
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();

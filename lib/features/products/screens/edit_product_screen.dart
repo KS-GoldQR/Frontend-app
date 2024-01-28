@@ -64,7 +64,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         isSubmitting = true;
       });
       if (!widget.args['fromAboutProduct']) {
-        setProduct();
+        debugPrint("set product hitted");
+        await setProduct();
       } else {
         await editProduct();
       }
@@ -212,12 +213,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = selectedType == "Tejabi"
-          ? AppLocalizations.of(context)!.tejabi
-          : selectedType == "Chhapawal"
-              ? AppLocalizations.of(context)!.tejabi
-              : AppLocalizations.of(context)!.asalChandi;
+      // selectedType = selectedType == "Tejabi"
+      //     ? AppLocalizations.of(context)!.tejabi
+      //     : selectedType == "Chhapawal"
+      //         ? AppLocalizations.of(context)!.tejabi
+      //         : AppLocalizations.of(context)!.asalChandi;
+
       selectedWeight = AppLocalizations.of(context)!.gram;
+      selectedType = AppLocalizations.of(context)!.asalChandi;
       _dependenciesInitialized = true;
       debugPrint("dependency chagned bro");
     }
@@ -229,7 +232,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     super.initState();
 
-    debugPrint(widget.args['product'].productType);
+    // debugPrint(widget.args['product'].productType);
 
     if (widget.args['fromAboutProduct']) {
       _nameController.text = widget.args['product'].name;

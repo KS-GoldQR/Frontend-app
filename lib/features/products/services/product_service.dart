@@ -64,49 +64,6 @@ class ProductService {
     return products;
   }
 
-  Future<List<Product>> viewSoldItems(BuildContext context) async {
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-
-    String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    List<Product> products = [];
-    try {
-      http.Response response = await http.post(
-        Uri.parse('$hostedUrl/prod/users/viewSoldItems'),
-        body: jsonEncode({
-          'sessionToken': user.sessionToken,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              for (int i = 0; i < jsonDecode(response.body).length; i++) {
-                products.add(
-                  Product.fromJson(
-                    jsonEncode(jsonDecode(response.body)[i]),
-                  ),
-                );
-              }
-            });
-      } else {
-        showSnackBar(
-            title: 'Error',
-            message: jsonDecode(response.body)['message'],
-            contentType: ContentType.failure);
-      }
-    } catch (e) {
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
-    }
-
-    return products;
-  }
-
   Future<Product?> viewProduct(
       BuildContext context, String productId, String sessionToken) async {
     String internalError = AppLocalizations.of(context)!.internalError;
@@ -117,6 +74,7 @@ class ProductService {
     Product? product;
 
     try {
+      debugPrint(productId);
       http.Response response;
       if (sessionToken.isEmpty) {
         response = await http.post(
@@ -137,24 +95,40 @@ class ProductService {
         );
       }
 
+      debugPrint("below is response....\n\n\n\n\n");
       debugPrint(response.body);
       if (response.statusCode == 200) {
         httpErrorHandle(
           response: response,
           onSuccess: () {
-            product = Product.fromJson(
-              jsonEncode(
-                jsonDecode(response.body),
-              ),
-            );
+            debugPrint("inside success of seet product view ${response.body}");
+            if (jsonDecode(response.body)['name'] == null) {
+              product = Product(
+                  id: productId,
+                  owned_by: -1,
+                  sold: -1,
+                  owner_name: "",
+                  owner_phone: "",
+                  validSession: "");
+            } else {
+              product = Product.fromJson(
+                jsonEncode(
+                  jsonDecode(response.body),
+                ),
+              );
 
-            if (sessionToken.isNotEmpty) {
-              Provider.of<ProductProvider>(context, listen: false)
-                  .setProduct(product!);
+              if (sessionToken.isNotEmpty) {
+                Provider.of<ProductProvider>(context, listen: false)
+                    .setProduct(product!);
+              }
+
+              navigatorKey.currentState!.pop();
             }
           },
         );
       } else {
+        // debugPrint(
+        // "inside success of seet product view ${response.statusCode}");
         showSnackBar(
           title: 'Error',
           message: jsonDecode(response.body)['message'],
@@ -264,54 +238,6 @@ class ProductService {
     }
   }
 
-  Future<void> sellProduct(
-      {required BuildContext context,
-      required String productId,
-      required String customerName,
-      required String customerPhone,
-      required String customerAddress,
-      required double productTotalPrice,
-      required double jyala,
-      required double jarti}) async {
-    String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-    try {
-      debugPrint("here");
-
-      //after modification in api sent jyala, jarti too in api
-      debugPrint(productTotalPrice.toString());
-      http.Response response = await http.post(
-        Uri.parse("$hostedUrl/prod/products/sellProduct"),
-        body: jsonEncode({
-          "sessionToken": user.sessionToken,
-          "product_id": productId,
-          "customer_name": customerName,
-          "customer_phone": customerPhone,
-          "customer_address": customerAddress,
-          "price": productTotalPrice.toString(),
-        }),
-        headers: <String, String>{'Content-Type': 'application/json'},
-      );
-
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            showSnackBar(
-                title: 'Product Sold',
-                message: 'your product has been sold',
-                contentType: ContentType.success);
-            navigatorKey.currentState!.pop();
-          });
-    } catch (e) {
-      debugPrint(e.toString());
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
-    }
-  }
-
   Future<void> setProduct({
     required BuildContext context,
     required String productId,
@@ -344,7 +270,7 @@ class ProductService {
         }),
         headers: {"Content-Type": 'application/json'},
       );
-
+      debugPrint(response.statusCode.toString());
       httpErrorHandle(
           response: response,
           onSuccess: () {

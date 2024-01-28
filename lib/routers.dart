@@ -5,14 +5,13 @@ import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.
 import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/sell_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
+import 'features/sales/screens/sold_items_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
   switch (routeSettings.name) {
@@ -56,11 +55,6 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       final args = routeSettings.arguments as Map<String, dynamic>;
       return MaterialPageRoute(
         builder: (context) => EditProductScreen(args: args),
-      );
-
-    case SellProductScreen.routeName:
-      return MaterialPageRoute(
-        builder: (context) => const SellProductScreen(),
       );
 
     case OrderScreen.routeName:

@@ -5,7 +5,6 @@ import 'package:grit_qr_scanner/features/home/screens/calculator_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/gold_rates_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/sold_items_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:grit_qr_scanner/features/home/widgets/custom_drawer.dart';
@@ -15,8 +14,8 @@ import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_card.dart';
+import '../../sales/screens/sold_items_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home-screen";
@@ -119,14 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
       AppLocalizations.of(context)!.calculator,
     ];
     super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      getRate(context);
-    });
   }
 
   @override

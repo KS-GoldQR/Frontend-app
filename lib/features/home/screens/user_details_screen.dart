@@ -25,7 +25,6 @@ class UserDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-           
             const CircleAvatar(
               radius: 50,
               backgroundColor: blueColor,
@@ -60,6 +59,8 @@ class UserDetailsScreen extends StatelessWidget {
             buildInfoRow(AppLocalizations.of(context)!.userId, user.userId),
             buildInfoRow(AppLocalizations.of(context)!.subscriptionEndsAt,
                 DateFormat.yMMMd().format(user.subscriptionEndsAt!)),
+            buildInfoRow(
+                AppLocalizations.of(context)!.appVersion, user.appVersion!),
           ],
         ),
       ),

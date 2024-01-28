@@ -1,29 +1,21 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
+import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
+import 'package:grit_qr_scanner/features/sales/widgets/sold_status_card.dart';
+import 'package:grit_qr_scanner/models/sales_model.dart';
+import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
-import '../../../models/product_model.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
-  final Product product;
-  final double jyala;
-  final double jarti;
-  final double totalPrice;
-  const CustomerDetailsForm(
-      {super.key,
-      required this.product,
-      required this.jyala,
-      required this.jarti,
-      required this.totalPrice});
+  const CustomerDetailsForm({super.key});
 
   @override
   State<CustomerDetailsForm> createState() => _CustomerDetailsFormState();
@@ -37,55 +29,68 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   final _nameFocus = FocusNode();
   final _addressFocus = FocusNode();
   final _phoneFocus = FocusNode();
-  final ProductService _productService = ProductService();
+  final SalesService _salesService = SalesService();
   bool _isSelling = false;
+  Map<SalesModel, bool> soldStatus = {};
 
-  Future<void> sellProduct(BuildContext context) async {
+  Future<void> sellProduct(
+      BuildContext context, SalesProvider salesProvider) async {
     setState(() {
       _isSelling = true;
     });
-    debugPrint(widget.totalPrice.toString());
-    await _productService.sellProduct(
+    try {
+      for (int i = 0; i < salesProvider.saleItems.length; i++) {
+        SalesModel sales = salesProvider.saleItems[i];
+        soldStatus[sales] = await _salesService.sellProduct(
+          context: context,
+          productId: sales.product.id,
+          customerName: _nameController.text.trim(),
+          customerPhone: _phoneController.text.trim(),
+          customerAddress: _addressController.text.trim(),
+          productTotalPrice: sales.price,
+          jyala: sales.jyalaPercentage,
+          jarti: sales.jartiPercentage,
+        );
+      }
+    } catch (e) {
+      debugPrint("inside catch block of sell items");
+    } finally {
+      if (mounted) {
+        // Check if the widget is still mounted before updating the state
+        setState(() {
+          _isSelling = false;
+        });
+      }
+
+      salesProvider.resetSaleItem();
+
+      if (soldStatus.isNotEmpty && mounted) {
+        debugPrint(soldStatus.length.toString());
+        Navigator.popUntil(context, ModalRoute.withName(HomeScreen.routeName));
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
+        showFullScreenDialog(context, soldStatus);
+      }
+    }
+  }
+
+  Future<void> showFullScreenDialog(
+      BuildContext context, Map<SalesModel, bool> soldStatus) async {
+    return showDialog(
       context: context,
-      productId: widget.product.id,
-      customerName: _nameController.text.trim(),
-      customerPhone: _phoneController.text.trim(),
-      customerAddress: _addressController.text.trim(),
-      productTotalPrice: widget.totalPrice,
-      jyala: widget.jyala,
-      jarti: widget.jarti,
+      builder: (BuildContext context) {
+        return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SoldStatusCard(status: soldStatus)));
+      },
     );
-    setState(() {
-      _isSelling = false;
-    });
   }
 
   void _fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
-  }
-
-  Future<void> _showChoiceDialog() async {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.question,
-      animType: AnimType.rightSlide,
-      title: 'Sell Another?',
-      desc: 'how do you want to sell',
-      btnOkText: 'Inventory',
-      btnCancelText: 'Scan QR',
-      btnOkColor: blueColor,
-      btnCancelColor: blueColor,
-      btnCancelOnPress: () {
-        debugPrint("from qr");
-        navigatorKey.currentState!.pushNamed(QRScannerScreen.routeName);
-      },
-      btnOkOnPress: () {
-        debugPrint("from inventory");
-        navigatorKey.currentState!.pushNamed(ViewInventoryScreen.routeName);
-      },
-    ).show();
   }
 
   @override
@@ -101,6 +106,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
 
   @override
   Widget build(BuildContext context) {
+    final salesProvider = Provider.of<SalesProvider>(context);
     return ModalProgressHUD(
       inAsyncCall: _isSelling,
       progressIndicator: const SpinKitChasingDots(
@@ -116,21 +122,6 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(
               children: [
-                const Gap(20),
-                CustomButton(
-                    onPressed: () {
-                      _showChoiceDialog();
-                    },
-                    text: AppLocalizations.of(context)!.addOtherItem,
-                    backgroundColor: blueColor,
-                    textColor: Colors.white),
-                const Gap(20),
-                Text(
-                  AppLocalizations.of(context)!.or.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
                 const Gap(20),
                 Text(
                   AppLocalizations.of(context)!.fillCustomerDetails,
@@ -225,7 +216,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                     onPressed: () {
                       if (_customerDetailsFormFormKey.currentState!
                           .validate()) {
-                        sellProduct(context);
+                        sellProduct(context, salesProvider);
                       }
                     },
                     text: AppLocalizations.of(context)!.sellItem,

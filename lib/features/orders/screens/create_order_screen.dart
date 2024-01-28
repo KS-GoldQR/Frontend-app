@@ -203,6 +203,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      await getRate(context);
+    });
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _itemNameController.dispose();

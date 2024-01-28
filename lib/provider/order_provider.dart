@@ -6,7 +6,7 @@ import '../models/customer_model.dart';
 
 class OrderProvider with ChangeNotifier {
   final List<OrderedItems> _orderedItems = [];
-  List<OldJwellery> _oldJweleries = [];
+final  List<OldJwellery> _oldJweleries = [];
   Customer? _customer;
 
   List<OrderedItems> get orderedItems => _orderedItems;
@@ -36,7 +36,7 @@ Customer? get customer => _customer;
   }
 
   void resetOldJwelries() {
-    _oldJweleries = [];
+    _oldJweleries.clear();
     notifyListeners();
   }
 

@@ -58,8 +58,11 @@ class _OrderScreenState extends State<OrderScreen> {
     setState(() {
       _isDeleting = true;
     });
-    await _orderService.deleteOrder(context: context, orderId: orderId);
-    orders!.removeWhere((element) => element.id == orderId);
+    bool isDeleted =
+        await _orderService.deleteOrder(context: context, orderId: orderId);
+    if (isDeleted) {
+      orders!.removeWhere((element) => element.id == orderId);
+    }
     setState(() {
       _isDeleting = false;
     });
