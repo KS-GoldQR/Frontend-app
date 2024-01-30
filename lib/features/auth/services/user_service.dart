@@ -35,35 +35,44 @@ class UserService {
         },
       );
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString(
-                'session-token', jsonDecode(response.body)['sessionToken']);
+      debugPrint(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        httpErrorHandle(
+            response: response,
+            onSuccess: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setString(
+                  'session-token', jsonDecode(response.body)['sessionToken']);
 
-            // ignore: use_build_context_synchronously
-            bool isValidated = await validateSession(context);
+              debugPrint("reached here");
+              // ignore: use_build_context_synchronously
+              bool isValidated = await validateSession(context);
 
-            if (isValidated) {
-              navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                  HomeScreen.routeName, (route) => false);
-            } else {
-              navigatorKey.currentState!.pushNamedAndRemoveUntil(
-                  LoginScreen.routeName, (route) => false);
-            }
-            showSnackBar(
-                title: successTitle,
-                message: successMessage,
-                contentType: ContentType.success);
-            // User user = User(
-            //     userId: jsonDecode(response.body)['userId'],
-            //     phoneNo: phoneNo,
-            //     password: password,
-            //     sessionToken: jsonDecode(response.body)['sessionToken']);
+              debugPrint(isValidated.toString());
 
-            // userProvider.setUserFromModel(user);
-          });
+              if (isValidated) {
+                showSnackBar(
+                    title: successTitle,
+                    message: successMessage,
+                    contentType: ContentType.success);
+                navigatorKey.currentState!.pushNamedAndRemoveUntil(
+                    HomeScreen.routeName, (route) => false);
+              }
+
+              // User user = User(
+              //     userId: jsonDecode(response.body)['userId'],
+              //     phoneNo: phoneNo,
+              //     password: password,
+              //     sessionToken: jsonDecode(response.body)['sessionToken']);
+
+              // userProvider.setUserFromModel(user);
+            });
+      } else {
+        showSnackBar(
+            title: "Unauthorized",
+            message: jsonDecode(response.body)['message'],
+            contentType: ContentType.warning);
+      }
     } catch (e) {
       showSnackBar(
           title: internalError,
@@ -150,7 +159,7 @@ class UserService {
                 title: "Success",
                 message: "successfully logged out",
                 contentType: ContentType.success);
-            Navigator.of(context).pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.pushNamedAndRemoveUntil(
                 LoginScreen.routeName, (route) => false);
           });
     } catch (e) {

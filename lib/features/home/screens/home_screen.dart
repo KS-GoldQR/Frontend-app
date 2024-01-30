@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
 import 'package:grit_qr_scanner/features/home/screens/calculator_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/gold_rates_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
+import 'package:grit_qr_scanner/features/old%20products/screens/old_product_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
 import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
@@ -61,6 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
       Remix.calculator_line,
       size: 30,
       color: Colors.white,
+    ),
+    const Icon(
+      Remix.safe_2_line,
+      size: 30,
+      color: Colors.white,
     )
   ];
 
@@ -87,10 +94,16 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           MaterialPageRoute(builder: (context) => const GoldRatesScreen()),
         );
+        break;
 
       case 5:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const CalculatorScreen()));
+        break;
+
+      case 6:
+        Navigator.pushNamed(context, OldProductsScreen.routeName);
+        break;
 
       default:
         Navigator.pushNamed(context, ErrorPage.routeName);
@@ -116,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
       AppLocalizations.of(context)!.orders,
       AppLocalizations.of(context)!.rates,
       AppLocalizations.of(context)!.calculator,
+      AppLocalizations.of(context)!.deposit,
     ];
     super.didChangeDependencies();
   }
@@ -147,9 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          title: const Text(
-            "Smart Sunar",
-            style: TextStyle(
+          title: Text(
+            AppLocalizations.of(context)!.smartSunar,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -160,12 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 Remix.logout_box_r_line,
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Remix.settings_3_line,
-              ),
-            ),
+            // IconButton(
+            //   onPressed: () {},
+            //   icon: const Icon(
+            //     Remix.settings_3_line,
+            //   ),
+            // ),
+            const Gap(10),
           ],
         ),
         body: Column(

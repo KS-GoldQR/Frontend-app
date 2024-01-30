@@ -11,6 +11,7 @@ import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
+import 'features/old products/screens/old_product_screen.dart';
 import 'features/sales/screens/sold_items_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
@@ -70,6 +71,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
     case OldJwelleryScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => const OldJwelleryScreen(),
+      );
+
+    case OldProductsScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const OldProductsScreen(),
       );
 
     case CustomerDetailsScreen.routeName:

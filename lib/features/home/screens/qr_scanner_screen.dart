@@ -188,7 +188,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                 EditProductScreen.routeName,
                                 arguments: {
                                   'product': product,
-                                  'fromAboutProduct': false,
+                                  'fromRouteName': QRScannerScreen.routeName,
                                 });
                           } else {
                             navigatorKey.currentState!

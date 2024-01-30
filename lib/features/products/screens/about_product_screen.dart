@@ -98,6 +98,7 @@ class _AboutProductState extends State<AboutProduct> {
     }
 
     debugPrint(goldRates.toString());
+    debugPrint(product!.name!);
 
     debugPrint("rebuilding...");
     return Scaffold(
@@ -369,7 +370,7 @@ class _AboutProductState extends State<AboutProduct> {
                                     context, EditProductScreen.routeName,
                                     arguments: {
                                       'product': product,
-                                      'fromAboutProduct': true,
+                                      'fromRouteName': AboutProduct.routeName,
                                     });
                               },
                               text: AppLocalizations.of(context)!.editItem,

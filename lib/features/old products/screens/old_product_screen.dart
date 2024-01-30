@@ -1,40 +1,64 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
+import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
-import 'package:grit_qr_scanner/provider/product_provider.dart';
-import 'package:grit_qr_scanner/utils/widgets/loader.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../../../provider/product_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../../utils/widgets/loader.dart';
+import '../../products/screens/about_product_screen.dart';
 
-class ViewInventoryScreen extends StatefulWidget {
-  static const String routeName = '/view-inventory-screen';
-  const ViewInventoryScreen({super.key});
+class OldProductsScreen extends StatefulWidget {
+  static const String routeName = "/old-products-screen";
+  const OldProductsScreen({super.key});
 
   @override
-  State<ViewInventoryScreen> createState() => _ViewInventoryScreenState();
+  State<OldProductsScreen> createState() => _OldProductsScreenState();
 }
 
-class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
+class _OldProductsScreenState extends State<OldProductsScreen> {
   List<Product>? products;
-  final ProductService _productService = ProductService();
+  final OldProductService _oldProductService = OldProductService();
+
   late List<String> types;
   late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
   bool _didDependenciesChanged = false;
 
-  Future<void> getInventory() async {
+  Future<void> getOldProducts() async {
     if (mounted) {
-      products = await _productService.getInventory(context);
+      products = await _oldProductService.getOldProducts(context);
       setState(() {
         getGroupedProduct();
       });
+    }
+  }
+
+  Future<void> deleteOldProduct(String productId) async {
+    await _oldProductService.deleteOldProduct(
+        context: context, productId: productId);
+    //update without hitting api
+  }
+
+  void navigateToAddProductScreen() {
+    navigatorKey.currentState!
+        .pushNamed(EditProductScreen.routeName, arguments: {
+      "fromRouteName": OldProductsScreen.routeName,
+      "product": Product(
+          id: "",
+          owned_by: 0,
+          sold: 0,
+          owner_name: "",
+          owner_phone: "",
+          validSession: ""),
+    });
+    if (mounted) {
+      getOldProducts();
     }
   }
 
@@ -81,7 +105,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
     Future.delayed(Duration.zero, () async {
       await getRate(context);
       if (mounted) {
-        getInventory();
+        getOldProducts();
       }
     });
   }
@@ -97,7 +121,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
 
     // Trigger refresh when returning from AboutProduct screen
     if (mounted) {
-      getInventory();
+      getOldProducts();
     }
   }
 
@@ -107,7 +131,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-          AppLocalizations.of(context)!.productInventory,
+         AppLocalizations.of(context)!.oldProduct,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -169,13 +193,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                   ? const Center(child: Loader())
                   : products!.isEmpty
                       ? Center(
-                          child: Text(
-                              "${AppLocalizations.of(context)!.noProductsFoundInInventory}!"),
+                          child: Text(AppLocalizations.of(context)!.noProductsFound),
                         )
                       : getFilteredProducts().isEmpty
                           ? Center(
-                              child: Text(AppLocalizations.of(context)!
-                                  .noProductsFound),
+                              child: Text(AppLocalizations.of(context)!.noProductsFound),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +236,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                                     "error fetching rates...")
                                                 : Text(
                                                     "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
-                                            trailing: Text(product.stone!),
+                                            trailing: IconButton(
+                                              onPressed: () {},
+                                              icon: const Icon(
+                                                  Remix.delete_bin_2_line),
+                                            ),
                                             leading: CachedNetworkImage(
                                               height: 250,
                                               width: 80,
@@ -240,6 +266,15 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                             ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: blueColor,
+        onPressed: navigateToAddProductScreen,
+        child: const Icon(
+          Remix.add_line,
+          size: 30,
+          color: Colors.white,
         ),
       ),
     );

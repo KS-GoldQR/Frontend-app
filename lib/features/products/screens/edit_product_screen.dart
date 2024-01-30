@@ -6,6 +6,10 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/features/old%20products/screens/old_product_screen.dart';
+import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
+import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
@@ -28,6 +32,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final String menuIcon = 'assets/icons/solar_hamburger-menu-broken.svg';
   final _addProductFormKey = GlobalKey<FormState>();
   final ProductService _productService = ProductService();
+  final OldProductService _oldProductService = OldProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
@@ -63,7 +68,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         isSubmitting = true;
       });
-      if (!widget.args['fromAboutProduct']) {
+      if (widget.args['fromRouteName'] == OldProductsScreen.routeName) {
+        await addOldProduct();
+      } else if (widget.args['fromRouteName'] == QRScannerScreen.routeName) {
         debugPrint("set product hitted");
         await setProduct();
       } else {
@@ -132,8 +139,41 @@ class _EditProductScreenState extends State<EditProductScreen> {
     await _productService.setProduct(
       context: context,
       productId: widget.args['product'].id,
-      image:
-          "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z29sZCUyMG5lY2tsYWNlfGVufDB8fDB8fHww",
+      image: image,
+      name: _nameController.text.trim(),
+      productType: rselectedType ?? selectedType,
+      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+          rselectedWeight ?? selectedWeight),
+      stone: _stoneController.text.trim(),
+      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
+      jyala: double.tryParse(_jyalaController.text.trim())!,
+      jarti: double.tryParse(_jartiController.text.trim())!,
+    );
+  }
+
+  Future<void> addOldProduct() async {
+    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+    String? rselectedWeight;
+    String? rselectedType;
+    if (countryLanguageUsed == "NP") {
+      rselectedWeight = selectedWeight == "ग्राम"
+          ? "Gram"
+          : selectedWeight == "तोला"
+              ? "Tola"
+              : "Laal";
+
+      rselectedType = selectedType == "छापावाल"
+          ? "Chhapawal"
+          : selectedType == "तेजाबी"
+              ? "Tejabi"
+              : "Asal Chandi";
+    }
+
+    debugPrint("adding old product");
+
+    await _oldProductService.addOldProduct(
+      context: context,
+      image: image,
       name: _nameController.text.trim(),
       productType: rselectedType ?? selectedType,
       weight: getWeight(double.tryParse(_weightController.text.trim())!,
@@ -234,7 +274,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     // debugPrint(widget.args['product'].productType);
 
-    if (widget.args['fromAboutProduct']) {
+    if (widget.args['fromRouteName'] == AboutProduct.routeName) {
       _nameController.text = widget.args['product'].name;
       selectedType = widget.args['product'].productType;
       _weightController.text = widget.args['product'].weight.toString();
@@ -267,6 +307,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("here printing");
+    debugPrint(QRScannerScreen.routeName);
+    final temp = widget.args['fromRouteName'];
+    debugPrint(temp.toString());
     final size = MediaQuery.sizeOf(context);
     return PopScope(
       canPop: false,
@@ -331,54 +375,58 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(10),
                           GestureDetector(
                             onTap: _showChoiceDialog,
-                            child: widget.args['product'].image == null
-                                ? DottedBorder(
-                                    strokeWidth: 1,
-                                    borderType: BorderType.RRect,
-                                    borderPadding: const EdgeInsets.all(5),
-                                    dashPattern: const [10, 4],
-                                    radius: const Radius.circular(15),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(15),
-                                      height: size.height * 0.2,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.folder_open_outlined,
-                                            size: 35,
-                                            color: Colors.black,
-                                          ),
-                                          Text(
-                                            'Select Product Images',
-                                            style: TextStyle(
-                                              fontSize: 25,
-                                              color: Colors.grey.shade400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                            child: image != null
+                                ? Image.file(
+                                    image!,
+                                    fit: BoxFit.contain,
+                                    height: size.height * 0.2,
+                                    width: double.infinity,
                                   )
-                                : image != null
-                                    ? Image.file(
-                                        image!,
-                                        fit: BoxFit.contain,
-                                        height: size.height * 0.2,
-                                        width: double.infinity,
+                                : widget.args['product'].image == null
+                                    ? DottedBorder(
+                                        strokeWidth: 1,
+                                        borderType: BorderType.RRect,
+                                        borderPadding: const EdgeInsets.all(5),
+                                        dashPattern: const [10, 4],
+                                        radius: const Radius.circular(15),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(15),
+                                          height: size.height * 0.2,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              const Icon(
+                                                Icons.folder_open_outlined,
+                                                size: 35,
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                'Select Product Images',
+                                                style: TextStyle(
+                                                  fontSize: 25,
+                                                  color: Colors.grey.shade400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       )
                                     : CachedNetworkImage(
                                         imageUrl: widget.args['product'].image,
                                         fit: BoxFit.contain,
                                         height: size.height * 0.2,
                                         width: double.infinity,
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                                child: Text("No image found")),
                                       ),
                           ),
                           const Gap(10),
@@ -402,9 +450,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             },
                           ),
                           const Gap(10),
-                          Text(
-                            AppLocalizations.of(context)!.type,
-                            style: customTextDecoration(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.type,
+                                style: customTextDecoration(),
+                              ),
+                            const  Text(
+                                "verify!",
+                                style: TextStyle(color: Colors.red),
+                              )
+                            ],
                           ),
                           const Gap(5),
                           DropdownButtonFormField<String>(

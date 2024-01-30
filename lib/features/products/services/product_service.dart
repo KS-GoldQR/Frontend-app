@@ -242,7 +242,7 @@ class ProductService {
     required BuildContext context,
     required String productId,
     required String name,
-    required String image,
+    File? image,
     required String productType,
     required double weight,
     required String stone,
@@ -254,13 +254,29 @@ class ProductService {
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
+      String? imageNameFromS3;
+      String? imageUrl;
+      if (image != null) {
+        imageNameFromS3 = await uploadImageToS3(context: context, file: image);
+
+        if (imageNameFromS3 == null) {
+          showSnackBar(
+              title: "Upload Failed",
+              message: "failed to upload image!",
+              contentType: ContentType.failure);
+          return;
+        } else {
+          imageUrl = "$s3ImageUrl/$imageNameFromS3";
+        }
+      }
+
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/setProduct"),
         body: jsonEncode({
           "sessionToken": user.sessionToken,
           "product_id": productId,
           "name": name,
-          "image": image,
+          "image": imageUrl ?? "",
           "productType": productType,
           "weight": weight,
           "stone": stone,
@@ -278,6 +294,7 @@ class ProductService {
                 title: "Success",
                 message: "product set successfully",
                 contentType: ContentType.success);
+            navigatorKey.currentState!.pop();
           });
     } catch (e) {
       showSnackBar(

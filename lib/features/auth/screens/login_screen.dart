@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _password = TextEditingController();
   final _phoneNoFocus = FocusNode();
   final _passwordFocus = FocusNode();
-  final _formKey = GlobalKey<FormState>();
+  final _loginformKey = GlobalKey<FormState>();
   bool isVisible = false;
   bool isSecondBoxVisible = false;
 
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               child: Form(
-                key: _formKey,
+                key: _loginformKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           onTap: (startLoading, stopLoading, btnState) async {
                             if (btnState == ButtonState.idle) {
-                              if (_formKey.currentState!.validate()) {
+                              if (_loginformKey.currentState!.validate()) {
                                 startLoading();
                                 await _userService.userLogin(
                                     _phoneNo.text.trim(),
