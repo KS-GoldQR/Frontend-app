@@ -27,11 +27,13 @@ class SalesService {
         headers: {'Content-Type': 'application/json'},
       );
 
+      debugPrint(jsonDecode(response.body).length.toString());
       if (response.statusCode == 200) {
         httpErrorHandle(
             response: response,
             onSuccess: () {
               for (int i = 0; i < jsonDecode(response.body).length; i++) {
+                debugPrint(jsonDecode(response.body)[i].toString());
                 products.add(
                   Product.fromJson(
                     jsonEncode(jsonDecode(response.body)[i]),
@@ -67,7 +69,6 @@ class SalesService {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    bool isSold = false;
 
     try {
       debugPrint("here");
@@ -89,22 +90,21 @@ class SalesService {
         headers: <String, String>{'Content-Type': 'application/json'},
       );
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            isSold = true;
-            showSnackBar(
-                title: 'Product Sold',
-                message: 'your product has been sold',
-                contentType: ContentType.success);
-          });
+      if (response.statusCode == 200) {
+        showSnackBar(
+            title: 'Product Sold',
+            message: 'your product has been sold',
+            contentType: ContentType.success);
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
           contentType: ContentType.warning);
+      return false;
     }
-    return isSold;
   }
 }

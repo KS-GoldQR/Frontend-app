@@ -20,9 +20,10 @@ class SoldStatusCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Your Sales Product List",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.yourSalesProductList,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const Gap(20),
                 for (var entry in status.entries)
@@ -33,7 +34,7 @@ class SoldStatusCard extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text('Close'),
+                    child: Text(AppLocalizations.of(context)!.close),
                   ),
                 ),
               ],
@@ -66,7 +67,7 @@ class SalesItemTile extends StatelessWidget {
           children: [
             buildInfoRow(
               saleItem.product.name!,
-              "${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(saleItem.price)} \n ${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}%",
+              "${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${saleItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}% \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(saleItem.price)} \n",
             ),
             const Gap(10),
             Text(

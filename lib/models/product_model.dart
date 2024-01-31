@@ -15,8 +15,12 @@ class Product {
   double? stone_price;
   String? productType;
   double? weight;
-  double? rate;
   double? price;
+  String? customerName;
+  String? customerAddress;
+  String? customerPhone;
+  DateTime? updatedAt;
+  DateTime? soldAt;
   String owner_name;
   String owner_phone;
   String validSession;
@@ -33,8 +37,12 @@ class Product {
     this.stone_price,
     this.productType,
     this.weight,
-    this.rate,
     this.price,
+    this.customerName,
+    this.customerAddress,
+    this.customerPhone,
+    this.updatedAt,
+    this.soldAt,
     required this.owner_name,
     required this.owner_phone,
     required this.validSession,
@@ -53,8 +61,12 @@ class Product {
       'stone_price': stone_price,
       'productType': productType,
       'weight': weight,
-      'rate': rate,
       'price': price,
+      'customer_name': customerName,
+      'customer_address': customerAddress,
+      'customer_phone': customerPhone,
+      'updated_at': updatedAt,
+      'sold_at': soldAt,
       'owner_name': owner_name,
       'owner_phone': owner_phone,
       'validSession': validSession,
@@ -71,11 +83,21 @@ class Product {
       owned_by: int.tryParse(map['owned_by']) ?? 0,
       sold: map['sold'] != null ? int.tryParse(map['sold']) ?? 0 : 0,
       stone: map['stone'] as String?,
-      stone_price: double.tryParse(map['stone_price']) ?? 0.0,
+      stone_price: double.tryParse(map['stone_price']) ?? -1,
       productType: map['productType'] as String?,
       weight: double.tryParse(map['weight']) ?? 0.0,
-      rate: map['rate'] != null ? double.tryParse(map['rate']) ?? 0.0 : 0.0,
       price: map['price'] != null ? double.tryParse(map['price']) : 0.0,
+      customerName: map['customer_name'] as String?,
+      customerAddress: map['customer_address'] as String?,
+      customerPhone: map['customer_phone'] as String?,
+      updatedAt: map.containsKey('updated_at')
+          ? (map['updated_at'] != null
+              ? DateTime.tryParse(map['updated_at'])
+              : null)
+          : null,
+      soldAt: map.containsKey('sold_at')
+          ? (map['sold_at'] != null ? DateTime.tryParse(map['sold_at']) : null)
+          : null,
       owner_name: map['owner_name'] != null ? map['owner_name'] ?? "" : "",
       owner_phone: map['owner_phone'] != null ? map['owner_phone'] ?? "" : "",
       validSession:
@@ -100,8 +122,12 @@ class Product {
     double? stone_price,
     String? productType,
     double? weight,
-    double? rate,
     double? price,
+    String? customerName,
+    String? customerAddress,
+    String? customerPhone,
+    DateTime? updatedAt,
+    DateTime? soldAt,
     String? owner_name,
     String? owner_phone,
     String? validSession,
@@ -118,8 +144,12 @@ class Product {
       stone_price: stone_price ?? this.stone_price,
       productType: productType ?? this.productType,
       weight: weight ?? this.weight,
-      rate: rate ?? this.rate,
       price: price ?? this.price,
+      customerName: customerName ?? this.customerName,
+      customerAddress: customerAddress ?? this.customerAddress,
+      customerPhone: customerPhone ?? this.customerPhone,
+      updatedAt: updatedAt ?? this.updatedAt,
+      soldAt: soldAt ?? this.soldAt,
       owner_name: owner_name ?? this.owner_name,
       owner_phone: owner_phone ?? this.owner_phone,
       validSession: validSession ?? this.validSession,

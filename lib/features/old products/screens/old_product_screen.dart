@@ -1,17 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/old%20products/screens/add_old_product_screen.dart';
+import 'package:grit_qr_scanner/features/old%20products/screens/view_old_product_screen.dart';
 import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
-import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
 import 'package:grit_qr_scanner/models/product_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../../../provider/product_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
-import '../../products/screens/about_product_screen.dart';
 
 class OldProductsScreen extends StatefulWidget {
   static const String routeName = "/old-products-screen";
@@ -43,20 +42,18 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
     await _oldProductService.deleteOldProduct(
         context: context, productId: productId);
     //update without hitting api
+    setState(() {
+      products?.removeWhere((element) => element.id == productId);
+      getGroupedProduct();
+    });
   }
 
-  void navigateToAddProductScreen() {
-    navigatorKey.currentState!
-        .pushNamed(EditProductScreen.routeName, arguments: {
-      "fromRouteName": OldProductsScreen.routeName,
-      "product": Product(
-          id: "",
-          owned_by: 0,
-          sold: 0,
-          owner_name: "",
-          owner_phone: "",
-          validSession: ""),
-    });
+  void navigateToAddProductScreen() async {
+    await navigatorKey.currentState!.push(
+      MaterialPageRoute(
+        builder: (context) => const AddOldProductScreen(),
+      ),
+    );
     if (mounted) {
       getOldProducts();
     }
@@ -111,18 +108,11 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
   }
 
   Future<void> navigateToAboutProduct(Product product) async {
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
-    productProvider.setProduct(product);
-
-    //cannot show edit/sell option in about page, because from reponse in inventory, product didn't contain validSession argument
-    await Navigator.of(context).pushNamed(AboutProduct.routeName,
-        arguments: {'product': product, 'fromInventory': true});
-
-    // Trigger refresh when returning from AboutProduct screen
-    if (mounted) {
-      getOldProducts();
-    }
+    navigatorKey.currentState!.push(
+      MaterialPageRoute(
+        builder: (context) => ViewOldProductScreen(product: product),
+      ),
+    );
   }
 
   @override
@@ -131,7 +121,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-         AppLocalizations.of(context)!.oldProduct,
+          AppLocalizations.of(context)!.oldProduct,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -193,11 +183,13 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                   ? const Center(child: Loader())
                   : products!.isEmpty
                       ? Center(
-                          child: Text(AppLocalizations.of(context)!.noProductsFound),
+                          child: Text(
+                              AppLocalizations.of(context)!.noProductsFound),
                         )
                       : getFilteredProducts().isEmpty
                           ? Center(
-                              child: Text(AppLocalizations.of(context)!.noProductsFound),
+                              child: Text(AppLocalizations.of(context)!
+                                  .noProductsFound),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,14 +224,17 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             subtitle: goldRates.isEmpty
-                                                ? const Text(
-                                                    "error fetching rates...")
+                                                ?  Text(
+                                                    AppLocalizations.of(context)!.errorFetchingRates)
                                                 : Text(
-                                                    "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
+                                                    "रु${NumberFormat('#,##,###.00').format((product.weight! * goldRates[product.productType!]!) + (product.stone_price! != -1 ? product.stone_price! : 0.0))}"),
                                             trailing: IconButton(
-                                              onPressed: () {},
+                                              onPressed: () =>
+                                                  deleteOldProduct(product.id),
                                               icon: const Icon(
-                                                  Remix.delete_bin_2_line),
+                                                Remix.delete_bin_7_line,
+                                                color: blueColor,
+                                              ),
                                             ),
                                             leading: CachedNetworkImage(
                                               height: 250,

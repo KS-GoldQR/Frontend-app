@@ -1,59 +1,50 @@
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
-import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
+import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../../../utils/form_validators.dart';
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../../utils/widgets/custom_button.dart';
 
-class EditProductScreen extends StatefulWidget {
-  static const String routeName = '/edit-product-screen';
-  final Map<String, dynamic> args;
-  const EditProductScreen({super.key, required this.args});
+class AddOldProductScreen extends StatefulWidget {
+  const AddOldProductScreen({super.key});
 
   @override
-  State<EditProductScreen> createState() => _EditProductScreenState();
+  State<AddOldProductScreen> createState() => _AddOldProductScreenState();
 }
 
-class _EditProductScreenState extends State<EditProductScreen> {
-  final _addProductFormKey = GlobalKey<FormState>();
-  final ProductService _productService = ProductService();
+class _AddOldProductScreenState extends State<AddOldProductScreen> {
+  final _addOldProductFormKey = GlobalKey<FormState>();
+  final OldProductService _oldProductService = OldProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
-  final TextEditingController _jyalaController = TextEditingController();
-  final TextEditingController _jartiController = TextEditingController();
   final _descriptionFocus = FocusNode();
   final _nameFocus = FocusNode();
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
-  final _jyalaFocus = FocusNode();
-  final _jartiFocus = FocusNode();
-  bool _dependenciesInitialized = false;
-  bool _stonePriceFieldVisible = false;
   late List<String> types;
   late String selectedType;
+  bool _stonePriceFieldVisible = false;
 
   late List<String> weight;
   late String selectedWeight;
   File? image;
   int currentIndex = 0;
   bool isSubmitting = false;
+  bool _dependenciesInitialized = false;
 
   Future<void> _pickImage(ImageSource source) async {
     image = await pickFile(context, source);
@@ -61,17 +52,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void isFormValid() async {
-    if (_addProductFormKey.currentState!.validate()) {
+    if (_addOldProductFormKey.currentState!.validate()) {
       setState(() {
         isSubmitting = true;
       });
-      if (widget.args['fromRouteName'] == QRScannerScreen.routeName) {
-        debugPrint("set product hitted");
-        await setProduct();
-      } else {
-        debugPrint("edit product api hitted");
-        await editProduct();
-      }
+      await addOldProduct();
       setState(() {
         isSubmitting = false;
       });
@@ -80,16 +65,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-//image will be file type, sessiontoken will be dynamic
-  Future<void> editProduct() async {
-    var(rselectedWeightType, rselectedType) = translatedTypes(
+  Future<void> addOldProduct() async {
+    var (rselectedWeightType, rselectedType) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeight,
         selectedType: selectedType);
 
-    await _productService.editProduct(
+    await _oldProductService.addOldProduct(
       context: context,
-      productId: widget.args['product'].id,
       image: image,
       name: _nameController.text.trim(),
       productType: rselectedType ?? selectedType,
@@ -100,32 +83,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       stonePrice: _stonePriceController.text.isEmpty
           ? null
           : double.tryParse(_stonePriceController.text.trim())!,
-      jyala: double.tryParse(_jyalaController.text.trim())!,
-      jarti: double.tryParse(_jartiController.text.trim())!,
-    );
-  }
-
-  Future<void> setProduct() async {
-   var(rselectedWeightType, rselectedType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeight,
-        selectedType: selectedType);
-
-    await _productService.setProduct(
-      context: context,
-      productId: widget.args['product'].id,
-      image: image,
-      name: _nameController.text.trim(),
-      productType: rselectedType ?? selectedType,
-      weight: getWeight(double.tryParse(_weightController.text.trim())!,
-          rselectedWeightType ?? selectedWeight),
-      stone:
-          _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
-      stonePrice: _stonePriceController.text.isEmpty
-          ? null
-          : double.tryParse(_stonePriceController.text.trim())!,
-      jyala: double.tryParse(_jyalaController.text.trim())!,
-      jarti: double.tryParse(_jartiController.text.trim())!,
     );
   }
 
@@ -154,8 +111,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text(AppLocalizations.of(context)!.quitEdit),
-          content:  Text(AppLocalizations.of(context)!.allProgressWillDisappear),
+          title: Text(AppLocalizations.of(context)!.quitEdit),
+          content: Text(AppLocalizations.of(context)!.allProductsWillBeCleared),
           actions: [
             TextButton(
               onPressed: () {
@@ -196,14 +153,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
         AppLocalizations.of(context)!.tejabi,
         AppLocalizations.of(context)!.asalChandi
       ];
-
-      //not work for set product because selectedType is not initailized at that time
-      // selectedType = selectedType == "Tejabi"
-      //     ? AppLocalizations.of(context)!.tejabi
-      //     : selectedType == "Chhapawal"
-      //         ? AppLocalizations.of(context)!.tejabi
-      //         : AppLocalizations.of(context)!.asalChandi;
-
       selectedWeight = AppLocalizations.of(context)!.gram;
       selectedType = AppLocalizations.of(context)!.asalChandi;
       _dependenciesInitialized = true;
@@ -214,54 +163,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    // debugPrint(widget.args['product'].productType);
-
-    if (widget.args['fromRouteName'] == AboutProduct.routeName) {
-      _nameController.text = widget.args['product'].name;
-      selectedType = widget.args['product'].productType;
-      _weightController.text = widget.args['product'].weight.toString();
-      if (widget.args['product'].stone != "None") {
-        _stoneController.text = widget.args['product'].stone;
-      }
-      if (widget.args['product'].stone_price != 0.0) {
-        _stonePriceController.text =
-            widget.args['product'].stone_price.toString();
-      }
-      _jyalaController.text = widget.args['product'].jyala.toString();
-      _jartiController.text = widget.args['product'].jarti.toString();
-
-      if (_stoneController.text.isNotEmpty) {
-        _stonePriceFieldVisible = true;
-      }
-    }
-  }
-
-  @override
   void dispose() {
     _descriptionController.dispose();
     _nameController.dispose();
     _weightController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
-    _jyalaController.dispose();
-    _jartiController.dispose();
     _descriptionFocus.dispose();
     _nameFocus.dispose();
     _weightFocus.dispose();
     _stoneFocus.dispose();
     _stonePriceFocus.dispose();
-    _jyalaFocus.dispose();
-    _jartiFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('is visible or not');
-    debugPrint(_stonePriceFieldVisible.toString());
     final size = MediaQuery.sizeOf(context);
     return PopScope(
       canPop: false,
@@ -295,7 +212,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
                 Expanded(
                   child: Form(
-                    key: _addProductFormKey,
+                    key: _addOldProductFormKey,
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,8 +250,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                     height: size.height * 0.2,
                                     width: double.infinity,
                                   )
-                                : widget.args['product'].image == null
-                                    ? DottedBorder(
+                                : image != null
+                                    ? Image.file(
+                                        image!,
+                                        fit: BoxFit.contain,
+                                        height: size.height * 0.2,
+                                        width: double.infinity,
+                                      )
+                                    : DottedBorder(
                                         strokeWidth: 1,
                                         borderType: BorderType.RRect,
                                         borderPadding: const EdgeInsets.all(5),
@@ -369,15 +292,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                             ],
                                           ),
                                         ),
-                                      )
-                                    : CachedNetworkImage(
-                                        imageUrl: widget.args['product'].image,
-                                        fit: BoxFit.contain,
-                                        height: size.height * 0.2,
-                                        width: double.infinity,
-                                        errorWidget: (context, url, error) =>
-                                             Center(
-                                                child: Text(AppLocalizations.of(context)!.errorGettingImage)),
                                       ),
                           ),
                           const Gap(10),
@@ -545,48 +459,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               ],
                             ),
                           ),
-                          const Gap(10),
-                          Text(
-                            "${AppLocalizations.of(context)!.jyala} (%)",
-                            style: customTextDecoration(),
-                          ),
-                          const Gap(5),
-                          TextFormField(
-                            controller: _jyalaController,
-                            focusNode: _jyalaFocus,
-                            onFieldSubmitted: (value) => _fieldFocusChange(
-                                context, _jyalaFocus, _jartiFocus),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            textInputAction: TextInputAction.next,
-                            cursorColor: blueColor,
-                            decoration: customTextfieldDecoration(),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) =>
-                                validateJyala(value!, context),
-                          ),
-                          const Gap(10),
-                          Text(
-                            "${AppLocalizations.of(context)!.jarti} (%)",
-                            style: customTextDecoration(),
-                          ),
-                          const Gap(5),
-                          TextFormField(
-                            controller: _jartiController,
-                            focusNode: _jartiFocus,
-                            onFieldSubmitted: (value) => _jartiFocus.unfocus(),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            textInputAction: TextInputAction.done,
-                            cursorColor: blueColor,
-                            decoration: customTextfieldDecoration(),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) =>
-                                validateJarti(value!, context),
-                          ),
-                          const Gap(10),
                         ],
                       ),
                     ),

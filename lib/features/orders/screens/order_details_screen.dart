@@ -13,7 +13,11 @@ class OrderDetailsScreen extends StatelessWidget {
   final double totalOrderedPrice;
   final double totalOldJwelleryPrice;
   const OrderDetailsScreen(
-      {Key? key, required this.order, required this.deleteOrder, required this.totalOrderedPrice, required this.totalOldJwelleryPrice})
+      {Key? key,
+      required this.order,
+      required this.deleteOrder,
+      required this.totalOrderedPrice,
+      required this.totalOldJwelleryPrice})
       : super(key: key);
 
   Future<void> _showChoiceDialog(BuildContext context) async {
@@ -21,10 +25,10 @@ class OrderDetailsScreen extends StatelessWidget {
       context: context,
       dialogType: DialogType.question,
       animType: AnimType.rightSlide,
-      title: 'Delete Order',
-      desc: 'deleteing order is irreversible action!',
-      btnOkText: 'Yes',
-      btnCancelText: 'No',
+      title: AppLocalizations.of(context)!.deleteOrder,
+      desc: '',
+      btnOkText: AppLocalizations.of(context)!.yes,
+      btnCancelText: AppLocalizations.of(context)!.no,
       btnOkColor: Colors.green,
       btnCancelColor: Colors.red,
       btnCancelOnPress: () {},
@@ -54,7 +58,8 @@ class OrderDetailsScreen extends StatelessWidget {
                     color: blueColor,
                     fontWeight: FontWeight.bold),
               ),
-              buildUserInfoCard(order, context, totalOrderedPrice, totalOldJwelleryPrice),
+              buildUserInfoCard(
+                  order, context, totalOrderedPrice, totalOldJwelleryPrice),
               const Gap(20),
               Text(
                 AppLocalizations.of(context)!.orderedItems,
@@ -80,7 +85,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 onPressed: () async {
                   _showChoiceDialog(context);
                 },
-                text: "Delete",
+                text: AppLocalizations.of(context)!.deleteOrder,
                 textColor: Colors.white,
                 backgroundColor: blueColor,
               )

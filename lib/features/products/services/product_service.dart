@@ -161,8 +161,8 @@ class ProductService {
     required String name,
     required String productType,
     required double weight,
-    required String stone,
-    required double stonePrice,
+    String? stone,
+    double? stonePrice,
     required double jyala,
     required double jarti,
   }) async {
@@ -209,6 +209,7 @@ class ProductService {
         headers: {'Content-Type': 'application/json'},
       );
 
+      debugPrint(response.statusCode.toString());
       httpErrorHandle(
           response: response,
           onSuccess: () {
@@ -222,11 +223,12 @@ class ProductService {
               image: imageUrl,
               productType: productType,
               weight: weight,
-              stone: stone,
-              stone_price: stonePrice,
+              stone: stone ?? "None",
+              stone_price: stonePrice ?? -1,
               jyala: jyala,
               jarti: jarti,
             );
+
             productProvider.setProduct(product);
             navigatorKey.currentState!.pop();
           });
@@ -245,8 +247,8 @@ class ProductService {
     File? image,
     required String productType,
     required double weight,
-    required String stone,
-    required double stonePrice,
+    String? stone,
+    double? stonePrice,
     required double jyala,
     required double jarti,
   }) async {

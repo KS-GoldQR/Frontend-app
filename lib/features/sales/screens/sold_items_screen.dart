@@ -7,6 +7,7 @@ import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
 
@@ -19,11 +20,14 @@ class SoldItemsScreen extends StatefulWidget {
 }
 
 class _ViewSoldItemsState extends State<SoldItemsScreen> {
+  final _uniqueKey = GlobalKey();
   List<Product>? products;
   final SalesService _salesService = SalesService();
   late List<String> types;
   late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
+  DateTime? startDate;
+  DateTime? endDate;
 
   Future<void> getSoldItems() async {
     products = await _salesService.viewSoldItems(context);
@@ -49,14 +53,30 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   }
 
   List<Product> getFilteredProducts() {
-    return selectedType != AppLocalizations.of(context)!.all
-        ? groupedProducts[selectedType] ?? []
-        : products ?? [];
+    return (selectedType != AppLocalizations.of(context)!.all
+            ? groupedProducts[selectedType] ?? []
+            : products ?? [])
+        .where((product) {
+      if (startDate == null && endDate == null) {
+        return true;
+      }
+      if (startDate != null && endDate == null) {
+        return product.soldAt != null && product.soldAt!.isAfter(startDate!);
+      }
+      if (startDate == null && endDate != null) {
+        return product.soldAt != null && product.soldAt!.isBefore(endDate!);
+      }
+      if (startDate != null && endDate != null) {
+        return product.soldAt != null &&
+            product.soldAt!.isAfter(startDate!) &&
+            product.soldAt!.isBefore(endDate!.add(const Duration(days: 1)));
+      }
+      return false; // Handle any other cases if necessary
+    }).toList();
   }
 
   Future<void> showFullScreenDialog(
       BuildContext context, Product product) async {
-    debugPrint(product.rate!.toString());
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -67,6 +87,26 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                 child: SoldItemDetails(product: product)));
       },
     );
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate:
+          isStartDate ? startDate ?? DateTime.now() : endDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        if (isStartDate) {
+          startDate = selectedDate;
+        } else {
+          endDate = selectedDate;
+        }
+      });
+    }
   }
 
   @override
@@ -115,6 +155,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: DropdownButtonFormField<String>(
+                        key: _uniqueKey,
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
@@ -144,15 +185,19 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                 ),
               ),
               const SizedBox(height: 15),
+              dateRangePicker(context),
+              const Gap(15),
               products == null
                   ? const Center(child: Loader())
                   : products!.isEmpty
-                      ? const Center(
-                          child: Text("No Product has been sold"),
+                      ? Center(
+                          child: Text(AppLocalizations.of(context)!
+                              .noProductHasBeenSold),
                         )
                       : getFilteredProducts().isEmpty
-                          ? const Center(
-                              child: Text("No Products found"),
+                          ? Center(
+                              child: Text(AppLocalizations.of(context)!
+                                  .noProductHasBeenSold),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +218,6 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
-                                          debugPrint(product.rate!.toString());
                                           return ListTile(
                                             onTap: () {
                                               showFullScreenDialog(
@@ -216,6 +260,73 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Row dateRangePicker(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TextButton.icon(
+          onPressed: () => _selectDate(context, true),
+          icon: const Icon(
+            Icons.calendar_month_outlined,
+            color: blueColor,
+          ),
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(50, 30),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              alignment: Alignment.centerLeft),
+          label: Text(
+            startDate != null ? formatDateTimeRange(startDate!) : 'from',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        Visibility(
+          visible: startDate != null && endDate != null,
+          child: const Text("-"),
+        ),
+        TextButton.icon(
+          onPressed: () => _selectDate(context, false),
+          icon: const Icon(
+            Icons.calendar_month_outlined,
+            color: blueColor,
+          ),
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(50, 30),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              alignment: Alignment.centerLeft),
+          label: Text(
+            endDate != null ? formatDateTimeRange(endDate!) : 'to',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                startDate = null;
+                endDate = null;
+              });
+            },
+            style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(50, 30),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                alignment: Alignment.centerLeft),
+            child: Text(
+              AppLocalizations.of(context)!.clear,
+              style: const TextStyle(
+                  color: blueColor, fontWeight: FontWeight.bold),
+            ))
+      ],
     );
   }
 }

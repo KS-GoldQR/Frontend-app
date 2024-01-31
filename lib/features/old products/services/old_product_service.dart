@@ -20,16 +20,22 @@ class OldProductService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       http.Response response = await http.post(
-          Uri.parse("$hostedUrl/prod/oldProduct/viewOldProducts"),
-          body: jsonEncode({"sessionToken": user.sessionToken}),
-          headers: {"Content-Type": "application/json"});
+        Uri.parse("$hostedUrl/prod/oldProduct/viewOldProducts"),
+        body: jsonEncode({"sessionToken": user.sessionToken}),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      debugPrint(response.statusCode.toString());
+      debugPrint(jsonDecode(response.body)['products'].toString());
 
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            for (int i = 0; i < jsonDecode(response.body).length; i++) {
+            for (int i = 0;
+                i < jsonDecode(response.body)['products'].length;
+                i++) {
               products.add(
-                Product.fromMap(jsonDecode(response.body)[i]),
+                Product.fromMap(jsonDecode(response.body)['products'][i]),
               );
             }
           });
@@ -48,10 +54,8 @@ class OldProductService {
     required String name,
     required String productType,
     required double weight,
-    required String stone,
-    required double stonePrice,
-    required double jyala,
-    required double jarti,
+    String? stone,
+    double? stonePrice,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -87,8 +91,6 @@ class OldProductService {
           "weight": weight,
           "stone": stone,
           "stone_price": stonePrice,
-          "jyala": jyala,
-          "jarti": jarti
         }),
         headers: {'Content-Type': 'application/json'},
       );

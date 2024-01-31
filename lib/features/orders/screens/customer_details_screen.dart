@@ -6,7 +6,6 @@ import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
 import 'package:grit_qr_scanner/models/customer_model.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -51,7 +50,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      helpText: AppLocalizations.of(context)!.chooseExpectedDeadline,
       currentDate: DateTime.now(),
       initialDate: expectedDeadline,
       firstDate: DateTime(2000),
@@ -62,11 +60,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         expectedDeadline = picked;
       });
     }
-  }
-
-  String formatDateTime(DateTime date) {
-    final dateTime = DateTime(date.year, date.month, date.day);
-    return DateFormat.yMMMMd().format(dateTime);
   }
 
   void _fieldFocusChange(
@@ -110,9 +103,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                 .removeAt(orderProvider.orderedItems.length - 1);
           }
           showSnackBar(
-              title: "Customer Details Cleared",
-              message: "",
-              contentType: ContentType.warning);
+              title: AppLocalizations.of(context)!.customerDetailsCleared, message: "", contentType: ContentType.warning);
         },
         child: Scaffold(
           appBar: AppBar(

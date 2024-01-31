@@ -33,7 +33,7 @@ Widget buildSalesItemsList(BuildContext context) {
                         Expanded(
                           child: buildInfoRow(
                             saleItem.product.name!,
-                            "${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(saleItem.price)} \n ${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}%",
+                            "${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${saleItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}% \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(saleItem.price)}",
                           ),
                         ),
                         IconButton(

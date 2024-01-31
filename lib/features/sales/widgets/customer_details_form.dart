@@ -6,6 +6,7 @@ import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
 import 'package:grit_qr_scanner/features/sales/widgets/sold_status_card.dart';
 import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -154,10 +155,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value!.isEmpty) return "name cannot be empty";
-                          return null;
-                        },
+                        validator: (value) => validateName(value!, context),
                       ),
                       const Gap(10),
                       Text(
@@ -176,16 +174,8 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "phone number cannot be empty!";
-                          }
-
-                          if (value.length != 10) {
-                            return "enter valid phone number";
-                          }
-                          return null;
-                        },
+                        validator: (value) =>
+                            validateContactNumber(value!, context),
                       ),
                       const Gap(10),
                       Text(
@@ -203,12 +193,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "address cannot be empty!";
-                          }
-                          return null;
-                        },
+                        validator: (value) => validateAddress(value!, context),
                       ),
                     ],
                   ),

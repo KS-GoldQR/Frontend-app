@@ -6,6 +6,7 @@ import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -51,11 +52,17 @@ class _AboutProductState extends State<AboutProduct> {
   //   );
   // }
 
-  void navigateToSalesDetailsScreen(SalesProvider salesProvider,
-      Product product, double jyala, double jarti, double totalPrice) {
+  void navigateToSalesDetailsScreen(
+      SalesProvider salesProvider,
+      Product product,
+      double jyala,
+      double jarti,
+      double totalPrice,
+      double weight) {
     SalesModel item = SalesModel(
         product: product,
         price: totalPrice,
+        weight: weight,
         jyalaPercentage: jyala,
         jartiPercentage: jarti);
     salesProvider.addSaleItem(item);
@@ -150,8 +157,9 @@ class _AboutProductState extends State<AboutProduct> {
                                 (context, url, downloadProgress) =>
                                     CircularProgressIndicator(
                                         value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                const Text("error getting image!"),
+                            errorWidget: (context, url, error) => Text(
+                                AppLocalizations.of(context)!
+                                    .errorGettingImage),
                           ),
                         ),
                       ),
@@ -176,12 +184,19 @@ class _AboutProductState extends State<AboutProduct> {
                         value:
                             "${getWeightByType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                     ProductDetail(
-                        label: '${AppLocalizations.of(context)!.stone}: ',
-                        value: product!.stone!),
-                    ProductDetail(
-                        label: '${AppLocalizations.of(context)!.stonePrice}: ',
+                        label: '${AppLocalizations.of(context)!.actualPrice}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
+                            "रु${NumberFormat('#,##,###.00').format(product!.weight! * goldRates[product!.productType!]!)}"),
+                    if (product!.stone != "None")
+                      ProductDetail(
+                          label: '${AppLocalizations.of(context)!.stone}: ',
+                          value: product!.stone!),
+                    if (product!.stone_price != -1)
+                      ProductDetail(
+                          label:
+                              '${AppLocalizations.of(context)!.stonePrice}: ',
+                          value:
+                              "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
                     Row(
                       children: [
                         Text(
@@ -223,21 +238,8 @@ class _AboutProductState extends State<AboutProduct> {
                               _totalPriceController.text =
                                   "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
                             },
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "jyala cannot be empty!";
-                              }
-
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-
-                              if (double.tryParse(value)! < 0) {
-                                return "jyala cannot be negative/zero";
-                              }
-
-                              return null;
-                            },
+                            validator: (value) =>
+                                validateJyala(value!, context),
                           ),
                         ),
                         const Spacer(),
@@ -291,21 +293,8 @@ class _AboutProductState extends State<AboutProduct> {
                               debugPrint(
                                   "inside jayala ${_jartiController.text}");
                             },
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "jarti cannot be empty!";
-                              }
-
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-
-                              if (double.tryParse(value)! < 0) {
-                                return "jarti cannot be negative/zero";
-                              }
-
-                              return null;
-                            },
+                            validator: (value) =>
+                                validateJarti(value!, context),
                           ),
                         ),
                         const Spacer(),
@@ -356,6 +345,12 @@ class _AboutProductState extends State<AboutProduct> {
                         ),
                       ],
                     ),
+                    const Gap(10),
+                    if (product!.updatedAt != null)
+                      ProductDetail(
+                          label:
+                              "${AppLocalizations.of(context)!.lastUpdate}: ",
+                          value: formatDateTimeRange(product!.updatedAt!)),
                     const Gap(20),
                     if (product!.validSession == "1" ||
                         widget.args['fromInventory'])
@@ -406,7 +401,7 @@ class _AboutProductState extends State<AboutProduct> {
                                 //                     _jartiController.text) ??
                                 //                 product!.jarti,
                                 //             stonePrice: product!.stone_price!));
-
+                              
                                 navigateToSalesDetailsScreen(
                                     salesProvider,
                                     product!,
@@ -426,7 +421,8 @@ class _AboutProductState extends State<AboutProduct> {
                                             jartiPercent: double.tryParse(
                                                     _jartiController.text) ??
                                                 product!.jarti,
-                                            stonePrice: product!.stone_price!));
+                                            stonePrice: product!.stone_price!),
+                                    product!.weight!);
                               },
                               text: AppLocalizations.of(context)!.sellItem,
                               iconColor: blueColor,

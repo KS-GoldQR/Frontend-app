@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import 'global_variables.dart';
 
@@ -194,4 +195,35 @@ double getTotalPrice(
   double jarti = jartiPercent == null ? 0.0 : (itemPrice * jartiPercent);
   double result = itemPrice + jyala + jarti + stonePrice;
   return double.parse(result.toStringAsFixed(3));
+}
+
+String formatDateTime(DateTime date) {
+  final dateTime = DateTime(date.year, date.month, date.day);
+  return DateFormat.yMMMMd().format(dateTime);
+}
+
+String formatDateTimeRange(DateTime date) {
+  final dateTime = DateTime(date.year, date.month, date.day);
+  return DateFormat('d MMM y').format(dateTime);
+}
+
+(String?, String?) translatedTypes(
+    {required BuildContext context, required String selectedWeightType, required String selectedType}) {
+  String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
+  String? rselectedWeightType;
+  String? rselectedType;
+  if (countryLanguageUsed == "NP") {
+    rselectedWeightType = selectedWeightType == "ग्राम"
+        ? "Gram"
+        : selectedWeightType == "तोला"
+            ? "Tola"
+            : "Laal";
+
+    rselectedType = selectedType == "छापावाल"
+        ? "Chhapawal"
+        : selectedType == "तेजाबी"
+            ? "Tejabi"
+            : "Asal Chandi";
+  }
+  return (rselectedWeightType, rselectedType);
 }

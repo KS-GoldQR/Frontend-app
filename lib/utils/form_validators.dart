@@ -63,7 +63,7 @@ validateStonePrice(String value, BuildContext context) {
   if (double.tryParse(value) == null) {
     return AppLocalizations.of(context)!.enterValidNumber;
   }
-  if (double.tryParse(value)! <= 0) {
+  if (double.tryParse(value)! < 0) {
     return AppLocalizations.of(context)!.stonePriceNonNegativeZero;
   }
 

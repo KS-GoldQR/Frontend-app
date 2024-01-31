@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 
 import '../../../utils/global_variables.dart';
@@ -49,24 +50,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   void calculateTotalPrice() {
-    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-    String? rselectedWeightType;
-    String? rselectedType;
-    if (countryLanguageUsed == "NP") {
-      rselectedWeightType = selectedWeightType == "ग्राम"
-          ? "Gram"
-          : selectedWeightType == "तोला"
-              ? "Tola"
-              : "Laal";
-
-      rselectedType = selectedType == "छापावाल"
-          ? "Chhapawal"
-          : selectedType == "तेजाबी"
-              ? "Tejabi"
-              : "Asal Chandi";
-    }
-
-    debugPrint(rselectedType);
+    var(rselectedWeightType, rselectedType) = translatedTypes(
+        context: context,
+        selectedWeightType: selectedWeightType,
+        selectedType: selectedType);
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -172,21 +159,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                             textInputAction: TextInputAction.next,
                             decoration: customTextfieldDecoration(),
                             autovalidateMode: AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "weight cannot be empty!";
-                              }
-
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-
-                              if (double.tryParse(value)! <= 0) {
-                                return "weight cannot be negative/zero";
-                              }
-
-                              return null;
-                            },
+                            validator: (value) => validateWeight(value!, context),
                             onChanged: (value) => calculateTotalPrice(),
                           ),
                         ),
@@ -234,21 +207,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "jyala cannot be empty!";
-                        }
-
-                        if (double.tryParse(value) == null) {
-                          return "enter a valid number";
-                        }
-
-                        if (double.tryParse(value)! < 0) {
-                          return "jyala cannot be negative/zero";
-                        }
-
-                        return null;
-                      },
+                      validator: (value)=> validateJyala(value!, context),
                       onChanged: (value) => calculateTotalPrice(),
                     ),
                     const Gap(10),
@@ -266,21 +225,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "jarti cannot be empty!";
-                        }
-
-                        if (double.tryParse(value) == null) {
-                          return "enter a valid number";
-                        }
-
-                        if (double.tryParse(value)! < 0) {
-                          return "jarti cannot be negative/zero";
-                        }
-
-                        return null;
-                      },
+                      validator: (value)=> validateJarti(value!, context),
                       onChanged: (value) => calculateTotalPrice(),
                     ),
                     const Gap(10),
@@ -298,16 +243,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isNotEmpty &&
-                            double.tryParse(value) == null) {
-                          return "enter a valid number";
-                        }
-                        if (value.isNotEmpty && double.tryParse(value)! <= 0) {
-                          return "stone price cannot be negative/zero";
-                        }
-                        return null;
-                      },
+                      validator: (value) => validateStonePrice(value!, context),
                       onChanged: (value) => calculateTotalPrice(),
                     ),
                   ],

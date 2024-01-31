@@ -54,10 +54,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         context: context,
         dialogType: DialogType.question,
         animType: AnimType.rightSlide,
-        title: 'Old Jwellery',
-        desc: 'Any old jewelry deposited?',
-        btnOkText: 'Yes',
-        btnCancelText: 'No',
+        title: AppLocalizations.of(context)!.oldJewellery,
+        desc: AppLocalizations.of(context)!.anyOldJewelryDeposited,
+        btnOkText: AppLocalizations.of(context)!.yes,
+        btnCancelText: AppLocalizations.of(context)!.no,
         btnOkColor: blueColor,
         btnCancelColor: blueColor,
         btnCancelOnPress: () {
@@ -73,25 +73,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void calculateTotalPrice() {
-    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-    String? rselectedWeightType;
-    String? rselectedType;
-    if (countryLanguageUsed == "NP") {
-      rselectedWeightType = selectedWeightType == "ग्राम"
-          ? "Gram"
-          : selectedWeightType == "तोला"
-              ? "Tola"
-              : "Laal";
-
-      rselectedType = selectedType == "छापावाल"
-          ? "Chhapawal"
-          : selectedType == "तेजाबी"
-              ? "Tejabi"
-              : "Asal Chandi";
-    }
-
-    debugPrint(rselectedType);
-    debugPrint(goldRates.toString());
+    var (rselectedWeightType, rselectedType) = translatedTypes(
+        context: context,
+        selectedWeightType: selectedWeightType,
+        selectedType: selectedType);
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -116,24 +101,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
-    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-    String? rselectedWeightType;
-    String? rselectedType;
-    if (countryLanguageUsed == "NP") {
-      rselectedWeightType = selectedWeightType == "ग्राम"
-          ? "Gram"
-          : selectedWeightType == "तोला"
-              ? "Tola"
-              : "Laal";
-
-      rselectedType = selectedType == "छापावाल"
-          ? "Chhapawal"
-          : selectedType == "तेजाबी"
-              ? "Tejabi"
-              : "Asal Chandi";
-    }
-
-    debugPrint(rselectedType);
+    var (rselectedWeightType, rselectedType) = translatedTypes(
+        context: context,
+        selectedWeightType: selectedWeightType,
+        selectedType: selectedType);
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -166,8 +137,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     orderProvider.addOrderedItems(orderedItem);
 
     showSnackBar(
-        title: "Order Added",
-        message: "your order is added to list",
+        title: AppLocalizations.of(context)!.orderAdded,
+        message: "",
         contentType: ContentType.success);
 
     if (!isProceed) {
@@ -241,8 +212,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       onPopInvoked: (didPop) {
         orderProvider.resetOrders();
         showSnackBar(
-            title: "Order Cancelled",
-            message: "all orders are cancelled",
+            title: AppLocalizations.of(context)!.orderCancelled,
+            message: "",
             contentType: ContentType.warning);
       },
       child: Scaffold(

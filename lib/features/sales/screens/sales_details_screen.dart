@@ -29,10 +29,10 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
       context: context,
       dialogType: DialogType.question,
       animType: AnimType.rightSlide,
-      title: 'Sell Another?',
-      desc: 'how do you want to sell',
-      btnOkText: 'Inventory',
-      btnCancelText: 'Scan QR',
+      title: AppLocalizations.of(context)!.sellAnother,
+      desc: AppLocalizations.of(context)!.howDoYouWantToSell,
+      btnOkText: AppLocalizations.of(context)!.inventory,
+      btnCancelText: AppLocalizations.of(context)!.scanQR,
       btnOkColor: blueColor,
       btnCancelColor: blueColor,
       btnCancelOnPress: () {
@@ -59,8 +59,8 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Clear Sales?'),
-          content: const Text('All products will be cleared'),
+          title: Text(AppLocalizations.of(context)!.clearSales),
+          content: Text(AppLocalizations.of(context)!.allProductsWillBeCleared),
           actions: [
             TextButton(
               onPressed: () {
@@ -71,19 +71,19 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text('No'),
+              child: Text(AppLocalizations.of(context)!.no),
             ),
             TextButton(
               onPressed: () {
                 salesProvider.resetSaleItem();
                 showSnackBar(
-                    title: 'Sales Cleared',
-                    message: "all product in sales are cleared",
+                    title: AppLocalizations.of(context)!.salesCleared,
+                    message: AppLocalizations.of(context)!.allProductsWillBeCleared,
                     contentType: ContentType.warning);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text('Yes'),
+              child: Text(AppLocalizations.of(context)!.yes),
             ),
           ],
         );
@@ -110,14 +110,14 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Sales Details"),
+          title: Text(AppLocalizations.of(context)!.salesDetails),
         ),
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              const Text("Your Sales Product List"),
+              Text(AppLocalizations.of(context)!.yourSalesProductList),
               const Gap(10),
               buildSalesItemsList(context),
               const Gap(20),

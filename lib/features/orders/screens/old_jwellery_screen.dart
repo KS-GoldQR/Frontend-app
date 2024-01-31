@@ -42,24 +42,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   bool _stonePriceFieldVisible = false;
 
   void calculateTotalPrice() {
-    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-    String? rselectedWeightType;
-    String? rselectedType;
-    if (countryLanguageUsed == "NP") {
-      rselectedWeightType = selectedWeightType == "ग्राम"
-          ? "Gram"
-          : selectedWeightType == "तोला"
-              ? "Tola"
-              : "Laal";
-
-      rselectedType = selectedType == "छापावाल"
-          ? "Chhapawal"
-          : selectedType == "तेजाबी"
-              ? "Tejabi"
-              : "Asal Chandi";
-    }
-
-    debugPrint(rselectedType);
+    var (rselectedWeightType, rselectedType) = translatedTypes(
+        context: context,
+        selectedWeightType: selectedWeightType,
+        selectedType: selectedType);
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -82,22 +68,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
-    String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-    String? rselectedWeightType;
-    String? rselectedType;
-    if (countryLanguageUsed == "NP") {
-      rselectedWeightType = selectedWeightType == "ग्राम"
-          ? "Gram"
-          : selectedWeightType == "तोला"
-              ? "Tola"
-              : "Laal";
-
-      rselectedType = selectedType == "छापावाल"
-          ? "Chhapawal"
-          : selectedType == "तेजाबी"
-              ? "Tejabi"
-              : "Asal Chandi";
-    }
+    var (rselectedWeightType, rselectedType) = translatedTypes(
+        context: context,
+        selectedWeightType: selectedWeightType,
+        selectedType: selectedType);
 
     double weight = getWeight(
       double.tryParse(_weightController.text.trim())!,
@@ -125,8 +99,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
 
     orderProvider.addOldJewelry(oldJwellery);
     showSnackBar(
-        title: "Old Jwellery Added",
-        message: "your old jwellery is added to list",
+        title: AppLocalizations.of(context)!.oldJewelryAdded,
+        message: "",
         contentType: ContentType.success);
 
     if (isProceed) {
@@ -202,8 +176,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
               .removeAt(orderProvider.orderedItems.length - 1);
         }
         showSnackBar(
-            title: "Old Jwellery Reset",
-            message: "your old jwellery list is empty now!",
+            title: AppLocalizations.of(context)!.oldJewelryReset,
+            message: AppLocalizations.of(context)!.oldJewelryListEmpty,
             contentType: ContentType.warning);
       },
       child: Scaffold(
@@ -305,7 +279,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                               decoration: customTextfieldDecoration(),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) => validateWeight(value!, context),
+                              validator: (value) =>
+                                  validateWeight(value!, context),
                               onChanged: (value) => calculateTotalPrice(),
                             ),
                           ),
@@ -388,7 +363,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                               decoration: customTextfieldDecoration(),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) => validateStonePrice(value!, context),
+                              validator: (value) =>
+                                  validateStonePrice(value!, context),
                               onChanged: (value) => calculateTotalPrice(),
                             ),
                           ],

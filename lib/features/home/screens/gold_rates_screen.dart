@@ -19,16 +19,17 @@ class GoldRatesScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Gold Rates Information',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.goldRatesInformation,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
-              if (goldRates.isEmpty) const Text("Error Fetching Rates"),
+              if (goldRates.isEmpty)
+                Text(AppLocalizations.of(context)!.errorFetchingRates),
               if (goldRates.isNotEmpty)
                 Card(
                   elevation: 3,
