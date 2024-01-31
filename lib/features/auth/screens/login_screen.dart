@@ -142,6 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: formBorderColor,
                       cursorHeight: 25,
                       decoration: userIdDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value!.isEmpty) return "User Id cannot be Empty!";
                         return null;
@@ -165,6 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: formBorderColor,
                       cursorHeight: 25,
                       decoration: passwordDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Password cannot be Empty!";

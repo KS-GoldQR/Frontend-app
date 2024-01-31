@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
 import 'package:grit_qr_scanner/models/customer_model.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      helpText: "Choose Expected Deadline",
+      helpText: AppLocalizations.of(context)!.chooseExpectedDeadline,
       currentDate: DateTime.now(),
       initialDate: expectedDeadline,
       firstDate: DateTime(2000),
@@ -138,7 +139,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                   const Gap(10),
                   Form(
                     key: _customerDetailsFormKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -157,10 +157,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
-                          validator: (value) {
-                            if (value!.isEmpty) return "name cannot be empty";
-                            return null;
-                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) => validateName(value!, context),
                         ),
                         const Gap(10),
                         Text(
@@ -178,16 +176,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "phone number cannot be empty!";
-                            }
-
-                            if (value.length != 10) {
-                              return "enter valid phone number";
-                            }
-                            return null;
-                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) =>
+                              validateContactNumber(value!, context),
                         ),
                         const Gap(10),
                         Text(
@@ -205,12 +196,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           textInputAction: TextInputAction.next,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "address cannot be empty!";
-                            }
-                            return null;
-                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) =>
+                              validateAddress(value!, context),
                         ),
                         const Gap(10),
                         Text(
@@ -229,20 +217,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                           textInputAction: TextInputAction.done,
                           cursorColor: blueColor,
                           decoration: customTextfieldDecoration(),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "advance payment cannot be empty!";
-                            }
-
-                            if (double.tryParse(value) == null) {
-                              return "enter a valid number";
-                            }
-
-                            if (double.tryParse(value)! < 0) {
-                              return "advance cannot be less than 0";
-                            }
-                            return null;
-                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) =>
+                              validateAdvancePayment(value!, context),
                         ),
                         const Gap(10),
                         Text(

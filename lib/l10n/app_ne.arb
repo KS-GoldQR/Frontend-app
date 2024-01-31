@@ -91,9 +91,23 @@
     "appVersion": "अ‍्‍‍‍‍‍‍‍‍‍‍‍‍‍प भर्सन",
     "deposit": "डिपोजिट",
     "oldProduct": "पुरानो बस्तुहरू",
-    "smartSunar": "स्मार्ट सुनार"
-
-
+    "smartSunar": "स्मार्ट सुनार",
+    "chooseExpectedDeadline": "प्रत्याशित म्याद छान्नुहोस्",
+    "nameEmpty": "नाम खाली हुन सक्दैन!",
+    "weightEmpty": "वजन खाली हुन सक्दैन!",
+    "jyalaEmpty": "ज्याला खाली हुन सक्दैन!",
+    "jartiEmpty": "जर्ती खाली हुन सक्दैन!",
+    "stonePriceEmpty": "रत्न मुल्य खाली हुन सक्दैन!",
+    "enterValidNumber": "मान्य नम्बर दिनुहोस्!",
+  "weightNonNegativeZero": "वजन नेगेटिभ वा शुन्य हुनुहुँदैन!",
+  "jyalaNonNegativeZero": "ज्याला नेगेटिभ वा शुन्य हुनुहुँदैन!",
+  "jartiNonNegativeZero": "जार्ती नेगेटिभ वा शुन्य हुनुहुँदैन!",
+  "stonePriceNonNegativeZero": "रत्न मूल्य नेगेटिभ वा शुन्य हुनुहुँदैन!",
+  "phoneNumberEmpty": "फोन नम्बर खाली हुन सकदैन!",
+  "invalidPhoneNumber": "सही १० अंकको फोन नम्बर प्रविष्ट गर्नुहोस्!",
+  "addressEmpty": "ठेगाना खाली हुन सकदैन!",
+  "advancePaymentEmpty": "अग्रिम भुक्तान खाली हुन सकदैन!",
+  "advancePaymentNonNegative": "अग्रिम 0 भन्दा कम हुन सकदैन"
 
 
 

@@ -6,6 +6,7 @@ import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart'
 import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:intl/intl.dart';
@@ -45,6 +46,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
   bool _dependenciesInitialized = false;
+  bool _stonePriceFieldVisible = false;
 
   void _showChoiceDialog(OrderProvider orderProvider) {
     Future.delayed(Duration.zero, () {
@@ -97,7 +99,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
-    double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
+    double stonePrice = _stonePriceController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
@@ -137,7 +141,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
-    double stonePrice = double.tryParse(_stonePriceController.text.trim())!;
+    double stonePrice = _stonePriceController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
@@ -264,7 +270,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 const Gap(10),
                 Form(
                   key: _createOrderFormKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -283,10 +288,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) return "name cannot be empty";
-                          return null;
-                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => validateName(value!, context),
                       ),
                       const Gap(10),
                       Text(
@@ -339,21 +342,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                       decimal: true),
                               textInputAction: TextInputAction.next,
                               decoration: customTextfieldDecoration(),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "weight cannot be empty!";
-                                }
-
-                                if (double.tryParse(value) == null) {
-                                  return "enter a valid number";
-                                }
-
-                                if (double.tryParse(value)! <= 0) {
-                                  return "weight cannot be negative/zero";
-                                }
-
-                                return null;
-                              },
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) =>
+                                  validateWeight(value!, context),
                               onChanged: (value) => calculateTotalPrice(),
                             ),
                           ),
@@ -403,21 +395,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "jyala cannot be empty!";
-                          }
-
-                          if (double.tryParse(value) == null) {
-                            return "enter a valid number";
-                          }
-
-                          if (double.tryParse(value)! < 0) {
-                            return "jyala cannot be negative/zero";
-                          }
-
-                          return null;
-                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => validateJyala(value!, context),
                         onChanged: (value) => calculateTotalPrice(),
                       ),
                       const Gap(10),
@@ -437,21 +416,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "jarti cannot be empty!";
-                          }
-
-                          if (double.tryParse(value) == null) {
-                            return "enter a valid number";
-                          }
-
-                          if (double.tryParse(value)! < 0) {
-                            return "jarti cannot be negative/zero";
-                          }
-
-                          return null;
-                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => validateJarti(value!, context),
                         onChanged: (value) => calculateTotalPrice(),
                       ),
                       const Gap(10),
@@ -470,42 +436,46 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "stone cannot be empty!";
-                          }
-                          return null;
+                        onChanged: (value) {
+                          setState(() {
+                            _stonePriceFieldVisible = value.isNotEmpty;
+                            if (!_stonePriceFieldVisible) {
+                              _stonePriceController.text = "";
+                            }
+                          });
                         },
                       ),
                       const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.stonePrice,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _stonePriceController,
-                        focusNode: _stonePriceFocus,
-                        onFieldSubmitted: (value) => _stonePriceFocus.unfocus(),
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        textInputAction: TextInputAction.done,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "stone price cannot be empty!";
-                          }
-                          if (double.tryParse(value) == null) {
-                            return "enter a valid number";
-                          }
-                          if (double.tryParse(value)! <= 0) {
-                            return "stone price cannot be negative/zero";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => calculateTotalPrice(),
+                      Visibility(
+                        visible: _stonePriceFieldVisible,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.stonePrice,
+                              style: customTextDecoration()
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const Gap(5),
+                            TextFormField(
+                              controller: _stonePriceController,
+                              focusNode: _stonePriceFocus,
+                              onFieldSubmitted: (value) =>
+                                  _stonePriceFocus.unfocus(),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              textInputAction: TextInputAction.done,
+                              cursorColor: blueColor,
+                              decoration: customTextfieldDecoration(),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) =>
+                                  validateStonePrice(value!, context),
+                              onChanged: (value) => calculateTotalPrice(),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

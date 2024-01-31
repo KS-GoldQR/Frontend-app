@@ -11,6 +11,7 @@ import 'package:grit_qr_scanner/features/old%20products/screens/old_product_scre
 import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
 import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,7 +49,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _jyalaFocus = FocusNode();
   final _jartiFocus = FocusNode();
   bool _dependenciesInitialized = false;
-
+  bool _stonePriceFieldVisible = false;
   late List<String> types;
   late String selectedType;
 
@@ -112,7 +113,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       weight: getWeight(double.tryParse(_weightController.text.trim())!,
           rselectedWeight ?? selectedWeight),
       stone: _stoneController.text.trim(),
-      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
+      stonePrice:_stonePriceController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
@@ -145,7 +148,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       weight: getWeight(double.tryParse(_weightController.text.trim())!,
           rselectedWeight ?? selectedWeight),
       stone: _stoneController.text.trim(),
-      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
+      stonePrice: _stonePriceController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
@@ -179,7 +184,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       weight: getWeight(double.tryParse(_weightController.text.trim())!,
           rselectedWeight ?? selectedWeight),
       stone: _stoneController.text.trim(),
-      stonePrice: double.tryParse(_stonePriceController.text.trim())!,
+      stonePrice: _stonePriceController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
@@ -345,7 +352,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 Expanded(
                   child: Form(
                     key: _addProductFormKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,6 +368,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             decoration: const InputDecoration.collapsed(
                               hintText: "Enter the description for the product",
                             ),
+                            // autovalidateMode: AutovalidateMode.onUserInteraction,
                             // validator: (value) {
                             //   if (value!.isEmpty) {
                             //     return "Description cannot be empty";
@@ -444,10 +451,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
-                            validator: (value) {
-                              if (value!.isEmpty) return "name cannot be empty";
-                              return null;
-                            },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => validateName(value!, context),
                           ),
                           const Gap(10),
                           Row(
@@ -457,7 +463,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 AppLocalizations.of(context)!.type,
                                 style: customTextDecoration(),
                               ),
-                            const  Text(
+                              const Text(
                                 "verify!",
                                 style: TextStyle(color: Colors.red),
                               )
@@ -507,21 +513,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                           decimal: true),
                                   textInputAction: TextInputAction.next,
                                   decoration: customTextfieldDecoration(),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "weight cannot be empty!";
-                                    }
-
-                                    if (double.tryParse(value) == null) {
-                                      return "enter a valid number";
-                                    }
-
-                                    if (double.tryParse(value)! <= 0) {
-                                      return "weight cannot be negative/zero";
-                                    }
-
-                                    return null;
-                                  },
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (value) => validateWeight(value!, context),
                                 ),
                               ),
                               const Gap(10),
@@ -555,7 +549,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           const Gap(10),
                           Text(
                             AppLocalizations.of(context)!.stone,
-                            style: customTextDecoration(),
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
                           ),
                           const Gap(5),
                           TextFormField(
@@ -567,41 +562,44 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "stone cannot be empty!";
-                              }
-                              return null;
+                            onChanged: (value) {
+                              setState(() {
+                                _stonePriceFieldVisible = value.isNotEmpty;
+                                if (!_stonePriceFieldVisible) {
+                                  _stonePriceController.text = "";
+                                }
+                              });
                             },
                           ),
                           const Gap(10),
-                          Text(
-                            AppLocalizations.of(context)!.stonePrice,
-                            style: customTextDecoration(),
-                          ),
-                          const Gap(5),
-                          TextFormField(
-                            controller: _stonePriceController,
-                            focusNode: _stonePriceFocus,
-                            onFieldSubmitted: (value) => _fieldFocusChange(
-                                context, _stonePriceFocus, _jyalaFocus),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            textInputAction: TextInputAction.next,
-                            cursorColor: blueColor,
-                            decoration: customTextfieldDecoration(),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "stone price cannot be empty!";
-                              }
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-                              if (double.tryParse(value)! <= 0) {
-                                return "stone price cannot be negative/zero";
-                              }
-                              return null;
-                            },
+                          Visibility(
+                            visible: _stonePriceFieldVisible,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.stonePrice,
+                                  style: customTextDecoration()
+                                      .copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                const Gap(5),
+                                TextFormField(
+                                  controller: _stonePriceController,
+                                  focusNode: _stonePriceFocus,
+                                  onFieldSubmitted: (value) =>
+                                      _stonePriceFocus.unfocus(),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  textInputAction: TextInputAction.done,
+                                  cursorColor: blueColor,
+                                  decoration: customTextfieldDecoration(),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (value) => validateStonePrice(value!, context),
+                                ),
+                              ],
+                            ),
                           ),
                           const Gap(10),
                           Text(
@@ -619,21 +617,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             textInputAction: TextInputAction.next,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "jyala cannot be empty!";
-                              }
-
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-
-                              if (double.tryParse(value)! < 0) {
-                                return "jyala cannot be negative/zero";
-                              }
-
-                              return null;
-                            },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value)=> validateJyala(value!, context),
                           ),
                           const Gap(10),
                           Text(
@@ -650,21 +636,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             textInputAction: TextInputAction.done,
                             cursorColor: blueColor,
                             decoration: customTextfieldDecoration(),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "jarti cannot be empty!";
-                              }
-
-                              if (double.tryParse(value) == null) {
-                                return "enter a valid number";
-                              }
-
-                              if (double.tryParse(value)! < 0) {
-                                return "jarti cannot be negative/zero";
-                              }
-
-                              return null;
-                            },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value)=> validateJarti(value!, context),
                           ),
                           const Gap(10),
                         ],

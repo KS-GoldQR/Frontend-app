@@ -52,19 +52,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final UserService _userService = UserService();
-  // bool? isValidated;
 
   @override
   void initState() {
     super.initState();
-    // Future.delayed(Duration.zero, () async {
-    // isValidated = await _userService.validateSession(context);
-    // debugPrint(isValidated.toString());
-    // setState(() {});
-    // await getRate(context);
-    // setState(() {});
-    // });
-    // if (isValidated != null) debugPrint(isValidated.toString());
   }
 
   @override
@@ -129,11 +120,6 @@ class _MyAppState extends State<MyApp> {
                   ); // Handle the case when data is not available
                 }
               },
-              // home: isValidated == null
-              //     ? const SplashScreen()
-              //     : isValidated!
-              //         ? const HomeScreen()
-              //         : const LoginScreen(),
             ));
       },
     );

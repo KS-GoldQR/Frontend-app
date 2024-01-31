@@ -135,7 +135,6 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                 const Gap(20),
                 Form(
                   key: _customerDetailsFormFormKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -154,6 +153,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) return "name cannot be empty";
                           return null;
@@ -175,6 +175,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "phone number cannot be empty!";
@@ -201,6 +202,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
                         textInputAction: TextInputAction.done,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "address cannot be empty!";

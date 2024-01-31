@@ -122,7 +122,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             children: [
               const Gap(10),
               Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -172,6 +171,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                 decimal: true),
                             textInputAction: TextInputAction.next,
                             decoration: customTextfieldDecoration(),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return "weight cannot be empty!";
@@ -233,6 +233,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       textInputAction: TextInputAction.next,
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "jyala cannot be empty!";
@@ -264,6 +265,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       textInputAction: TextInputAction.next,
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "jarti cannot be empty!";
@@ -295,6 +297,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       textInputAction: TextInputAction.done,
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value!.isNotEmpty &&
                             double.tryParse(value) == null) {

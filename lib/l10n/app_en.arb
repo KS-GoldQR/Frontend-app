@@ -29,7 +29,7 @@
     "name": "Name",
     "deadline": "Deadline",
     "remaining": "Remaining",
-    "action":"Action",
+    "action": "Action",
     "createOrder": "Create Order",
     "itemName": "Item Name",
     "type": "Type",
@@ -91,21 +91,22 @@
     "appVersion": "App Version",
     "deposit": "Deposit",
     "oldProduct": "Old Product",
-    "smartSunar": "Smart Sunaar"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "smartSunar": "Smart Sunaar",
+    "chooseExpectedDeadline": "Choose Expected Deadline",
+    
+    "nameEmpty": "Name cannot be empty!",
+    "weightEmpty": "Weight cannot be empty!",
+    "jyalaEmpty": "Jyala cannot be empty!",
+    "jartiEmpty": "Jarti cannot be empty!",
+    "stonePriceEmpty": "Stone price cannot be empty!",
+  "weightNonNegativeZero": "Weight cannot be negative or zero!",
+  "jyalaNonNegativeZero": "Jyala cannot be negative or zero!",
+  "jartiNonNegativeZero": "Jarti cannot be negative or zero!",
+  "stonePriceNonNegativeZero": "Stone price cannot be negative or zero!",
+  "phoneNumberEmpty": "Phone number cannot be empty!",
+  "invalidPhoneNumber": "Enter a valid 10-digit phone number!",
+  "addressEmpty": "Address cannot be empty!",
+  "advancePaymentEmpty": "Advance payment cannot be empty!",
+  "enterValidNumber": "Enter a valid number!",
+  "advancePaymentNonNegative": "Advance cannot be less than 0"
 }
