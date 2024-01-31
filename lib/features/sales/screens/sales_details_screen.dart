@@ -78,7 +78,8 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
                 salesProvider.resetSaleItem();
                 showSnackBar(
                     title: AppLocalizations.of(context)!.salesCleared,
-                    message: AppLocalizations.of(context)!.allProductsWillBeCleared,
+                    message:
+                        AppLocalizations.of(context)!.allProductsWillBeCleared,
                     contentType: ContentType.warning);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

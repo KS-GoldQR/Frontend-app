@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
   "dashboard": "Dashboard",
-  "lastUpdate": "last update",
+  "lastUpdate": "Last update",
   "scanQR": "Scan QR",
   "inventory": "Inventory",
   "soldItems": "Sold Items",
@@ -114,9 +114,9 @@
   "oldJewelryAdded": "Old Jewelry Added",
   "oldJewelryReset": "Old Jewelry Reset",
   "oldJewelryListEmpty": "Your old jewelry list is empty now!",
-  "salesCleared":"Sales cleared",
+  "salesCleared": "Sales cleared",
+  "deleteOrder": "Delete Order",
   
-"deleteOrder": "Delete Order",
   "nameEmpty": "Name cannot be empty!",
   "weightEmpty": "Weight cannot be empty!",
   "jyalaEmpty": "Jyala cannot be empty!",
