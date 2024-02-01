@@ -42,9 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 5), () {
-      setState(() {
+      if(mounted) {
+        setState(() {
         isSecondBoxVisible = true;
       });
+      }
     });
   }
 
