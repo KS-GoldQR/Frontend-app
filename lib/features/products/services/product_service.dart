@@ -26,8 +26,6 @@ class ProductService {
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Product> products = [];
     try {
-      debugPrint(user.sessionToken);
-      debugPrint(user.userId);
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/viewInventory'),
         body: jsonEncode({
@@ -37,7 +35,6 @@ class ProductService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint(response.body);
         httpErrorHandle(
             response: response,
             onSuccess: () {
@@ -48,13 +45,12 @@ class ProductService {
               }
             });
       } else {
-        showSnackBar(
-            title: 'Error',
-            message: "No products in Inventory",
-            contentType: ContentType.failure);
+        // showSnackBar(
+        //     title: 'Error',
+        //     message: "No products in Inventory",
+        //     contentType: ContentType.failure);
       }
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
@@ -68,13 +64,12 @@ class ProductService {
       BuildContext context, String productId, String sessionToken) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    debugPrint("product id is $productId");
+
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     Product? product;
 
     try {
-      debugPrint(productId);
       http.Response response;
       if (sessionToken.isEmpty) {
         response = await http.post(
@@ -95,13 +90,10 @@ class ProductService {
         );
       }
 
-      debugPrint("below is response....\n\n\n\n\n");
-      debugPrint(response.body);
       if (response.statusCode == 200) {
         httpErrorHandle(
           response: response,
           onSuccess: () {
-            debugPrint("inside success of seet product view ${response.body}");
             if (jsonDecode(response.body)['name'] == null) {
               product = Product(
                   id: productId,
@@ -140,7 +132,6 @@ class ProductService {
         );
       }
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
@@ -189,9 +180,7 @@ class ProductService {
         }
       }
 
-      debugPrint("hello");
-
-      // debugPrint("from service : ${imageUrl}");
+      //
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/editProduct"),
         body: jsonEncode({
@@ -209,22 +198,22 @@ class ProductService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      debugPrint(response.statusCode.toString());
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            showSnackBar(
-                title: "Success",
-                message: jsonDecode(response.body)['message'],
-                contentType: ContentType.success);
+            // showSnackBar(
+            //     title: "Success",
+            //     message: jsonDecode(response.body)['message'],
+            //     contentType: ContentType.success);
             // productProvider.setProduct(product);
+
             Product product = productProvider.currentProduct!.copyWith(
               name: name,
               image: imageUrl,
               productType: productType,
               weight: weight,
               stone: stone ?? "None",
-              stone_price: stonePrice ?? -1,
+              stone_price: stonePrice,
               jyala: jyala,
               jarti: jarti,
             );
@@ -262,10 +251,10 @@ class ProductService {
         imageNameFromS3 = await uploadImageToS3(context: context, file: image);
 
         if (imageNameFromS3 == null) {
-          showSnackBar(
-              title: "Upload Failed",
-              message: "failed to upload image!",
-              contentType: ContentType.failure);
+          // showSnackBar(
+          //     title: "Upload Failed",
+          //     message: "failed to upload image!",
+          //     contentType: ContentType.failure);
           return;
         } else {
           imageUrl = "$s3ImageUrl/$imageNameFromS3";
@@ -288,14 +277,14 @@ class ProductService {
         }),
         headers: {"Content-Type": 'application/json'},
       );
-      debugPrint(response.statusCode.toString());
+
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            showSnackBar(
-                title: "Success",
-                message: "product set successfully",
-                contentType: ContentType.success);
+            // showSnackBar(
+            //     title: "Success",
+            //     message: "product set successfully",
+            //     contentType: ContentType.success);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
@@ -324,10 +313,10 @@ class ProductService {
           response: response,
           onSuccess: () {
             fileName = jsonDecode(response.body)['fileName'];
-            showSnackBar(
-                title: "image Upload Success",
-                message: "",
-                contentType: ContentType.success);
+            // showSnackBar(
+            //     title: "image Upload Success",
+            //     message: "",
+            //     contentType: ContentType.success);
           });
     } catch (e) {
       showSnackBar(

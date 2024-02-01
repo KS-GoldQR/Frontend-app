@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
@@ -34,6 +35,8 @@ class _AboutProductState extends State<AboutProduct> {
   final TextEditingController _jyalaController = TextEditingController();
   final TextEditingController _jartiController = TextEditingController();
   final TextEditingController _totalPriceController = TextEditingController();
+  final _jyalaFocus = FocusNode();
+  final _jartiFocus = FocusNode();
 
   final String productDescription = "Description not added yet!";
 
@@ -59,12 +62,23 @@ class _AboutProductState extends State<AboutProduct> {
       double jarti,
       double totalPrice,
       double weight) {
+    for (int i = 0; i < salesProvider.saleItems.length; i++) {
+      if (salesProvider.saleItems[i].product.id == product.id) {
+        showSnackBar(
+            title: AppLocalizations.of(context)!.duplicateFound,
+            message: AppLocalizations.of(context)!.itemAlreadyInList,
+            contentType: ContentType.warning);
+        return;
+      }
+    }
+
     SalesModel item = SalesModel(
         product: product,
         price: totalPrice,
         weight: weight,
         jyalaPercentage: jyala,
         jartiPercentage: jarti);
+
     salesProvider.addSaleItem(item);
     Navigator.push(
       context,
@@ -89,6 +103,8 @@ class _AboutProductState extends State<AboutProduct> {
     _jyalaController.dispose();
     _jartiController.dispose();
     _totalPriceController.dispose();
+    _jyalaFocus.dispose();
+    _jartiFocus.dispose();
   }
 
   @override
@@ -98,16 +114,10 @@ class _AboutProductState extends State<AboutProduct> {
 
     if (user.sessionToken.isEmpty) {
       product = widget.args['product'];
-      debugPrint("inside if");
     } else {
       product = Provider.of<ProductProvider>(context).currentProduct;
-      debugPrint("from provider");
     }
 
-    debugPrint(goldRates.toString());
-    debugPrint(product!.name!);
-
-    debugPrint("rebuilding...");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -191,7 +201,7 @@ class _AboutProductState extends State<AboutProduct> {
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.stone}: ',
                           value: product!.stone!),
-                    if (product!.stone_price != -1)
+                    if (product!.stone_price != null)
                       ProductDetail(
                           label:
                               '${AppLocalizations.of(context)!.stonePrice}: ',
@@ -223,30 +233,40 @@ class _AboutProductState extends State<AboutProduct> {
                               decimal: true,
                             ),
                             style: const TextStyle(fontSize: 16),
-                            decoration: const InputDecoration(
+                            focusNode: _jyalaFocus,
+                            decoration: InputDecoration(
                               contentPadding: EdgeInsets.zero,
                               isCollapsed: true,
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(
+                                    color: _jyalaFocus.hasFocus
+                                        ? Colors.black
+                                        : Colors.white),
                               ),
-                              focusedBorder: UnderlineInputBorder(
+                              focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
                               ),
                             ),
                             onChanged: (value) {
                               _jyalaController.text = value;
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
                             },
                             validator: (value) =>
                                 validateJyala(value!, context),
                           ),
                         ),
                         const Spacer(),
-                        const Icon(
-                          Remix.edit_2_line,
-                          size: 16,
+                        GestureDetector(
+                          onTap: () {
+                            _jyalaFocus.requestFocus();
+                          },
+                          child: const Icon(
+                            Remix.edit_2_line,
+                            size: 20,
+                          ),
                         ),
+                        const Gap(20),
                       ],
                     ),
                     const Gap(10),
@@ -276,20 +296,24 @@ class _AboutProductState extends State<AboutProduct> {
                               decimal: true,
                             ),
                             style: const TextStyle(fontSize: 16),
-                            decoration: const InputDecoration(
+                            focusNode: _jartiFocus,
+                            decoration: InputDecoration(
                               contentPadding: EdgeInsets.zero,
                               isCollapsed: true,
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(
+                                    color: _jartiFocus.hasFocus
+                                        ? Colors.black
+                                        : Colors.white),
                               ),
-                              focusedBorder: UnderlineInputBorder(
+                              focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
                               ),
                             ),
                             onChanged: (value) {
                               _jartiController.text = value;
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
                               debugPrint(
                                   "inside jayala ${_jartiController.text}");
                             },
@@ -298,10 +322,16 @@ class _AboutProductState extends State<AboutProduct> {
                           ),
                         ),
                         const Spacer(),
-                        const Icon(
-                          Remix.edit_2_line,
-                          size: 16,
+                        GestureDetector(
+                          onTap: () {
+                            _jartiFocus.requestFocus();
+                          },
+                          child: const Icon(
+                            Remix.edit_2_line,
+                            size: 20,
+                          ),
                         ),
+                        const Gap(20),
                       ],
                     ),
                     const Gap(10),
@@ -321,7 +351,7 @@ class _AboutProductState extends State<AboutProduct> {
                           child: TextFormField(
                             controller: _totalPriceController
                               ..text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti!, stonePrice: product!.stone_price!))}",
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}",
                             enabled: false, // Disable user input
                             style: const TextStyle(color: Colors.black),
                             decoration: const InputDecoration(
@@ -339,7 +369,7 @@ class _AboutProductState extends State<AboutProduct> {
                             ),
                             onChanged: (value) {
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price!))}";
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
                             },
                           ),
                         ),
@@ -379,10 +409,6 @@ class _AboutProductState extends State<AboutProduct> {
                           Expanded(
                             child: CustomButton(
                               onPressed: () {
-                                debugPrint(product!.price!.toString());
-                                debugPrint(_jyalaController.text);
-                                debugPrint(_jartiController.text);
-                                debugPrint(_totalPriceController.text);
                                 // navigateToCustomerDetailsForm(
                                 //     context,
                                 //     product!,
@@ -400,8 +426,8 @@ class _AboutProductState extends State<AboutProduct> {
                                 //             jartiPercent: double.tryParse(
                                 //                     _jartiController.text) ??
                                 //                 product!.jarti,
-                                //             stonePrice: product!.stone_price!));
-                              
+                                //             stonePrice: product!.stone_price ?? 0.0));
+
                                 navigateToSalesDetailsScreen(
                                     salesProvider,
                                     product!,
@@ -421,7 +447,8 @@ class _AboutProductState extends State<AboutProduct> {
                                             jartiPercent: double.tryParse(
                                                     _jartiController.text) ??
                                                 product!.jarti,
-                                            stonePrice: product!.stone_price!),
+                                            stonePrice:
+                                                product!.stone_price ?? 0.0),
                                     product!.weight!);
                               },
                               text: AppLocalizations.of(context)!.sellItem,

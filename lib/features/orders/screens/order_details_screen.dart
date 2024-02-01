@@ -12,12 +12,13 @@ class OrderDetailsScreen extends StatelessWidget {
   final Function deleteOrder;
   final double totalOrderedPrice;
   final double totalOldJwelleryPrice;
+  final double totalOldJwelleryCharge;
   const OrderDetailsScreen(
       {Key? key,
       required this.order,
       required this.deleteOrder,
       required this.totalOrderedPrice,
-      required this.totalOldJwelleryPrice})
+      required this.totalOldJwelleryPrice, required this.totalOldJwelleryCharge})
       : super(key: key);
 
   Future<void> _showChoiceDialog(BuildContext context) async {
@@ -59,7 +60,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
               buildUserInfoCard(
-                  order, context, totalOrderedPrice, totalOldJwelleryPrice),
+                  order, context, totalOrderedPrice, totalOldJwelleryPrice, totalOldJwelleryCharge),
               const Gap(20),
               Text(
                 AppLocalizations.of(context)!.orderedItems,

@@ -31,6 +31,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   final ProductService _productService = ProductService();
   Product? product;
   bool isScanning = false;
+  final _modalProgressHUDKeyQrScreen = GlobalKey();
 
   Future<void> getProductInfo(String productId, String sessionToken) async {
     try {
@@ -43,8 +44,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         isScanning = false;
       });
     } catch (e) {
-      debugPrint("inside catch bolock.....................\n\n\n\n\n");
-      debugPrint(e.toString());
       navigatorKey.currentState!.popAndPushNamed(
         ErrorPage.routeName,
         arguments: "Error Occurred - Bad Request",
@@ -78,6 +77,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     final size = MediaQuery.sizeOf(context);
     final user = Provider.of<UserProvider>(context).user;
     return ModalProgressHUD(
+      key: _modalProgressHUDKeyQrScreen,
       inAsyncCall: isScanning,
       opacity: 0.5,
       progressIndicator: const SpinKitChasingDots(
@@ -161,29 +161,20 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   child: MobileScanner(
                     controller: cameraController,
                     // onScannerStarted: (arguments) {
-                    //   debugPrint(arguments.toString());
+                    //
                     // },
                     onDetect: (capture) async {
                       final List<Barcode> barcodes = capture.barcodes;
-                      for (final barcode in barcodes) {
-                        debugPrint('Barcode found! ${barcode.rawValue}');
-                      }
                       cameraController.stop();
 
                       try {
                         await getProductInfo(
                             barcodes[0].rawValue!, user.sessionToken);
-
-                        // debugPrint(" hereee${product!.id}");
-
                         if (product != null) {
                           if (product!.name == null &&
                               user.sessionToken.isEmpty) {
                             _cannotEdit();
                           } else if (product!.name == null) {
-                            //use set product api
-
-                            // debugPrint(" hereee${product!.id}");
                             navigatorKey.currentState!.pushReplacementNamed(
                                 EditProductScreen.routeName,
                                 arguments: {
@@ -198,9 +189,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                             });
                           }
                         }
-                      } catch (e) {
-                        debugPrint("Error while getting product info: $e");
-                      }
+                      } catch (e) {}
                     },
                     placeholderBuilder: (p0, p1) {
                       return const SpinKitChasingDots(

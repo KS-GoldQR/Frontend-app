@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/features/old%20products/screens/add_old_product_screen.dart';
@@ -23,6 +24,7 @@ class OldProductsScreen extends StatefulWidget {
 class _OldProductsScreenState extends State<OldProductsScreen> {
   List<Product>? products;
   final OldProductService _oldProductService = OldProductService();
+  final GlobalKey _circularProgressIndicatorKey = GlobalKey();
 
   late List<String> types;
   late String selectedType;
@@ -79,6 +81,24 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
     return selectedType != AppLocalizations.of(context)!.all
         ? groupedProducts[selectedType] ?? []
         : products ?? [];
+  }
+
+  Future<void> _showChoiceDialog(BuildContext context, String productId) async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: AppLocalizations.of(context)!.areYouSure,
+      desc: '',
+      btnOkText: AppLocalizations.of(context)!.yes,
+      btnCancelText: AppLocalizations.of(context)!.no,
+      btnOkColor: Colors.green,
+      btnCancelColor: Colors.red,
+      btnCancelOnPress: () {},
+      btnOkOnPress: () {
+        deleteOldProduct(productId);
+      },
+    ).show();
   }
 
   @override
@@ -163,7 +183,6 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                         onChanged: (String? newValue) {
                           setState(() {
                             selectedType = newValue!;
-                            debugPrint(selectedType);
                           });
                         },
                         items:
@@ -180,7 +199,10 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
               ),
               const SizedBox(height: 15),
               products == null
-                  ? const Center(child: Loader())
+                  ? Center(
+                      child: Loader(
+                      circularIndicatiorKey: _circularProgressIndicatorKey,
+                    ))
                   : products!.isEmpty
                       ? Center(
                           child: Text(
@@ -210,7 +232,6 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
-                                          debugPrint(product.productType);
                                           return ListTile(
                                             onTap: () async {
                                               await navigateToAboutProduct(
@@ -224,13 +245,15 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             subtitle: goldRates.isEmpty
-                                                ?  Text(
-                                                    AppLocalizations.of(context)!.errorFetchingRates)
+                                                ? Text(AppLocalizations.of(
+                                                        context)!
+                                                    .errorFetchingRates)
                                                 : Text(
-                                                    "रु${NumberFormat('#,##,###.00').format((product.weight! * goldRates[product.productType!]!) + (product.stone_price! != -1 ? product.stone_price! : 0.0))}"),
+                                                    "रु${NumberFormat('#,##,###.00').format((product.weight! * goldRates[product.productType!]!) + (product.stone_price ?? 0.0))}"),
                                             trailing: IconButton(
                                               onPressed: () =>
-                                                  deleteOldProduct(product.id),
+                                                  _showChoiceDialog(
+                                                      context, product.id),
                                               icon: const Icon(
                                                 Remix.delete_bin_7_line,
                                                 color: blueColor,

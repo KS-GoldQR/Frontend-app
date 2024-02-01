@@ -4,8 +4,12 @@ import 'package:intl/intl.dart';
 import '../../../models/order_model.dart';
 import '../../../utils/widgets/build_row_info.dart';
 
-Widget buildUserInfoCard(Order order, BuildContext context,
-    double totalOrderedPrice, double totalOldJwelleryPrice) {
+Widget buildUserInfoCard(
+    Order order,
+    BuildContext context,
+    double totalOrderedPrice,
+    double totalOldJwelleryPrice,
+    double totalOldJwelleryCharge) {
   return Card(
     elevation: 5.0,
     shape: RoundedRectangleBorder(
@@ -23,10 +27,13 @@ Widget buildUserInfoCard(Order order, BuildContext context,
               NumberFormat('#,##,###.00').format(totalOrderedPrice)),
           buildInfoRow(AppLocalizations.of(context)!.oldJewelryTotalPrice,
               NumberFormat('#,##,###.00').format(totalOldJwelleryPrice)),
+          buildInfoRow(AppLocalizations.of(context)!.charge,
+              NumberFormat('#,##,###.00').format(totalOldJwelleryCharge)),
           buildInfoRow(
               AppLocalizations.of(context)!.differencePrice,
-              NumberFormat('#,##,###.00')
-                  .format(totalOrderedPrice - totalOldJwelleryPrice)),
+              NumberFormat('#,##,###.00').format(totalOrderedPrice -
+                  totalOldJwelleryPrice -
+                  totalOldJwelleryCharge)),
           buildInfoRow(AppLocalizations.of(context)!.advancePayment,
               NumberFormat('#,##,###.00').format(order.advanced_payment)),
           buildInfoRow(AppLocalizations.of(context)!.remaining,
@@ -40,7 +47,6 @@ Widget buildUserInfoCard(Order order, BuildContext context,
 }
 
 Widget buildOrderedItemsList(Order order, BuildContext context) {
-  debugPrint(order.ordered_items!.length.toString());
   return Card(
     elevation: 5.0,
     shape: RoundedRectangleBorder(
@@ -59,7 +65,7 @@ Widget buildOrderedItemsList(Order order, BuildContext context) {
             children: [
               buildInfoRow(
                 orderedItem.itemName,
-                "${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(orderedItem.totalPrice)} \n ${AppLocalizations.of(context)!.type}: ${orderedItem.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : orderedItem.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${orderedItem.wt} ${AppLocalizations.of(context)!.gram}",
+                "${AppLocalizations.of(context)!.type}: ${orderedItem.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : orderedItem.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${orderedItem.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(orderedItem.totalPrice)}",
               ),
               if (index != order.ordered_items!.length - 1)
                 const Divider(
@@ -78,7 +84,6 @@ Widget buildOrderedItemsList(Order order, BuildContext context) {
 }
 
 Widget buildOldJwelleryList(Order order, BuildContext context) {
-  debugPrint(order.ordered_items!.length.toString());
   return Card(
     elevation: 5.0,
     shape: RoundedRectangleBorder(
@@ -97,7 +102,7 @@ Widget buildOldJwelleryList(Order order, BuildContext context) {
             children: [
               buildInfoRow(
                 oldJwellery.itemName,
-                "${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldJwellery.price)} \n ${AppLocalizations.of(context)!.type}: ${oldJwellery.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldJwellery.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldJwellery.wt} ${AppLocalizations.of(context)!.gram}",
+                "${AppLocalizations.of(context)!.type}: ${oldJwellery.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldJwellery.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldJwellery.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldJwellery.price)}",
               ),
               if (index != order.old_jwellery!.length - 1)
                 const Divider(
@@ -114,5 +119,3 @@ Widget buildOldJwelleryList(Order order, BuildContext context) {
     ),
   );
 }
-
-

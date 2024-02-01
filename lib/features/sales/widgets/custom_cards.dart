@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +11,27 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 Widget buildSalesItemsList(BuildContext context) {
   final salesProvider = Provider.of<SalesProvider>(context);
   final sales = salesProvider.saleItems;
+
+  Future<void> showChoiceDialogDelete(BuildContext context, int index) async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: AppLocalizations.of(context)!.areYouSure,
+      desc: '',
+      btnOkText: AppLocalizations.of(context)!.yes,
+      btnCancelText: AppLocalizations.of(context)!.no,
+      btnOkColor: Colors.green,
+      btnCancelColor: Colors.red,
+      btnCancelOnPress: () {},
+      btnOkOnPress: () {
+        salesProvider.removeItemAt(index);
+      },
+    ).show();
+  }
+
   return sales.isEmpty
-      ? const Text("No product to sell")
+      ? Text(AppLocalizations.of(context)!.noProductToSell)
       : Card(
           elevation: 5.0,
           shape: RoundedRectangleBorder(
@@ -37,8 +57,8 @@ Widget buildSalesItemsList(BuildContext context) {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {
-                            salesProvider.removeItemAt(index);
+                          onPressed: () async {
+                            await showChoiceDialogDelete(context, index);
                           },
                           icon: const Icon(
                             Remix.delete_bin_2_line,

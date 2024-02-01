@@ -112,15 +112,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
     double jarti = double.tryParse(_jartiController.text.trim())!;
-    double stonePrice = _stonePriceController.text.isEmpty
-        ? 0.0
+    double? stonePrice = _stonePriceController.text.isEmpty
+        ? null
         : double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: jyala,
       jartiPercent: jarti,
-      stonePrice: stonePrice,
+      stonePrice: stonePrice ?? 0.0,
     );
 
     OrderedItems orderedItem = OrderedItems(
@@ -129,23 +129,22 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       type: rselectedType ?? selectedType,
       jarti: jarti,
       jyala: jyala,
-      stone: _stoneController.text.trim(),
+      stone:
+          _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
       stonePrice: stonePrice,
       totalPrice: totalPrice,
     );
 
     orderProvider.addOrderedItems(orderedItem);
 
-    showSnackBar(
-        title: AppLocalizations.of(context)!.orderAdded,
-        message: "",
-        contentType: ContentType.success);
+    // showSnackBar(
+    //     title: AppLocalizations.of(context)!.orderAdded,
+    //     message: "",
+    //     contentType: ContentType.success);
 
     if (!isProceed) {
       Navigator.pushReplacementNamed(context, CreateOrderScreen.routeName);
     }
-
-    debugPrint(orderProvider.orderedItems.toString());
   }
 
   void _fieldFocusChange(
@@ -173,9 +172,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
       _dependenciesInitialized = true;
-      debugPrint("dependency chagned bro");
     }
-    debugPrint("dependency chagned sisi");
+
     super.didChangeDependencies();
   }
 

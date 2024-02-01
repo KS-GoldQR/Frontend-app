@@ -27,13 +27,11 @@ class SalesService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      debugPrint(jsonDecode(response.body).length.toString());
       if (response.statusCode == 200) {
         httpErrorHandle(
             response: response,
             onSuccess: () {
               for (int i = 0; i < jsonDecode(response.body).length; i++) {
-                debugPrint(jsonDecode(response.body)[i].toString());
                 products.add(
                   Product.fromJson(
                     jsonEncode(jsonDecode(response.body)[i]),
@@ -71,10 +69,8 @@ class SalesService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     try {
-      debugPrint("here");
-
       //after modification in api sent jyala, jarti too in api
-      debugPrint(productTotalPrice.toString());
+
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/products/sellProduct"),
         body: jsonEncode({
@@ -91,10 +87,10 @@ class SalesService {
       );
 
       if (response.statusCode == 200) {
-        showSnackBar(
-            title: 'Product Sold',
-            message: 'your product has been sold',
-            contentType: ContentType.success);
+        // showSnackBar(
+        //     title: 'Product Sold',
+        //     message: 'your product has been sold',
+        //     contentType: ContentType.success);
         return true;
       } else {
         return false;

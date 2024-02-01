@@ -7,8 +7,6 @@ import 'dart:convert';
 // //
 // //     final orderedItems = orderedItemsFromJson(jsonString);
 
-
-
 // OrderedItems orderedItemsFromJson(String str) => OrderedItems.fromJson(json.decode(str));
 
 // String orderedItemsToJson(OrderedItems data) => json.encode(data.toJson());
@@ -74,22 +72,22 @@ import 'dart:convert';
 // }
 
 class OrderedItems {
-    String itemName;
-    double wt;
-    String type;
-    double jarti;
-    double jyala;
-    String stone;
-    double stonePrice;
-    double totalPrice;
+  String itemName;
+  double wt;
+  String type;
+  double jarti;
+  double jyala;
+  String? stone;
+  double? stonePrice;
+  double totalPrice;
   OrderedItems({
     required this.itemName,
     required this.wt,
     required this.type,
     required this.jarti,
     required this.jyala,
-    required this.stone,
-    required this.stonePrice,
+    this.stone,
+    this.stonePrice,
     required this.totalPrice,
   });
 
@@ -113,13 +111,15 @@ class OrderedItems {
       type: map['type'] as String,
       jarti: map['jarti'] as double,
       jyala: map['jyala'] as double,
-      stone: map['stone'] as String,
-      stonePrice: map['stone_price'] as double,
+      stone: map['stone'] as String?,
+      stonePrice:
+          map['stone_price'] != null ? map['stone_price'] as double : null,
       totalPrice: map['total_price'] as double,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory OrderedItems.fromJson(String source) => OrderedItems.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory OrderedItems.fromJson(String source) =>
+      OrderedItems.fromMap(json.decode(source) as Map<String, dynamic>);
 }

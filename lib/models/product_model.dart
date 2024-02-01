@@ -83,7 +83,9 @@ class Product {
       owned_by: int.tryParse(map['owned_by']) ?? 0,
       sold: map['sold'] != null ? int.tryParse(map['sold']) ?? 0 : 0,
       stone: map['stone'] as String?,
-      stone_price: double.tryParse(map['stone_price']) ?? -1,
+      stone_price: map['stone_price'] != "None"
+          ? double.tryParse(map['stone_price'])
+          : null, //from backend its None in response, what dart doesn't understands if its null
       productType: map['productType'] as String?,
       weight: double.tryParse(map['weight']) ?? 0.0,
       price: map['price'] != null ? double.tryParse(map['price']) : 0.0,
@@ -141,7 +143,7 @@ class Product {
       owned_by: owned_by ?? this.owned_by,
       sold: sold ?? this.sold,
       stone: stone ?? this.stone,
-      stone_price: stone_price ?? this.stone_price,
+      stone_price: stone_price,
       productType: productType ?? this.productType,
       weight: weight ?? this.weight,
       price: price ?? this.price,

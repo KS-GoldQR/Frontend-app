@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
 import 'package:grit_qr_scanner/features/sales/widgets/sold_item_details.dart';
+import 'package:intl/intl.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,6 +22,7 @@ class SoldItemsScreen extends StatefulWidget {
 
 class _ViewSoldItemsState extends State<SoldItemsScreen> {
   final _uniqueKey = GlobalKey();
+  final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   List<Product>? products;
   final SalesService _salesService = SalesService();
   late List<String> types;
@@ -32,13 +34,13 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   Future<void> getSoldItems() async {
     products = await _salesService.viewSoldItems(context);
     setState(() {
-      getGroupedProduct();
+      getGroupedProduct(products!);
     });
   }
 
-  void getGroupedProduct() {
+  void getGroupedProduct(List<Product> products) {
     groupedProducts.clear();
-    for (var product in products!) {
+    for (var product in products) {
       dynamic translatedType = product.productType == "Chhapawal"
           ? AppLocalizations.of(context)!.chhapawal
           : product.productType == "Tejabi"
@@ -59,19 +61,18 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
         .where((product) {
       if (startDate == null && endDate == null) {
         return true;
-      }
-      if (startDate != null && endDate == null) {
+      } else if (startDate != null && endDate == null) {
         return product.soldAt != null && product.soldAt!.isAfter(startDate!);
-      }
-      if (startDate == null && endDate != null) {
-        return product.soldAt != null && product.soldAt!.isBefore(endDate!);
-      }
-      if (startDate != null && endDate != null) {
+      } else if (startDate == null && endDate != null) {
+        return product.soldAt != null &&
+            product.soldAt!.isBefore(endDate!.add(const Duration(days: 1)));
+      } else if (startDate != null && endDate != null) {
         return product.soldAt != null &&
             product.soldAt!.isAfter(startDate!) &&
             product.soldAt!.isBefore(endDate!.add(const Duration(days: 1)));
+      } else {
+        return false; // Handle any other cases if necessary
       }
-      return false; // Handle any other cases if necessary
     }).toList();
   }
 
@@ -95,15 +96,19 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
       initialDate:
           isStartDate ? startDate ?? DateTime.now() : endDate ?? DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now(),
     );
 
     if (selectedDate != null) {
       setState(() {
         if (isStartDate) {
           startDate = selectedDate;
+          List<Product> products = getFilteredProducts();
+          getGroupedProduct(products);
         } else {
           endDate = selectedDate;
+          List<Product> products = getFilteredProducts();
+          getGroupedProduct(products);
         }
       });
     }
@@ -188,7 +193,10 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
               dateRangePicker(context),
               const Gap(15),
               products == null
-                  ? const Center(child: Loader())
+                  ? Center(
+                      child: Loader(
+                      circularIndicatiorKey: _circularProgressIndicatorKey,
+                    ))
                   : products!.isEmpty
                       ? Center(
                           child: Text(AppLocalizations.of(context)!
@@ -230,25 +238,30 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            subtitle:
-                                                Text("रु${product.price}"),
-                                            trailing: Text(product.stone!),
-                                            leading: CachedNetworkImage(
-                                              height: 250,
-                                              width: 80,
-                                              imageUrl: product.image!,
-                                              fit: BoxFit.cover,
-                                              progressIndicatorBuilder:
-                                                  (context, url,
-                                                          downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
-                                              errorWidget: (context, url,
-                                                      error) =>
-                                                  const Icon(
-                                                      Remix.error_warning_fill),
+                                            subtitle: Text(
+                                                "${AppLocalizations.of(context)!.soldDate}: ${formatDateTimeRange(product.soldAt!)}"),
+                                            trailing: Text(
+                                                "रु${NumberFormat('#,##,###.00').format(product.price)}"),
+                                            leading: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: CachedNetworkImage(
+                                                height: 250,
+                                                width: 80,
+                                                imageUrl: product.image!,
+                                                fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    const Icon(Remix
+                                                        .error_warning_fill),
+                                              ),
                                             ),
                                           );
                                         }),
@@ -314,6 +327,8 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
               setState(() {
                 startDate = null;
                 endDate = null;
+                List<Product> products = getFilteredProducts();
+                getGroupedProduct(products);
               });
             },
             style: TextButton.styleFrom(

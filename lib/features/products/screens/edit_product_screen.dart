@@ -29,6 +29,7 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _addProductFormKey = GlobalKey<FormState>();
+  final _modalProgressHUDKeyEditProduct = GlobalKey();
   final ProductService _productService = ProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -66,23 +67,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
         isSubmitting = true;
       });
       if (widget.args['fromRouteName'] == QRScannerScreen.routeName) {
-        debugPrint("set product hitted");
         await setProduct();
       } else {
-        debugPrint("edit product api hitted");
         await editProduct();
       }
       setState(() {
         isSubmitting = false;
       });
-    } else {
-      debugPrint("error occured in edit form page");
-    }
+    } else {}
   }
 
 //image will be file type, sessiontoken will be dynamic
   Future<void> editProduct() async {
-    var(rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, rselectedType) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeight,
         selectedType: selectedType);
@@ -97,16 +94,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
           rselectedWeightType ?? selectedWeight),
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
-      stonePrice: _stonePriceController.text.isEmpty
+      stonePrice: _stoneController.text.isEmpty
           ? null
-          : double.tryParse(_stonePriceController.text.trim())!,
+          : _stonePriceController.text.isEmpty
+              ? null
+              : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
       jarti: double.tryParse(_jartiController.text.trim())!,
     );
   }
 
   Future<void> setProduct() async {
-   var(rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, rselectedType) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeight,
         selectedType: selectedType);
@@ -154,21 +153,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text(AppLocalizations.of(context)!.quitEdit),
-          content:  Text(AppLocalizations.of(context)!.allProgressWillDisappear),
+          title: Text(AppLocalizations.of(context)!.quitEdit),
+          content: Text(AppLocalizations.of(context)!.allProgressWillDisappear),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child:  Text(AppLocalizations.of(context)!.no),
+              child: Text(AppLocalizations.of(context)!.no),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child:  Text(AppLocalizations.of(context)!.yes),
+              child: Text(AppLocalizations.of(context)!.yes),
             ),
           ],
         );
@@ -204,21 +203,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
       //         ? AppLocalizations.of(context)!.tejabi
       //         : AppLocalizations.of(context)!.asalChandi;
 
+      if (widget.args['fromRouteName'] == QRScannerScreen.routeName) {
+        selectedType = AppLocalizations.of(context)!.asalChandi;
+      } else {
+        selectedType = selectedType == "Tejabi"
+            ? AppLocalizations.of(context)!.tejabi
+            : selectedType == "Chhapawal"
+                ? AppLocalizations.of(context)!.chhapawal
+                : AppLocalizations.of(context)!.asalChandi;
+      }
       selectedWeight = AppLocalizations.of(context)!.gram;
-      selectedType = AppLocalizations.of(context)!.asalChandi;
+
       _dependenciesInitialized = true;
-      debugPrint("dependency chagned bro");
     }
-    debugPrint("dependency chagned sisi");
+
     super.didChangeDependencies();
   }
 
   @override
   void initState() {
     super.initState();
-
-    // debugPrint(widget.args['product'].productType);
-
     if (widget.args['fromRouteName'] == AboutProduct.routeName) {
       _nameController.text = widget.args['product'].name;
       selectedType = widget.args['product'].productType;
@@ -226,7 +230,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if (widget.args['product'].stone != "None") {
         _stoneController.text = widget.args['product'].stone;
       }
-      if (widget.args['product'].stone_price != 0.0) {
+      if (widget.args['product'].stone_price != null) {
         _stonePriceController.text =
             widget.args['product'].stone_price.toString();
       }
@@ -260,8 +264,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('is visible or not');
-    debugPrint(_stonePriceFieldVisible.toString());
     final size = MediaQuery.sizeOf(context);
     return PopScope(
       canPop: false,
@@ -270,6 +272,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         _onWillPop(context);
       },
       child: ModalProgressHUD(
+        key: _modalProgressHUDKeyEditProduct,
         inAsyncCall: isSubmitting,
         progressIndicator: const SpinKitRotatingCircle(color: blueColor),
         child: Scaffold(
@@ -360,7 +363,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                                 color: Colors.black,
                                               ),
                                               Text(
-                                                AppLocalizations.of(context)!.selectProductImages,
+                                                AppLocalizations.of(context)!
+                                                    .selectProductImages,
                                                 style: TextStyle(
                                                   fontSize: 25,
                                                   color: Colors.grey.shade400,
@@ -376,8 +380,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                         height: size.height * 0.2,
                                         width: double.infinity,
                                         errorWidget: (context, url, error) =>
-                                             Center(
-                                                child: Text(AppLocalizations.of(context)!.errorGettingImage)),
+                                            Center(
+                                                child: Text(AppLocalizations.of(
+                                                        context)!
+                                                    .errorGettingImage)),
                                       ),
                           ),
                           const Gap(10),
@@ -400,18 +406,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             validator: (value) => validateName(value!, context),
                           ),
                           const Gap(10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.type,
-                                style: customTextDecoration(),
-                              ),
-                              const Text(
-                                "verify!",
-                                style: TextStyle(color: Colors.red),
-                              )
-                            ],
+                          Text(
+                            AppLocalizations.of(context)!.type,
+                            style: customTextDecoration(),
                           ),
                           const Gap(5),
                           DropdownButtonFormField<String>(

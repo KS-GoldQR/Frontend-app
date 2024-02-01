@@ -69,16 +69,18 @@ class OldJwellery {
   String itemName;
   double wt;
   String type;
-  String stone;
-  double stonePrice;
+  String? stone;
+  double? stonePrice;
   double price;
+  double? charge;
   OldJwellery({
     required this.itemName,
     required this.wt,
     required this.type,
-    required this.stone,
-    required this.stonePrice,
+    this.stone,
+    this.stonePrice,
     required this.price,
+    this.charge,
   });
 
   Map<String, dynamic> toMap() {
@@ -89,6 +91,7 @@ class OldJwellery {
       'stone': stone,
       'stone_price': stonePrice,
       'price': price,
+      'charge': charge,
     };
   }
 
@@ -97,13 +100,20 @@ class OldJwellery {
       itemName: map['item_name'] as String,
       wt: map['wt'] as double,
       type: map['type'] as String,
-      stone: map['stone'] as String,
-      stonePrice: map['stone_price'] as double,
+      stone: map['stone'] as String?,
       price: map['price'] as double,
+      stonePrice:
+          map['stone_price'] != null ? map['stone_price'] as double? : null,
+      charge: map.containsKey('charge')
+          ? map['charge'] != null
+              ? map['charge'] as double?
+              : null
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory OldJwellery.fromJson(String source) => OldJwellery.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory OldJwellery.fromJson(String source) =>
+      OldJwellery.fromMap(json.decode(source) as Map<String, dynamic>);
 }

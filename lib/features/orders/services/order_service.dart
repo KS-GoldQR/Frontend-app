@@ -56,8 +56,8 @@ class OrderService {
 
               if (modifiedOrdersJson is List<dynamic>) {
                 orders = modifiedOrdersJson.map((orderJson) {
-                  debugPrint(orderJson.toString());
                   if (orderJson is Map<String, dynamic>) {
+                    debugPrint(orderJson.toString());
                     return Order.fromMap(orderJson);
                   } else {
                     return Order.fromJson(orderJson.toString());
@@ -67,6 +67,7 @@ class OrderService {
             }
           });
     } catch (e) {
+      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
@@ -104,7 +105,6 @@ class OrderService {
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            debugPrint(jsonDecode(response.body)['id']);
             showSnackBar(
                 title: "Order Added!",
                 message: jsonDecode(response.body)['message'],
@@ -120,7 +120,6 @@ class OrderService {
             navigatorKey.currentState!.pushNamed(OrderScreen.routeName);
           });
     } catch (e) {
-      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
@@ -150,10 +149,10 @@ class OrderService {
         httpErrorHandle(
             response: response,
             onSuccess: () {
-              showSnackBar(
-                  title: "Order Deleted",
-                  message: "order is been delete form list",
-                  contentType: ContentType.success);
+              // showSnackBar(
+              //     title: "Order Deleted",
+              //     message: "order is been delete form list",
+              //     contentType: ContentType.success);
             });
         return true;
       } else {

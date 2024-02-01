@@ -20,7 +20,9 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   List<Order>? orders;
+  final _modalProgressHUDKeyOrderScreen = GlobalKey();
   final OrderService _orderService = OrderService();
+  final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   late List<PlutoColumn> columns;
   bool _isDeleting = false;
 
@@ -84,6 +86,14 @@ class _OrderScreenState extends State<OrderScreen> {
     return totalPrice;
   }
 
+  double getOldJwelleryCharge(Order order) {
+    double totalPrice = 0;
+    for (int i = 0; i < order.old_jwellery!.length; i++) {
+      totalPrice += (order.old_jwellery![i].charge ?? 0.0);
+    }
+    return totalPrice;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -142,6 +152,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
+      key: _modalProgressHUDKeyOrderScreen,
       inAsyncCall: _isDeleting,
       progressIndicator: const SpinKitDoubleBounce(color: blueColor),
       child: Scaffold(
@@ -154,8 +165,10 @@ class _OrderScreenState extends State<OrderScreen> {
           ),
         ),
         body: orders == null
-            ? const Center(
-                child: Loader(),
+            ? Center(
+                child: Loader(
+                  circularIndicatiorKey: _circularProgressIndicatorKey,
+                ),
               )
             : orders!.isEmpty
                 ? const Center(
@@ -190,12 +203,15 @@ class _OrderScreenState extends State<OrderScreen> {
                         double totalOrderedPrice = getOrderTotalPrice(rowOrder);
                         double totalOldJwelleryPrice =
                             getOldJwelleryTotalPrice(rowOrder);
+                        double totalOldJwelleryCharge =
+                            getOldJwelleryCharge(rowOrder);
 
                         // Update the order with copyWith
                         final updatedOrder = rowOrder.copyWith(
                           remaining_payment: totalOrderedPrice -
                               totalOldJwelleryPrice -
-                              rowOrder.advanced_payment,
+                              rowOrder.advanced_payment -
+                              totalOldJwelleryCharge,
                         );
 
                         //if you want to get updates orders list
@@ -221,6 +237,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               order: updatedOrder,
                               totalOrderedPrice: totalOrderedPrice,
                               totalOldJwelleryPrice: totalOldJwelleryPrice,
+                              totalOldJwelleryCharge: totalOldJwelleryCharge,
                               deleteOrder: () async {
                                 await deleteOrder(updatedOrder.id, context);
                               },

@@ -116,6 +116,12 @@
   "oldJewelryListEmpty": "Your old jewelry list is empty now!",
   "salesCleared": "Sales cleared",
   "deleteOrder": "Delete Order",
+  "noProductToSell": "No product to sell",
+  "duplicateFound": "Duplicate found!",
+  "itemAlreadyInList": "This item is already in the list",
+  "charge": "Charge",
+  "chargeCannotBeNegative": "Charge cannot be negative",
+  "areYouSure": "Are you sure?",
   
   "nameEmpty": "Name cannot be empty!",
   "weightEmpty": "Weight cannot be empty!",

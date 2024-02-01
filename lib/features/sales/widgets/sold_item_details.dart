@@ -102,8 +102,8 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                             (context, url, downloadProgress) =>
                                 CircularProgressIndicator(
                                     value: downloadProgress.progress),
-                        errorWidget: (context, url, error) =>
-                             Text(AppLocalizations.of(context)!.errorGettingImage),
+                        errorWidget: (context, url, error) => Text(
+                            AppLocalizations.of(context)!.errorGettingImage),
                       ),
                     ),
                   ),
@@ -139,7 +139,7 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                   ProductDetail(
                       label: '${AppLocalizations.of(context)!.stone}: ',
                       value: widget.product.stone!),
-                if (widget.product.stone_price != -1)
+                if (widget.product.stone_price != null)
                   ProductDetail(
                       label: '${AppLocalizations.of(context)!.stonePrice}: ',
                       value:

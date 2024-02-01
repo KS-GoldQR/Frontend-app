@@ -116,6 +116,7 @@ class _MainPageState extends State<MainPage> {
   bool toUpdate = false;
   String? appVersion;
   String? appName;
+  String? apiAppVersion;
 
   Future<void> getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -125,26 +126,31 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> getValidation() async {
     isValidated = await _userService.validateSession(context);
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void toUpdateApp() {
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-    int appVersionNumber = getExtendedVersionNumber(appVersion!);
-    int apiVersionNumber = getExtendedVersionNumber(user.appVersion!);
+    if (isValidated!) {
+      final user = Provider.of<UserProvider>(context, listen: false).user;
+      apiAppVersion = user.appVersion!;
+      int appVersionNumber = getExtendedVersionNumber(appVersion!);
+      int apiVersionNumber = getExtendedVersionNumber(apiAppVersion!);
 
-    debugPrint(appVersionNumber.toString());
-    debugPrint(apiVersionNumber.toString());
-
-    if (apiVersionNumber > appVersionNumber) {
-      if (mounted) {
-        setState(() {
-          toUpdate = true;
-        });
+      if (apiVersionNumber > appVersionNumber) {
+        if (mounted) {
+          setState(() {
+            toUpdate = true;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            toUpdate = false;
+          });
+        }
       }
-    } else {
-      setState(() {
-        toUpdate = false;
-      });
     }
   }
 
@@ -176,8 +182,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(appVersion);
-    debugPrint(appName);
     return Stack(
       children: [
         isValidated == null
@@ -188,7 +192,7 @@ class _MainPageState extends State<MainPage> {
         if (toUpdate)
           UpdateAlertDialog(
             appName: "smart sunar",
-            appVersion: appVersion!,
+            appVersion: apiAppVersion!,
             onUpdate: () {
               setState(() {
                 toUpdate = false;

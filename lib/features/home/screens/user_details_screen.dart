@@ -15,7 +15,7 @@ class UserDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
-    debugPrint(user.userId);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Details'),

@@ -112,7 +112,7 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.stone}: ',
                           value: widget.product.stone!),
-                    if (widget.product.stone_price != -1)
+                    if (widget.product.stone_price != null)
                       ProductDetail(
                           label:
                               '${AppLocalizations.of(context)!.stonePrice}: ',
@@ -121,7 +121,7 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.price}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format((widget.product.weight! * goldRates[widget.product.productType!]!) + (widget.product.stone_price! != -1 ? widget.product.stone_price! : 0.0))}"),
+                            "रु${NumberFormat('#,##,###.00').format((widget.product.weight! * goldRates[widget.product.productType!]!) + (widget.product.stone_price ?? 0.0))}"),
                   ],
                 ),
               ),

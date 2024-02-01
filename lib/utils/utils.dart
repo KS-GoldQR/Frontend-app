@@ -123,14 +123,13 @@ Future<void> getRate(BuildContext context) async {
   String internalError = AppLocalizations.of(context)!.internalError;
   String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   try {
-    debugPrint("hitted getrates");
     http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/users/getGoldRate"),
         headers: {"Content-Type": "application/json"});
 
     if (response.statusCode == 200) {
       Map<String, dynamic> rawRates = json.decode(response.body);
-      // debugPrint(jsonDecode(response.body)['Date']); //date is null so not implemented
+      //  //date is null so not implemented
 
       rawRates.forEach((key, value) {
         if (key == "Chappawala") {
@@ -144,7 +143,6 @@ Future<void> getRate(BuildContext context) async {
       lastUpdated = DateTime.now();
       return;
     } else {
-      debugPrint(response.statusCode.toString());
       return;
     }
   } catch (e) {
@@ -208,7 +206,9 @@ String formatDateTimeRange(DateTime date) {
 }
 
 (String?, String?) translatedTypes(
-    {required BuildContext context, required String selectedWeightType, required String selectedType}) {
+    {required BuildContext context,
+    required String selectedWeightType,
+    required String selectedType}) {
   String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
   String? rselectedWeightType;
   String? rselectedType;

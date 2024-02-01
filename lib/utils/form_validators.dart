@@ -102,3 +102,15 @@ validateAdvancePayment(String value, BuildContext context) {
   }
   return null;
 }
+
+validateCharge(String value, BuildContext context) {
+  if (double.tryParse(value) == null) {
+    return AppLocalizations.of(context)!.enterValidNumber;
+  }
+
+  if (double.tryParse(value)! < 0) {
+    return AppLocalizations.of(context)!.chargeCannotBeNegative;
+  }
+
+  return null;
+}

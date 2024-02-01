@@ -24,6 +24,7 @@ class AddOldProductScreen extends StatefulWidget {
 
 class _AddOldProductScreenState extends State<AddOldProductScreen> {
   final _addOldProductFormKey = GlobalKey<FormState>();
+  final _modalProgressHUDKeyAboutOldProduct = GlobalKey();
   final OldProductService _oldProductService = OldProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -60,9 +61,7 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
       setState(() {
         isSubmitting = false;
       });
-    } else {
-      debugPrint("error occured in edit form page");
-    }
+    } else {}
   }
 
   Future<void> addOldProduct() async {
@@ -118,14 +117,14 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child:  Text(AppLocalizations.of(context)!.no),
+              child: Text(AppLocalizations.of(context)!.no),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child:  Text(AppLocalizations.of(context)!.yes),
+              child: Text(AppLocalizations.of(context)!.yes),
             ),
           ],
         );
@@ -156,9 +155,8 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
       selectedWeight = AppLocalizations.of(context)!.gram;
       selectedType = AppLocalizations.of(context)!.asalChandi;
       _dependenciesInitialized = true;
-      debugPrint("dependency chagned bro");
     }
-    debugPrint("dependency chagned sisi");
+
     super.didChangeDependencies();
   }
 
@@ -187,6 +185,7 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
         _onWillPop(context);
       },
       child: ModalProgressHUD(
+        key: _modalProgressHUDKeyAboutOldProduct,
         inAsyncCall: isSubmitting,
         progressIndicator: const SpinKitRotatingCircle(color: blueColor),
         child: Scaffold(
@@ -283,7 +282,8 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                                                 color: Colors.black,
                                               ),
                                               Text(
-                                                AppLocalizations.of(context)!.selectProductImages,
+                                                AppLocalizations.of(context)!
+                                                    .selectProductImages,
                                                 style: TextStyle(
                                                   fontSize: 25,
                                                   color: Colors.grey.shade400,

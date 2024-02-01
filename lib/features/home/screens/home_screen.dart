@@ -29,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final UserService _userService = UserService();
+  final _modalProgressHUDKeyHomeScreen = GlobalKey();
   bool isLoggingOut = false;
 
   List<String> cardsText = [];
@@ -139,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final size = MediaQuery.sizeOf(context);
     return ModalProgressHUD(
       inAsyncCall: isLoggingOut,
+      key: _modalProgressHUDKeyHomeScreen,
       blur: 0.5,
       progressIndicator: const SpinKitSquareCircle(
         color: blueColor,

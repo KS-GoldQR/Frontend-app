@@ -33,6 +33,7 @@ class LanguageSelectionScreen extends StatefulWidget {
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   late Language selectedLanguage;
   bool _isChanging = false;
+  final _modalProgressHUDKeyLanguage = GlobalKey();
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
+      key: _modalProgressHUDKeyLanguage,
       inAsyncCall: _isChanging,
       progressIndicator: const SpinKitChasingDots(color: blueColor),
       child: Scaffold(

@@ -116,6 +116,12 @@
   "oldJewelryListEmpty": "तपाईंको पुरानो ज्वेलरी तालिका खाली छ!",
   "deleteOrder": "अर्डर मेटाउनुहोस्",
   "salesCleared": "सेल रद्द गरियो",
+  "noProductToSell": "बेच्नको लागि कुनै बस्तु छैन",
+  "duplicateFound": "नक्कल परेखियो!",
+  "itemAlreadyInList": "यो बस्तु पहिले नै सूचीमा छ",
+  "charge": "चार्ज",
+  "chargeCannotBeNegative": "चार्ज  0 भन्दा कम हुन सकदैन",
+  "areYouSure": "के तपाईं निश्चित हुनुहुन्छ?",
   
   "nameEmpty": "नाम खाली हुन सक्दैन!",
   "weightEmpty": "वजन खाली हुन सक्दैन!",

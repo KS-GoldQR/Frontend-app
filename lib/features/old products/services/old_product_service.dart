@@ -25,9 +25,6 @@ class OldProductService {
         headers: {"Content-Type": "application/json"},
       );
 
-      debugPrint(response.statusCode.toString());
-      debugPrint(jsonDecode(response.body)['products'].toString());
-
       httpErrorHandle(
           response: response,
           onSuccess: () {
@@ -95,17 +92,14 @@ class OldProductService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      debugPrint("api hitting old product");
-      debugPrint(response.statusCode.toString());
-
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            debugPrint("success adding old product");
-            showSnackBar(
-                title: "Success",
-                message: jsonDecode(response.body)['message'],
-                contentType: ContentType.success);
+            //
+            // showSnackBar(
+            //     title: "Success",
+            //     message: jsonDecode(response.body)['message'],
+            //     contentType: ContentType.success);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
@@ -131,10 +125,10 @@ class OldProductService {
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            showSnackBar(
-                title: "Deleted",
-                message: "Old product deleted successfully",
-                contentType: ContentType.success);
+            // showSnackBar(
+            //     title: "Deleted",
+            //     message: "Old product deleted successfully",
+            //     contentType: ContentType.success);
           });
     } catch (e) {
       showSnackBar(
@@ -162,10 +156,10 @@ class OldProductService {
           response: response,
           onSuccess: () {
             fileName = jsonDecode(response.body)['fileName'];
-            showSnackBar(
-                title: "image Upload Success",
-                message: "",
-                contentType: ContentType.success);
+            // showSnackBar(
+            //     title: "image Upload Success",
+            //     message: "",
+            //     contentType: ContentType.success);
           });
     } catch (e) {
       showSnackBar(

@@ -24,6 +24,8 @@ class ViewInventoryScreen extends StatefulWidget {
 class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   List<Product>? products;
   final ProductService _productService = ProductService();
+  final GlobalKey _uniqueKey = GlobalKey();
+  final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   late List<String> types;
   late String selectedType;
   Map<String, List<Product>> groupedProducts = {};
@@ -32,9 +34,11 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   Future<void> getInventory() async {
     if (mounted) {
       products = await _productService.getInventory(context);
-      setState(() {
-        getGroupedProduct();
-      });
+      if (mounted) {
+        setState(() {
+          getGroupedProduct();
+        });
+      }
     }
   }
 
@@ -135,6 +139,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: DropdownButtonFormField<String>(
+                        key: _uniqueKey,
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
@@ -149,7 +154,6 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                         onChanged: (String? newValue) {
                           setState(() {
                             selectedType = newValue!;
-                            debugPrint(selectedType);
                           });
                         },
                         items:
@@ -166,7 +170,10 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
               ),
               const SizedBox(height: 15),
               products == null
-                  ? const Center(child: Loader())
+                  ? Center(
+                      child: Loader(
+                      circularIndicatiorKey: _circularProgressIndicatorKey,
+                    ))
                   : products!.isEmpty
                       ? Center(
                           child: Text(
@@ -196,7 +203,6 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                           ),
                                         ),
                                         ...entry.value.map((product) {
-                                          debugPrint(product.productType);
                                           return ListTile(
                                             onTap: () async {
                                               await navigateToAboutProduct(
@@ -209,28 +215,41 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            subtitle: goldRates.isEmpty
-                                                ? const Text(
-                                                    "error fetching rates...")
-                                                : Text(
-                                                    "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price!)}"),
-                                            trailing: Text(product.stone!),
-                                            leading: CachedNetworkImage(
-                                              height: 250,
-                                              width: 80,
-                                              imageUrl: product.image!,
-                                              fit: BoxFit.cover,
-                                              progressIndicatorBuilder:
-                                                  (context, url,
-                                                          downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
-                                              errorWidget: (context, url,
-                                                      error) =>
-                                                  const Icon(
-                                                      Remix.error_warning_fill),
+                                            // subtitle: goldRates.isEmpty
+                                            //     ? const Text(
+                                            //         "error fetching rates...")
+                                            //     : Text(
+                                            //         "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                            subtitle: product.updatedAt != null
+                                                ? Text(
+                                                    "${AppLocalizations.of(context)!.lastUpdate}: ${formatDateTimeRange(product.updatedAt!)}")
+                                                : goldRates.isEmpty
+                                                    ? const Text(
+                                                        "error fetching rates...")
+                                                    : Text(
+                                                        "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                            // trailing: Text(
+                                            //     "रु${NumberFormat('#,##,###.00').format(product.price!)}"),
+                                            leading: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: CachedNetworkImage(
+                                                height: 250,
+                                                width: 80,
+                                                imageUrl: product.image!,
+                                                fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    const Icon(Remix
+                                                        .error_warning_fill),
+                                              ),
                                             ),
                                           );
                                         }),

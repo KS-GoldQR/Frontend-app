@@ -24,6 +24,7 @@ class CustomerDetailsScreen extends StatefulWidget {
 
 class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final _customerDetailsFormKey = GlobalKey<FormState>();
+  final _modalProgressHUDKeyCustomerDetails = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -85,6 +86,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
     return ModalProgressHUD(
+      key: _modalProgressHUDKeyCustomerDetails,
       inAsyncCall: _isSubmitting,
       progressIndicator: const SpinKitDoubleBounce(
         color: blueColor,
@@ -103,7 +105,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                 .removeAt(orderProvider.orderedItems.length - 1);
           }
           showSnackBar(
-              title: AppLocalizations.of(context)!.customerDetailsCleared, message: "", contentType: ContentType.warning);
+              title: AppLocalizations.of(context)!.customerDetailsCleared,
+              message: "",
+              contentType: ContentType.warning);
         },
         child: Scaffold(
           appBar: AppBar(

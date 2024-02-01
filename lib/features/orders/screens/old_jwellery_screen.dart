@@ -27,10 +27,12 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
+  final TextEditingController _chargeController = TextEditingController();
   final _itemNamefocus = FocusNode();
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
+  final _chargeFocus = FocusNode();
   bool _showTotalPrice = false;
   late List<String> weight;
   late String selectedWeightType;
@@ -54,6 +56,9 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     double stonePrice = _stonePriceController.text.isEmpty
         ? 0.0
         : double.tryParse(_stonePriceController.text.trim())!;
+    double charge = _chargeController.text.isEmpty
+        ? 0.0
+        : double.tryParse(_chargeController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
@@ -63,7 +68,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     );
 
     setState(() {
-      currentJwelleryPrice = totalPrice;
+      currentJwelleryPrice = totalPrice - charge;
     });
   }
 
@@ -77,39 +82,44 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
-    double stonePrice = _stonePriceController.text.isEmpty
-        ? 0.0
+    double? stonePrice = _stonePriceController.text.isEmpty
+        ? null
         : double.tryParse(_stonePriceController.text.trim())!;
+
+    double? charge = _chargeController.text.isEmpty
+        ? null
+        : double.tryParse(_chargeController.text.trim())!;
+
     double totalPrice = getTotalPrice(
       weight: weight,
       rate: goldRates[rselectedType ?? selectedType]!,
       jyalaPercent: null,
       jartiPercent: null,
-      stonePrice: stonePrice,
+      stonePrice: stonePrice ?? 0.0,
     );
 
     OldJwellery oldJwellery = OldJwellery(
       itemName: _itemNameController.text.trim(),
       wt: weight,
       type: rselectedType ?? selectedType,
-      stone: _stoneController.text.trim(),
+      stone:
+          _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
       stonePrice: stonePrice,
+      charge: charge,
       price: totalPrice,
     );
 
     orderProvider.addOldJewelry(oldJwellery);
-    showSnackBar(
-        title: AppLocalizations.of(context)!.oldJewelryAdded,
-        message: "",
-        contentType: ContentType.success);
+    // showSnackBar(
+    //     title: AppLocalizations.of(context)!.oldJewelryAdded,
+    //     message: "",
+    //     contentType: ContentType.success);
 
     if (isProceed) {
       Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
     } else {
       Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
     }
-
-    debugPrint(orderProvider.oldJweleries.toString());
   }
 
   void _fieldFocusChange(
@@ -137,9 +147,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
       _dependenciesInitialized = true;
-      debugPrint("dependency chagned bro");
     }
-    debugPrint("dependency chagned sisi");
+
     super.didChangeDependencies();
   }
 
@@ -158,10 +167,12 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     _weightController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
+    _chargeController.dispose();
     _itemNamefocus.dispose();
     _weightFocus.dispose();
     _stoneFocus.dispose();
     _stonePriceFocus.dispose();
+    _chargeFocus.dispose();
   }
 
   @override
@@ -177,7 +188,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
         }
         showSnackBar(
             title: AppLocalizations.of(context)!.oldJewelryReset,
-            message: AppLocalizations.of(context)!.oldJewelryListEmpty,
+            message: "",
             contentType: ContentType.warning);
       },
       child: Scaffold(
@@ -324,7 +335,11 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                         controller: _stoneController,
                         focusNode: _stoneFocus,
                         onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _stoneFocus, _stonePriceFocus),
+                            context,
+                            _stoneFocus,
+                            _stonePriceFieldVisible
+                                ? _stonePriceFocus
+                                : _chargeFocus),
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
@@ -367,8 +382,28 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                                   validateStonePrice(value!, context),
                               onChanged: (value) => calculateTotalPrice(),
                             ),
+                            const Gap(10),
                           ],
                         ),
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.charge,
+                        style: customTextDecoration()
+                            .copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      const Gap(5),
+                      TextFormField(
+                        controller: _chargeController,
+                        focusNode: _chargeFocus,
+                        onFieldSubmitted: (value) => _chargeFocus.unfocus(),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textInputAction: TextInputAction.done,
+                        cursorColor: blueColor,
+                        decoration: customTextfieldDecoration(),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => validateCharge(value!, context),
+                        onChanged: (value) => calculateTotalPrice(),
                       ),
                     ],
                   ),
@@ -453,7 +488,13 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                 const Gap(10),
                 CustomButton(
                   onPressed: () {
-                    if (_oldJwelleryFormKey.currentState!.validate()) {
+                    if (_itemNameController.text.isEmpty &&
+                        _weightController.text.isEmpty &&
+                        _stoneController.text.isEmpty &&
+                        _chargeController.text.isEmpty) {
+                      Navigator.pushNamed(
+                          context, CustomerDetailsScreen.routeName);
+                    } else if (_oldJwelleryFormKey.currentState!.validate()) {
                       addOtherItem(orderProvider, true);
                     }
                   },

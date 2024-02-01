@@ -24,6 +24,7 @@ class CustomerDetailsForm extends StatefulWidget {
 
 class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   final _customerDetailsFormFormKey = GlobalKey<FormState>();
+  final _modalProgressHUDKeyCust = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -54,7 +55,6 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
         );
       }
     } catch (e) {
-      debugPrint("inside catch block of sell items");
     } finally {
       if (mounted) {
         // Check if the widget is still mounted before updating the state
@@ -66,8 +66,8 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
       salesProvider.resetSaleItem();
 
       if (soldStatus.isNotEmpty && mounted) {
-        debugPrint(soldStatus.length.toString());
         Navigator.popUntil(context, ModalRoute.withName(HomeScreen.routeName));
+
         Navigator.of(context).pushNamed(HomeScreen.routeName);
         showFullScreenDialog(context, soldStatus);
       }
@@ -109,6 +109,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   Widget build(BuildContext context) {
     final salesProvider = Provider.of<SalesProvider>(context);
     return ModalProgressHUD(
+      key: _modalProgressHUDKeyCust,
       inAsyncCall: _isSelling,
       progressIndicator: const SpinKitChasingDots(
         color: blueColor,

@@ -35,7 +35,6 @@ class UserService {
         },
       );
 
-      debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
         httpErrorHandle(
             response: response,
@@ -44,11 +43,8 @@ class UserService {
               await prefs.setString(
                   'session-token', jsonDecode(response.body)['sessionToken']);
 
-              debugPrint("reached here");
               // ignore: use_build_context_synchronously
               bool isValidated = await validateSession(context);
-
-              debugPrint(isValidated.toString());
 
               if (isValidated) {
                 showSnackBar(
@@ -78,7 +74,6 @@ class UserService {
           title: internalError,
           message: unknownError,
           contentType: ContentType.warning);
-      debugPrint(e.toString());
     }
   }
 
@@ -90,7 +85,6 @@ class UserService {
       String? token = prefs.getString('session-token');
 
       if (token == null) return false;
-      debugPrint(token);
 
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/validateSession'),
@@ -144,8 +138,6 @@ class UserService {
         },
       );
 
-      debugPrint(response.statusCode.toString());
-
       httpErrorHandle(
           response: response,
           onSuccess: () async {
@@ -167,7 +159,6 @@ class UserService {
           title: internalError,
           message: unknownError,
           contentType: ContentType.warning);
-      debugPrint(e.toString());
     }
   }
 }

@@ -11,7 +11,6 @@ class SoldStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(status.length.toString());
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
