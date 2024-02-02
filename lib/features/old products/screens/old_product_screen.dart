@@ -259,22 +259,25 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                 color: blueColor,
                                               ),
                                             ),
-                                            leading: CachedNetworkImage(
-                                              height: 250,
-                                              width: 80,
-                                              imageUrl: product.image!,
-                                              fit: BoxFit.cover,
-                                              progressIndicatorBuilder:
-                                                  (context, url,
-                                                          downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
-                                              errorWidget: (context, url,
-                                                      error) =>
-                                                  const Icon(
-                                                      Remix.error_warning_fill),
+                                            leading: ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: CachedNetworkImage(
+                                                height: 250,
+                                                width: 80,
+                                                imageUrl: product.image!,
+                                                fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url,
+                                                            downloadProgress) =>
+                                                        CircularProgressIndicator(
+                                                            value:
+                                                                downloadProgress
+                                                                    .progress),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    const Icon(
+                                                        Remix.error_warning_fill),
+                                              ),
                                             ),
                                           );
                                         }),

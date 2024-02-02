@@ -96,8 +96,16 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
     productProvider.setProduct(product);
 
     //cannot show edit/sell option in about page, because from reponse in inventory, product didn't contain validSession argument
-    await Navigator.of(context).pushNamed(AboutProduct.routeName,
-        arguments: {'product': product, 'fromInventory': true});
+    // await Navigator.of(context)
+    //     .pushNamed(AboutProduct.routeName, arguments: {'fromInventory': true});
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>const  AboutProduct(
+          args: {'fromInventory': true},
+        ),
+      ),
+    );
 
     // Trigger refresh when returning from AboutProduct screen
     if (mounted) {

@@ -6,7 +6,6 @@ import 'package:grit_qr_scanner/features/sales/screens/sales_details_screen.dart
 import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +22,10 @@ import '../widgets/product_detail_card.dart';
 class AboutProduct extends StatefulWidget {
   static const String routeName = '/about-product-screen';
   final Map<String, dynamic> args;
-  const AboutProduct({super.key, required this.args});
+  const AboutProduct({
+    super.key,
+    required this.args,
+  });
 
   @override
   State<AboutProduct> createState() => _AboutProductState();
@@ -37,6 +39,7 @@ class _AboutProductState extends State<AboutProduct> {
   final TextEditingController _totalPriceController = TextEditingController();
   final _jyalaFocus = FocusNode();
   final _jartiFocus = FocusNode();
+  bool _isDependencyChanged = false;
 
   final String productDescription = "Description not added yet!";
 
@@ -91,10 +94,18 @@ class _AboutProductState extends State<AboutProduct> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Future.delayed(Duration.zero, () async {
-      await getRate(context);
-      setState(() {});
-    });
+    if (!_isDependencyChanged) {
+      debugPrint("calling dependency.");
+      Future.delayed(Duration.zero, () async {
+        await getRate(context);
+        if (mounted) {
+          setState(() {});
+          _isDependencyChanged = true;
+        } else {
+          _isDependencyChanged = true;
+        }
+      });
+    }
   }
 
   @override
@@ -109,15 +120,8 @@ class _AboutProductState extends State<AboutProduct> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context, listen: false).user;
     final salesProvider = Provider.of<SalesProvider>(context, listen: false);
-
-    if (user.sessionToken.isEmpty) {
-      product = widget.args['product'];
-    } else {
-      product = Provider.of<ProductProvider>(context).currentProduct;
-    }
-
+    product = Provider.of<ProductProvider>(context).currentProduct;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -314,8 +318,6 @@ class _AboutProductState extends State<AboutProduct> {
                               _jartiController.text = value;
                               _totalPriceController.text =
                                   "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
-                              debugPrint(
-                                  "inside jayala ${_jartiController.text}");
                             },
                             validator: (value) =>
                                 validateJarti(value!, context),

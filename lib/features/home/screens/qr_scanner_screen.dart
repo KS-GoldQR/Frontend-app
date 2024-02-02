@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
+import '../../../provider/product_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/error_page.dart';
 
@@ -182,14 +183,31 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                   'fromRouteName': QRScannerScreen.routeName,
                                 });
                           } else {
-                            navigatorKey.currentState!
-                                .pushNamed(AboutProduct.routeName, arguments: {
-                              'product': product,
-                              'fromInventory': false,
-                            });
+                            // navigatorKey.currentState!
+                            //     .pushNamed(AboutProduct.routeName, arguments: {
+                            //   'product': product,
+                            //   'fromInventory': false,
+                            // });
+                            final productProvider =
+                                // ignore: use_build_context_synchronously
+                                Provider.of<ProductProvider>(context,
+                                    listen: false);
+                            productProvider.setProduct(product!);
+
+                            navigatorKey.currentState!.push(
+                              MaterialPageRoute(
+                                builder: (context) => const AboutProduct(
+                                  args: {
+                                    'fromInventory': false,
+                                  },
+                                ),
+                              ),
+                            );
                           }
                         }
-                      } catch (e) {}
+                      } catch (e) {
+                        debugPrint(e.toString());
+                      }
                     },
                     placeholderBuilder: (p0, p1) {
                       return const SpinKitChasingDots(

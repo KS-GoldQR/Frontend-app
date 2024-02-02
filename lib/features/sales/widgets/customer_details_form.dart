@@ -55,6 +55,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
         );
       }
     } catch (e) {
+      debugPrint(e.toString());
     } finally {
       if (mounted) {
         // Check if the widget is still mounted before updating the state

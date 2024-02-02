@@ -248,15 +248,7 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                                     fit: BoxFit.contain,
                                     height: size.height * 0.2,
                                     width: double.infinity,
-                                  )
-                                : image != null
-                                    ? Image.file(
-                                        image!,
-                                        fit: BoxFit.contain,
-                                        height: size.height * 0.2,
-                                        width: double.infinity,
-                                      )
-                                    : DottedBorder(
+                                  ): DottedBorder(
                                         strokeWidth: 1,
                                         borderType: BorderType.RRect,
                                         borderPadding: const EdgeInsets.all(5),
@@ -314,18 +306,9 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                             validator: (value) => validateName(value!, context),
                           ),
                           const Gap(10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.type,
-                                style: customTextDecoration(),
-                              ),
-                              const Text(
-                                "verify!",
-                                style: TextStyle(color: Colors.red),
-                              )
-                            ],
+                          Text(
+                            AppLocalizations.of(context)!.type,
+                            style: customTextDecoration(),
                           ),
                           const Gap(5),
                           DropdownButtonFormField<String>(
