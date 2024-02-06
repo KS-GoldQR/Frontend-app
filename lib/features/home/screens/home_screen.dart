@@ -17,7 +17,6 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../utils/widgets/custom_card.dart';
-import '../../sales/screens/sold_items_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home-screen";
@@ -45,11 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
-      Remix.product_hunt_line,
-      size: 30,
-      color: Colors.white,
-    ),
+    // const Icon(
+    //   Remix.product_hunt_line,
+    //   size: 30,
+    //   color: Colors.white,
+    // ),
     const Icon(
       Remix.shopping_cart_2_line,
       size: 30,
@@ -82,27 +81,28 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushNamed(context, ViewInventoryScreen.routeName);
         break;
 
-      case 2:
-        Navigator.pushNamed(context, SoldItemsScreen.routeName);
-        break;
+      //due to requirement change, sales details are avoided my be needed in future, just uncomment and adjust indexes
+      // case 2:
+      //   Navigator.pushNamed(context, SoldItemsScreen.routeName);
+      //   break;
 
-      case 3:
+      case 2:
         Navigator.pushNamed(context, OrderScreen.routeName);
         break;
 
-      case 4:
+      case 3:
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GoldRatesScreen()),
         );
         break;
 
-      case 5:
+      case 4:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const CalculatorScreen()));
         break;
 
-      case 6:
+      case 5:
         Navigator.pushNamed(context, OldProductsScreen.routeName);
         break;
 
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     cardsText = [
       AppLocalizations.of(context)!.scanQR,
       AppLocalizations.of(context)!.inventory,
-      AppLocalizations.of(context)!.soldItems,
+      // AppLocalizations.of(context)!.soldItems,
       AppLocalizations.of(context)!.orders,
       AppLocalizations.of(context)!.rates,
       AppLocalizations.of(context)!.calculator,

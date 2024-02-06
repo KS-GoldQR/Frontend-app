@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../utils/global_variables.dart';
 
-class GoldRatesScreen extends StatelessWidget {
+class GoldRatesScreen extends StatefulWidget {
   const GoldRatesScreen({super.key});
+
+  @override
+  State<GoldRatesScreen> createState() => _GoldRatesScreenState();
+}
+
+class _GoldRatesScreenState extends State<GoldRatesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      getRate(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +34,7 @@ class GoldRatesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                AppLocalizations.of(context)!.goldRatesInformation,
+                AppLocalizations.of(context)!.goldRates,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,

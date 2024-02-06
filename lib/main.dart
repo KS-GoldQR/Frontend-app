@@ -58,9 +58,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer<LanguageChangeProvider>(
       builder: (_, provider, child) {
-        if (widget.languageCode.isEmpty) {
-          provider.changeLangauge(const Locale('ne'));
+        // Retrieve stored language code or default to 'ne'
+        final String storedLanguage =
+            widget.languageCode.isNotEmpty ? widget.languageCode : 'ne';
+
+        if (provider.appLocale == null) {
+          // Set the initial language based on stored preferences
+          provider.changeLangauge(Locale(storedLanguage));
         }
+
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Grit QR Scanner',
@@ -79,11 +85,7 @@ class _MyAppState extends State<MyApp> {
                 titleTextStyle: TextStyle(
                     color: Colors.white, fontSize: 25, fontFamily: "Poppins")),
           ),
-
-          // ignore: prefer_if_null_operators
-          locale: provider.appLocale == null
-              ? const Locale('ne')
-              : provider.appLocale,
+          locale: provider.appLocale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
