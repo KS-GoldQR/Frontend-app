@@ -188,15 +188,15 @@ class _AboutProductState extends State<AboutProduct> {
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(product!.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
+                            "${getWeightInType(product!.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(product!.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
+                            "${getWeightInType(product!.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+                            "${getWeightInType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.actualPrice}: ',
                         value:
@@ -214,7 +214,7 @@ class _AboutProductState extends State<AboutProduct> {
                     Row(
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.jyala} (%): ',
+                          '${AppLocalizations.of(context)!.jyala}: ',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -254,7 +254,7 @@ class _AboutProductState extends State<AboutProduct> {
                             onChanged: (value) {
                               _jyalaController.text = value;
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
                             },
                             validator: (value) =>
                                 validateJyala(value!, context),
@@ -277,7 +277,7 @@ class _AboutProductState extends State<AboutProduct> {
                     Row(
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.jarti} (%): ',
+                          '${AppLocalizations.of(context)!.jarti} (${product!.jartiType == "Laal" ? AppLocalizations.of(context)!.laal : AppLocalizations.of(context)!.percentage}): ',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -317,7 +317,7 @@ class _AboutProductState extends State<AboutProduct> {
                             onChanged: (value) {
                               _jartiController.text = value;
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
+                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price, jartiWeightType: product!.jartiType))}";
                             },
                             validator: (value) =>
                                 validateJarti(value!, context),
@@ -353,7 +353,7 @@ class _AboutProductState extends State<AboutProduct> {
                           child: TextFormField(
                             controller: _totalPriceController
                               ..text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: product!.jyala!, jartiPercent: product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}",
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: product!.jyala!, jarti: product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}",
                             enabled: false, // Disable user input
                             style: const TextStyle(color: Colors.black),
                             decoration: const InputDecoration(
@@ -371,7 +371,7 @@ class _AboutProductState extends State<AboutProduct> {
                             ),
                             onChanged: (value) {
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyalaPercent: double.tryParse(_jyalaController.text) ?? product!.jyala!, jartiPercent: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0))}";
+                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
                             },
                           ),
                         ),
@@ -422,10 +422,10 @@ class _AboutProductState extends State<AboutProduct> {
                                 //         getTotalPrice(
                                 //             weight: product!.weight!,
                                 //             rate: goldRates[product!.productType!]!,
-                                //             jyalaPercent: double.tryParse(
+                                //             jyala: double.tryParse(
                                 //                     _jyalaController.text) ??
                                 //                 product!.jyala!,
-                                //             jartiPercent: double.tryParse(
+                                //             jarti: double.tryParse(
                                 //                     _jartiController.text) ??
                                 //                 product!.jarti,
                                 //             stonePrice: product!.stone_price ?? 0.0));
@@ -443,14 +443,16 @@ class _AboutProductState extends State<AboutProduct> {
                                             weight: product!.weight!,
                                             rate: goldRates[
                                                 product!.productType!]!,
-                                            jyalaPercent: double.tryParse(
+                                            jyala: double.tryParse(
                                                     _jyalaController.text) ??
                                                 product!.jyala!,
-                                            jartiPercent: double.tryParse(
+                                            jarti: double.tryParse(
                                                     _jartiController.text) ??
                                                 product!.jarti,
                                             stonePrice:
-                                                product!.stone_price ?? 0.0),
+                                                product!.stone_price ?? 0.0,
+                                            jartiWeightType:
+                                                product!.jartiType),
                                     product!.weight!);
                               },
                               text: AppLocalizations.of(context)!.sellItem,

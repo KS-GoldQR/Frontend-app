@@ -48,10 +48,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool _dependenciesInitialized = false;
   bool _stonePriceFieldVisible = false;
   late List<String> types;
-  late String selectedType;
-
+  late String selectedProductType;
+  late List<String> jartiWeightTypeList;
   late List<String> weight;
   late String selectedWeight;
+  late String selectedJartiWeightType;
   File? image;
   int currentIndex = 0;
   bool isSubmitting = false;
@@ -79,18 +80,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
 //image will be file type, sessiontoken will be dynamic
   Future<void> editProduct() async {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeight,
-        selectedType: selectedType);
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) =
+        translatedTypes(
+            context: context,
+            selectedWeightType: selectedWeight,
+            selectedProductType: selectedProductType,
+            selectedJartiWeightType: selectedJartiWeightType);
+
+    double jarti = double.tryParse(_jartiController.text.trim())!;
 
     await _productService.editProduct(
       context: context,
       productId: widget.args['product'].id,
       image: image,
       name: _nameController.text.trim(),
-      productType: rselectedType ?? selectedType,
-      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+      productType: rselectedType ?? selectedProductType,
+      weight: getWeightInGram(double.tryParse(_weightController.text.trim())!,
           rselectedWeightType ?? selectedWeight),
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
@@ -100,23 +105,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ? null
               : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
-      jarti: double.tryParse(_jartiController.text.trim())!,
+      jarti: jarti,
+      jartiType: rselectedJartiWeightType!,
     );
   }
 
   Future<void> setProduct() async {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeight,
-        selectedType: selectedType);
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) =
+        translatedTypes(
+            context: context,
+            selectedWeightType: selectedWeight,
+            selectedProductType: selectedProductType,
+            selectedJartiWeightType: selectedJartiWeightType);
+
+    double jarti = double.tryParse(_jartiController.text.trim())!;
 
     await _productService.setProduct(
       context: context,
       productId: widget.args['product'].id,
       image: image,
       name: _nameController.text.trim(),
-      productType: rselectedType ?? selectedType,
-      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+      productType: rselectedType ?? selectedProductType,
+      weight: getWeightInGram(double.tryParse(_weightController.text.trim())!,
           rselectedWeightType ?? selectedWeight),
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
@@ -124,7 +134,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ? null
           : double.tryParse(_stonePriceController.text.trim())!,
       jyala: double.tryParse(_jyalaController.text.trim())!,
-      jarti: double.tryParse(_jartiController.text.trim())!,
+      jarti: jarti,
+      jartiType: rselectedJartiWeightType!,
     );
   }
 
@@ -196,24 +207,34 @@ class _EditProductScreenState extends State<EditProductScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
 
-      //not work for set product because selectedType is not initailized at that time
-      // selectedType = selectedType == "Tejabi"
+      jartiWeightTypeList = getJartiWeightType(context);
+      //not work for set product because selectedProductType is not initailized at that time
+      // selectedProductType = selectedProductType == "Tejabi"
       //     ? AppLocalizations.of(context)!.tejabi
-      //     : selectedType == "Chhapawal"
+      //     : selectedProductType == "Chhapawal"
       //         ? AppLocalizations.of(context)!.tejabi
       //         : AppLocalizations.of(context)!.asalChandi;
 
       if (widget.args['fromRouteName'] == QRScannerScreen.routeName) {
-        selectedType = AppLocalizations.of(context)!.asalChandi;
+        selectedProductType = AppLocalizations.of(context)!.asalChandi;
       } else {
-        selectedType = selectedType == "Tejabi"
+        selectedProductType = selectedProductType == "Tejabi"
             ? AppLocalizations.of(context)!.tejabi
-            : selectedType == "Chhapawal"
+            : selectedProductType == "Chhapawal"
                 ? AppLocalizations.of(context)!.chhapawal
                 : AppLocalizations.of(context)!.asalChandi;
       }
       selectedWeight = AppLocalizations.of(context)!.gram;
-
+      // selectedJartiWeightType = AppLocalizations.of(context)!.laal;
+      selectedJartiWeightType = widget.args['product'].jartiType == "%"
+          ? "%"
+          : translatedTypes(
+                  context: context,
+                  selectedWeightType: null,
+                  selectedProductType: null,
+                  selectedJartiWeightType: widget.args['product'].jartiType)
+              .$3!;
+      // widget.args['product'].jartiType == "Laal" ? "Laal" : "%";
       _dependenciesInitialized = true;
     }
 
@@ -225,8 +246,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.initState();
     if (widget.args['fromRouteName'] == AboutProduct.routeName) {
       _nameController.text = widget.args['product'].name;
-      selectedType = widget.args['product'].productType;
+      selectedProductType = widget.args['product'].productType;
       _weightController.text = widget.args['product'].weight.toString();
+      selectedJartiWeightType =
+          widget.args['product'].jartiType == "Laal" ? "Laal" : "%";
+
+      debugPrint("$selectedJartiWeightType heeere");
       if (widget.args['product'].stone != "None") {
         _stoneController.text = widget.args['product'].stone;
       }
@@ -264,6 +289,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(selectedJartiWeightType);
     final size = MediaQuery.sizeOf(context);
     return PopScope(
       canPop: false,
@@ -412,7 +438,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(5),
                           DropdownButtonFormField<String>(
-                            value: selectedType,
+                            value: selectedProductType,
                             iconEnabledColor: const Color(0xFFC3C3C3),
                             iconDisabledColor: const Color(0xFFC3C3C3),
                             iconSize: 25,
@@ -428,7 +454,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             }).toList(),
                             onChanged: (value) {
                               setState(() {
-                                selectedType = value!;
+                                selectedProductType = value!;
                               });
                             },
                             decoration: customTextfieldDecoration(),
@@ -544,7 +570,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "${AppLocalizations.of(context)!.jyala} (%)",
+                            "${AppLocalizations.of(context)!.jyala} ",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
@@ -565,23 +591,58 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                           const Gap(10),
                           Text(
-                            "${AppLocalizations.of(context)!.jarti} (%)",
+                            "${AppLocalizations.of(context)!.jarti} ",
                             style: customTextDecoration(),
                           ),
                           const Gap(5),
-                          TextFormField(
-                            controller: _jartiController,
-                            focusNode: _jartiFocus,
-                            onFieldSubmitted: (value) => _jartiFocus.unfocus(),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            textInputAction: TextInputAction.done,
-                            cursorColor: blueColor,
-                            decoration: customTextfieldDecoration(),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) =>
-                                validateJarti(value!, context),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  controller: _jartiController,
+                                  focusNode: _jartiFocus,
+                                  onFieldSubmitted: (value) =>
+                                      _jartiFocus.unfocus(),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  textInputAction: TextInputAction.done,
+                                  cursorColor: blueColor,
+                                  decoration: customTextfieldDecoration(),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (value) =>
+                                      validateJarti(value!, context),
+                                ),
+                              ),
+                              const Gap(10),
+                              Expanded(
+                                flex: 1,
+                                child: DropdownButtonFormField<String>(
+                                  value: selectedJartiWeightType,
+                                  iconEnabledColor: const Color(0xFFC3C3C3),
+                                  iconDisabledColor: const Color(0xFFC3C3C3),
+                                  iconSize: 25,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                  items: jartiWeightTypeList.map((category) {
+                                    return DropdownMenuItem<String>(
+                                      value: category,
+                                      child: Text(category),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedJartiWeightType = value!;
+                                    });
+                                  },
+                                  decoration: customTextfieldDecoration(),
+                                ),
+                              ),
+                            ],
                           ),
                           const Gap(10),
                         ],

@@ -7,6 +7,7 @@ class Product {
   String id;
   String? image;
   double? jarti;
+  String? jartiType;
   double? jyala;
   String? name;
   int owned_by;
@@ -29,6 +30,7 @@ class Product {
     required this.id,
     this.image,
     this.jarti,
+    this.jartiType,
     this.jyala,
     this.name,
     required this.owned_by,
@@ -53,6 +55,7 @@ class Product {
       'id': id,
       'image': image,
       'jarti': jarti,
+      'jarti_type':jartiType,
       'jyala': jyala,
       'name': name,
       'owned_by': owned_by,
@@ -78,6 +81,7 @@ class Product {
       id: map['id'] as String,
       image: map['image'] as String?,
       jarti: double.tryParse(map['jarti']) ?? 0.0,
+      jartiType: map.containsKey('jarti_type') ? map['jarti_type'] as String? : null,
       jyala: double.tryParse(map['jyala']) ?? 0.0,
       name: map['name'] as String?,
       owned_by: int.tryParse(map['owned_by']) ?? 0,
@@ -116,6 +120,7 @@ class Product {
     String? id,
     String? image,
     double? jarti,
+    String? jartiType,
     double? jyala,
     String? name,
     int? owned_by,
@@ -138,6 +143,7 @@ class Product {
       id: id ?? this.id,
       image: image ?? this.image,
       jarti: jarti ?? this.jarti,
+      jartiType: jartiType ?? this.jartiType,
       jyala: jyala ?? this.jyala,
       name: name ?? this.name,
       owned_by: owned_by ?? this.owned_by,

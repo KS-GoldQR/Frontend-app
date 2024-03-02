@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:intl/intl.dart';
+import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -51,9 +51,10 @@ Widget buildSalesItemsList(BuildContext context) {
                     Row(
                       children: [
                         Expanded(
+                          // TODO(UI): change jarti and jarti-type in sales model, sales api and change here to show accordingly
                           child: buildInfoRow(
                             saleItem.product.name!,
-                            "${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${saleItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}% \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(saleItem.price)}",
+                            "${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${saleItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}% \n ${AppLocalizations.of(context)!.price}: ${getNumberFormat(saleItem.price)}",
                           ),
                         ),
                         IconButton(

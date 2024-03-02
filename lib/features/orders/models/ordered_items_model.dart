@@ -76,6 +76,7 @@ class OrderedItems {
   double wt;
   String type;
   double jarti;
+  String jartiType;
   double jyala;
   String? stone;
   double? stonePrice;
@@ -85,6 +86,7 @@ class OrderedItems {
     required this.wt,
     required this.type,
     required this.jarti,
+    required this.jartiType,
     required this.jyala,
     this.stone,
     this.stonePrice,
@@ -97,6 +99,7 @@ class OrderedItems {
       'wt': wt,
       'type': type,
       'jarti': jarti,
+      'jarti_type':jartiType,
       'jyala': jyala,
       'stone': stone,
       'stone_price': stonePrice,
@@ -110,6 +113,7 @@ class OrderedItems {
       wt: map['wt'] as double,
       type: map['type'] as String,
       jarti: map['jarti'] as double,
+      jartiType: map.containsKey('jarti_type') ? map['jarti_type'] as String : "",
       jyala: map['jyala'] as double,
       stone: map['stone'] as String?,
       stonePrice:

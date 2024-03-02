@@ -2,14 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
 import 'package:intl/intl.dart';
-import '../../../models/product_model.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../products/widgets/product_detail_card.dart';
 
 class ViewOldProductScreen extends StatefulWidget {
-  final Product product;
+  final OldProductModel product;
   const ViewOldProductScreen({super.key, required this.product});
 
   @override
@@ -79,8 +79,9 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                                 (context, url, downloadProgress) =>
                                     CircularProgressIndicator(
                                         value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                Text(AppLocalizations.of(context)!.errorGettingImage),
+                            errorWidget: (context, url, error) => Text(
+                                AppLocalizations.of(context)!
+                                    .errorGettingImage),
                           ),
                         ),
                       ),
@@ -88,40 +89,53 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                     const Gap(10),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.productName}: ',
-                        value: widget.product.name!),
+                        value: widget.product.name),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.type}: ',
-                        value: widget.product.productType!),
+                        value: widget.product.productType),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(widget.product.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
+                            "${getWeightInType(widget.product.weight, "Gram")} ${AppLocalizations.of(context)!.gram}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(widget.product.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
+                            "${getWeightInType(widget.product.weight, "Laal")} ${AppLocalizations.of(context)!.laal}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightByType(widget.product.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+                            "${getWeightInType(widget.product.weight, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.actualPrice}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(widget.product.weight! * goldRates[widget.product.productType!]!)}"),
+                            "रु${NumberFormat('#,##,###.00').format(widget.product.weight * widget.product.rate)}"),
+                    ProductDetail(
+                        label: '${AppLocalizations.of(context)!.rate}: ',
+                        value:
+                            "रु${NumberFormat('#,##,###.00').format(widget.product.rate)}"),
+                    if (widget.product.charge != null)
+                      ProductDetail(
+                          label: '${AppLocalizations.of(context)!.charge}: ',
+                          value:
+                              "रु${NumberFormat('#,##,###.00').format(widget.product.charge)}"),
                     if (widget.product.stone != "None")
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.stone}: ',
                           value: widget.product.stone!),
-                    if (widget.product.stone_price != null)
+                    if (widget.product.stonePrice != null)
                       ProductDetail(
                           label:
                               '${AppLocalizations.of(context)!.stonePrice}: ',
                           value:
-                              "रु${NumberFormat('#,##,###.00').format(widget.product.stone_price)}"),
+                              "रु${NumberFormat('#,##,###.00').format(widget.product.stonePrice)}"),
+                    ProductDetail(
+                        label: '${AppLocalizations.of(context)!.loss}: ',
+                        value:
+                            "रु${NumberFormat('#,##,###.00').format(widget.product.loss)} ${AppLocalizations.of(context)!.gram}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.price}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format((widget.product.weight! * goldRates[widget.product.productType!]!) + (widget.product.stone_price ?? 0.0))}"),
+                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: widget.product.weight, rate: widget.product.rate, stonePrice: widget.product.stonePrice ?? 0.0, loss: widget.product.loss))}"),
                   ],
                 ),
               ),

@@ -15,3 +15,4 @@ class SalesModel {
     required this.jartiPercentage,
   });
 }
+  

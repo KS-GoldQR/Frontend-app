@@ -5,21 +5,22 @@ import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import '../../../models/order_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../widget/custom_cards.dart';
+import '../widget/order_details_custom_cards.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final Order order;
   final Function deleteOrder;
   final double totalOrderedPrice;
   final double totalOldJwelleryPrice;
-  final double totalOldJwelleryCharge;
-  const OrderDetailsScreen(
-      {Key? key,
-      required this.order,
-      required this.deleteOrder,
-      required this.totalOrderedPrice,
-      required this.totalOldJwelleryPrice, required this.totalOldJwelleryCharge})
-      : super(key: key);
+  // final double totalOldJwelleryCharge;
+  const OrderDetailsScreen({
+    Key? key,
+    required this.order,
+    required this.deleteOrder,
+    required this.totalOrderedPrice,
+    required this.totalOldJwelleryPrice,
+    //  required this.totalOldJwelleryCharge,
+  }) : super(key: key);
 
   Future<void> _showChoiceDialog(BuildContext context) async {
     AwesomeDialog(
@@ -60,7 +61,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
               buildUserInfoCard(
-                  order, context, totalOrderedPrice, totalOldJwelleryPrice, totalOldJwelleryCharge),
+                  order, context, totalOrderedPrice, totalOldJwelleryPrice),
               const Gap(20),
               Text(
                 AppLocalizations.of(context)!.orderedItems,

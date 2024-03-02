@@ -27,7 +27,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   final GlobalKey _uniqueKey = GlobalKey();
   final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   late List<String> types;
-  late String selectedType;
+  late String selectedProductType;
   Map<String, List<Product>> groupedProducts = {};
   bool _didDependenciesChanged = false;
 
@@ -59,8 +59,8 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
   }
 
   List<Product> getFilteredProducts() {
-    return selectedType != AppLocalizations.of(context)!.all
-        ? groupedProducts[selectedType] ?? []
+    return selectedProductType != AppLocalizations.of(context)!.all
+        ? groupedProducts[selectedProductType] ?? []
         : products ?? [];
   }
 
@@ -73,7 +73,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
         AppLocalizations.of(context)!.tejabi,
         AppLocalizations.of(context)!.asalChandi
       ];
-      selectedType = AppLocalizations.of(context)!.all;
+      selectedProductType = AppLocalizations.of(context)!.all;
       _didDependenciesChanged = true;
     }
     super.didChangeDependencies();
@@ -101,7 +101,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
 
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>const  AboutProduct(
+        builder: (context) => const AboutProduct(
           args: {'fromInventory': true},
         ),
       ),
@@ -151,7 +151,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
-                        value: selectedType,
+                        value: selectedProductType,
                         icon: const Icon(Icons.arrow_drop_down),
                         iconSize: 24,
                         iconDisabledColor: const Color(0xFFC3C3C3),
@@ -161,7 +161,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                             const TextStyle(color: Colors.black, fontSize: 18),
                         onChanged: (String? newValue) {
                           setState(() {
-                            selectedType = newValue!;
+                            selectedProductType = newValue!;
                           });
                         },
                         items:
@@ -196,9 +196,9 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (var entry in groupedProducts.entries)
-                                  if (selectedType ==
+                                  if (selectedProductType ==
                                           AppLocalizations.of(context)!.all ||
-                                      entry.key == selectedType)
+                                      entry.key == selectedProductType)
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -227,7 +227,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                             //     ? const Text(
                                             //         "error fetching rates...")
                                             //     : Text(
-                                            //         "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                            //         "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
                                             subtitle: product.updatedAt != null
                                                 ? Text(
                                                     "${AppLocalizations.of(context)!.lastUpdate}: ${formatDateTimeRange(product.updatedAt!)}")
@@ -235,7 +235,7 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                                     ? const Text(
                                                         "error fetching rates...")
                                                     : Text(
-                                                        "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyalaPercent: product.jyala!, jartiPercent: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                                        "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
                                             // trailing: Text(
                                             //     "रु${NumberFormat('#,##,###.00').format(product.price!)}"),
                                             leading: ClipRRect(

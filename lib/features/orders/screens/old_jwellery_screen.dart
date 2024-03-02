@@ -2,7 +2,7 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
-import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
+import 'package:grit_qr_scanner/features/orders/screens/check_order_screen.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
@@ -27,58 +27,81 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
-  final TextEditingController _chargeController = TextEditingController();
+  // final TextEditingController _chargeController = TextEditingController();
+  final TextEditingController _lossController = TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
   final _itemNamefocus = FocusNode();
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
   final _chargeFocus = FocusNode();
+  final _lossFocus = FocusNode();
+  final _rateFocus = FocusNode();
   bool _showTotalPrice = false;
   late List<String> weight;
   late String selectedWeightType;
+  late String lossWeightType;
   late List<String> types;
-  late String selectedType;
+  late String selectedProductType;
   bool _dependenciesInitialized = false;
   double currentJwelleryPrice = 0.0;
   double totalPriceToShow = 0.0;
   bool _stonePriceFieldVisible = false;
+  String customRate = "";
+  bool _isSelectedTypeChanged = false;
 
   void calculateTotalPrice() {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, _, _) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeightType,
-        selectedType: selectedType);
+        selectedProductType: selectedProductType);
 
-    double weight = getWeight(
+    var (rlossWeightType, _, _) = translatedTypes(
+        context: context,
+        selectedWeightType: lossWeightType,
+        selectedProductType: selectedProductType);
+
+    double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
     double stonePrice = _stonePriceController.text.isEmpty
         ? 0.0
         : double.tryParse(_stonePriceController.text.trim())!;
-    double charge = _chargeController.text.isEmpty
+    // double charge = _chargeController.text.isEmpty
+    //     ? 0.0
+    //     : double.tryParse(_chargeController.text.trim())!;
+    double rate = double.tryParse(_rateController.text.trim())!;
+    double loss = _lossController.text.isEmpty
         ? 0.0
-        : double.tryParse(_chargeController.text.trim())!;
+        : getWeightInGram(
+            double.tryParse(_lossController.text)!, rlossWeightType!);
+
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[rselectedType ?? selectedType]!,
-      jyalaPercent: null,
-      jartiPercent: null,
+      rate: rate,
+      loss: loss,
+      // charge: charge,
       stonePrice: stonePrice,
     );
 
     setState(() {
-      currentJwelleryPrice = totalPrice - charge;
+      currentJwelleryPrice = totalPrice;
     });
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, rselectedType, _) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeightType,
-        selectedType: selectedType);
+        selectedProductType: selectedProductType);
 
-    double weight = getWeight(
+    var (rlossWeightType, _, _) = translatedTypes(
+        context: context,
+        selectedWeightType: lossWeightType,
+        selectedProductType: selectedProductType);
+
+    double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
@@ -86,27 +109,34 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
         ? null
         : double.tryParse(_stonePriceController.text.trim())!;
 
-    double? charge = _chargeController.text.isEmpty
-        ? null
-        : double.tryParse(_chargeController.text.trim())!;
+    // double? charge = _chargeController.text.isEmpty
+    //     ? null
+    //     : double.tryParse(_chargeController.text.trim())!;
+    double rate = double.tryParse(_rateController.text.trim())!;
+    double loss = _lossController.text.isEmpty
+        ? 0.0
+        : getWeightInGram(
+            double.tryParse(_lossController.text)!, rlossWeightType!);
 
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[rselectedType ?? selectedType]!,
-      jyalaPercent: null,
-      jartiPercent: null,
+      rate: rate,
+      loss: loss,
+      // charge: charge,
       stonePrice: stonePrice ?? 0.0,
     );
 
     OldJwellery oldJwellery = OldJwellery(
       itemName: _itemNameController.text.trim(),
       wt: weight,
-      type: rselectedType ?? selectedType,
+      type: rselectedType ?? selectedProductType,
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
       stonePrice: stonePrice,
-      charge: charge,
+      // charge: charge,
       price: totalPrice,
+      rate: rate,
+      loss: loss,
     );
 
     orderProvider.addOldJewelry(oldJwellery);
@@ -116,7 +146,13 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     //     contentType: ContentType.success);
 
     if (isProceed) {
-      Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+      // Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CheckOrderScreen(),
+        ),
+      );
     } else {
       Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
     }
@@ -143,9 +179,10 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = AppLocalizations.of(context)!.chhapawal;
+      selectedProductType = AppLocalizations.of(context)!.chhapawal;
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
+      lossWeightType = selectedWeightType;
       _dependenciesInitialized = true;
     }
 
@@ -167,7 +204,9 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     _weightController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
-    _chargeController.dispose();
+    // _chargeController.dispose();
+    _lossController.dispose();
+    _rateController.dispose();
     _itemNamefocus.dispose();
     _weightFocus.dispose();
     _stoneFocus.dispose();
@@ -245,7 +284,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                       ),
                       const Gap(5),
                       DropdownButtonFormField<String>(
-                        value: selectedType,
+                        value: selectedProductType,
                         iconEnabledColor: const Color(0xFFC3C3C3),
                         iconDisabledColor: const Color(0xFFC3C3C3),
                         iconSize: 25,
@@ -261,7 +300,15 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                         }).toList(),
                         onChanged: (value) {
                           setState(() {
-                            selectedType = value!;
+                            selectedProductType = value!;
+                            _isSelectedTypeChanged = true;
+                            customRate = goldRates[translatedTypes(
+                                        context: context,
+                                        selectedWeightType: selectedWeightType,
+                                        selectedProductType: value)
+                                    .$2]
+                                .toString();
+                            _rateController.text = customRate;
                             calculateTotalPrice();
                           });
                         },
@@ -339,7 +386,7 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                             _stoneFocus,
                             _stonePriceFieldVisible
                                 ? _stonePriceFocus
-                                : _chargeFocus),
+                                : _rateFocus),
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
@@ -368,8 +415,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                             TextFormField(
                               controller: _stonePriceController,
                               focusNode: _stonePriceFocus,
-                              onFieldSubmitted: (value) =>
-                                  _stonePriceFocus.unfocus(),
+                              onFieldSubmitted: (value) => _fieldFocusChange(
+                                  context, _stonePriceFocus, _rateFocus),
                               keyboardType:
                                   const TextInputType.numberWithOptions(
                                       decimal: true),
@@ -386,24 +433,125 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                           ],
                         ),
                       ),
+                      // Text(
+                      //   AppLocalizations.of(context)!.charge,
+                      //   style: customTextDecoration()
+                      //       .copyWith(fontWeight: FontWeight.w600),
+                      // ),
+                      // const Gap(5),
+                      // TextFormField(
+                      //   controller: _chargeController,
+                      //   focusNode: _chargeFocus,
+                      //   onFieldSubmitted: (value) => _fieldFocusChange(
+                      //       context, _chargeFocus, _rateFocus),
+                      //   keyboardType: const TextInputType.numberWithOptions(
+                      //       decimal: true),
+                      //   textInputAction: TextInputAction.next,
+                      //   cursorColor: blueColor,
+                      //   decoration: customTextfieldDecoration(),
+                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                      //   validator: (value) => validateCharge(value!, context),
+                      //   onChanged: (value) => calculateTotalPrice(),
+                      // ),
+                      // const Gap(10),
                       Text(
-                        AppLocalizations.of(context)!.charge,
+                        AppLocalizations.of(context)!.rate,
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
                       const Gap(5),
                       TextFormField(
-                        controller: _chargeController,
-                        focusNode: _chargeFocus,
-                        onFieldSubmitted: (value) => _chargeFocus.unfocus(),
+                        controller: _rateController
+                          ..text = _isSelectedTypeChanged
+                              ? customRate
+                              : goldRates[translatedTypes(
+                                          context: context,
+                                          selectedWeightType:
+                                              selectedWeightType,
+                                          selectedProductType:
+                                              selectedProductType)
+                                      .$2]
+                                  .toString(),
+                        focusNode: _rateFocus,
+                        onFieldSubmitted: (value) =>
+                            _fieldFocusChange(context, _rateFocus, _lossFocus),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
                         cursorColor: blueColor,
                         decoration: customTextfieldDecoration(),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateCharge(value!, context),
-                        onChanged: (value) => calculateTotalPrice(),
+                        validator: (value) => validateRate(value!, context),
+                        onChanged: (value) {
+                          _rateController.text = value;
+                          customRate = value;
+                          _isSelectedTypeChanged = true;
+                          calculateTotalPrice();
+                        },
+                      ),
+                      const Gap(10),
+                      Text(
+                        AppLocalizations.of(context)!.loss,
+                        style: customTextDecoration()
+                            .copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _lossController,
+                              focusNode: _lossFocus,
+                              onFieldSubmitted: (value) => _lossFocus.unfocus(),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              textInputAction: TextInputAction.done,
+                              cursorColor: blueColor,
+                              decoration: customTextfieldDecoration(),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                // validateWeight(_weightController.text, context);
+                                debugPrint(lossWeightType);
+                                return validateLoss(
+                                    _weightController.text,
+                                    value!,
+                                    selectedWeightType,
+                                    lossWeightType,
+                                    context);
+                              },
+                              onChanged: (value) => calculateTotalPrice(),
+                            ),
+                          ),
+                          const Gap(10),
+                          Expanded(
+                            flex: 1,
+                            child: DropdownButtonFormField<String>(
+                              value: lossWeightType,
+                              iconEnabledColor: const Color(0xFFC3C3C3),
+                              iconDisabledColor: const Color(0xFFC3C3C3),
+                              iconSize: 25,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ),
+                              items: weight.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category,
+                                  child: Text(category),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  lossWeightType = value!;
+                                });
+                                calculateTotalPrice();
+                              },
+                              decoration: customTextfieldDecoration(),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -489,11 +637,18 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
                 CustomButton(
                   onPressed: () {
                     if (_itemNameController.text.isEmpty &&
-                        _weightController.text.isEmpty &&
-                        _stoneController.text.isEmpty &&
-                        _chargeController.text.isEmpty) {
-                      Navigator.pushNamed(
-                          context, CustomerDetailsScreen.routeName);
+                            _weightController.text.isEmpty &&
+                            _stoneController.text.isEmpty
+                        // && _chargeController.text.isEmpty
+                        ) {
+                      // Navigator.pushNamed(
+                      //     context, CustomerDetailsScreen.routeName);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CheckOrderScreen(),
+                        ),
+                      );
                     } else if (_oldJwelleryFormKey.currentState!.validate()) {
                       addOtherItem(orderProvider, true);
                     }

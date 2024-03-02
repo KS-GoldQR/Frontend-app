@@ -1,10 +1,10 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
 import 'package:grit_qr_scanner/features/old%20products/screens/add_old_product_screen.dart';
 import 'package:grit_qr_scanner/features/old%20products/screens/view_old_product_screen.dart';
 import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
-import 'package:grit_qr_scanner/models/product_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:remixicon/remixicon.dart';
@@ -22,13 +22,13 @@ class OldProductsScreen extends StatefulWidget {
 }
 
 class _OldProductsScreenState extends State<OldProductsScreen> {
-  List<Product>? products;
+  List<OldProductModel>? products;
   final OldProductService _oldProductService = OldProductService();
   final GlobalKey _circularProgressIndicatorKey = GlobalKey();
 
   late List<String> types;
-  late String selectedType;
-  Map<String, List<Product>> groupedProducts = {};
+  late String selectedProductType;
+  Map<String, List<OldProductModel>> groupedProducts = {};
   bool _didDependenciesChanged = false;
 
   Future<void> getOldProducts() async {
@@ -77,9 +77,9 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
     }
   }
 
-  List<Product> getFilteredProducts() {
-    return selectedType != AppLocalizations.of(context)!.all
-        ? groupedProducts[selectedType] ?? []
+  List<OldProductModel> getFilteredProducts() {
+    return selectedProductType != AppLocalizations.of(context)!.all
+        ? groupedProducts[selectedProductType] ?? []
         : products ?? [];
   }
 
@@ -110,7 +110,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
         AppLocalizations.of(context)!.tejabi,
         AppLocalizations.of(context)!.asalChandi
       ];
-      selectedType = AppLocalizations.of(context)!.all;
+      selectedProductType = AppLocalizations.of(context)!.all;
       _didDependenciesChanged = true;
     }
     super.didChangeDependencies();
@@ -127,7 +127,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
     });
   }
 
-  Future<void> navigateToAboutProduct(Product product) async {
+  Future<void> navigateToAboutProduct(OldProductModel product) async {
     navigatorKey.currentState!.push(
       MaterialPageRoute(
         builder: (context) => ViewOldProductScreen(product: product),
@@ -172,7 +172,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
-                        value: selectedType,
+                        value: selectedProductType,
                         icon: const Icon(Icons.arrow_drop_down),
                         iconSize: 24,
                         iconDisabledColor: const Color(0xFFC3C3C3),
@@ -182,7 +182,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                             const TextStyle(color: Colors.black, fontSize: 18),
                         onChanged: (String? newValue) {
                           setState(() {
-                            selectedType = newValue!;
+                            selectedProductType = newValue!;
                           });
                         },
                         items:
@@ -217,9 +217,9 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (var entry in groupedProducts.entries)
-                                  if (selectedType ==
+                                  if (selectedProductType ==
                                           AppLocalizations.of(context)!.all ||
-                                      entry.key == selectedType)
+                                      entry.key == selectedProductType)
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -240,7 +240,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                             contentPadding:
                                                 const EdgeInsets.all(10),
                                             title: Text(
-                                              product.name!,
+                                              product.name,
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600),
                                             ),
@@ -249,7 +249,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                         context)!
                                                     .errorFetchingRates)
                                                 : Text(
-                                                    "रु${NumberFormat('#,##,###.00').format((product.weight! * goldRates[product.productType!]!) + (product.stone_price ?? 0.0))}"),
+                                                    "रु${NumberFormat('#,##,###.00').format((product.weight * goldRates[product.productType]!) + (product.stonePrice ?? 0.0))}"),
                                             trailing: IconButton(
                                               onPressed: () =>
                                                   _showChoiceDialog(
@@ -260,7 +260,8 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                               ),
                                             ),
                                             leading: ClipRRect(
-                                              borderRadius: BorderRadius.circular(5),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                               child: CachedNetworkImage(
                                                 height: 250,
                                                 width: 80,
@@ -275,8 +276,8 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                                     .progress),
                                                 errorWidget: (context, url,
                                                         error) =>
-                                                    const Icon(
-                                                        Remix.error_warning_fill),
+                                                    const Icon(Remix
+                                                        .error_warning_fill),
                                               ),
                                             ),
                                           );

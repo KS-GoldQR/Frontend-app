@@ -26,7 +26,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   List<Product>? products;
   final SalesService _salesService = SalesService();
   late List<String> types;
-  late String selectedType;
+  late String selectedProductType;
   Map<String, List<Product>> groupedProducts = {};
   DateTime? startDate;
   DateTime? endDate;
@@ -55,8 +55,8 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
   }
 
   List<Product> getFilteredProducts() {
-    return (selectedType != AppLocalizations.of(context)!.all
-            ? groupedProducts[selectedType] ?? []
+    return (selectedProductType != AppLocalizations.of(context)!.all
+            ? groupedProducts[selectedProductType] ?? []
             : products ?? [])
         .where((product) {
       if (startDate == null && endDate == null) {
@@ -122,7 +122,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
       AppLocalizations.of(context)!.tejabi,
       AppLocalizations.of(context)!.asalChandi
     ];
-    selectedType = AppLocalizations.of(context)!.all;
+    selectedProductType = AppLocalizations.of(context)!.all;
     super.didChangeDependencies();
   }
 
@@ -164,7 +164,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                         decoration: customTextfieldDecoration(),
                         isExpanded: true,
                         isDense: true,
-                        value: selectedType,
+                        value: selectedProductType,
                         icon: const Icon(Icons.arrow_drop_down),
                         iconSize: 24,
                         iconDisabledColor: const Color(0xFFC3C3C3),
@@ -174,7 +174,7 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                             const TextStyle(color: Colors.black, fontSize: 18),
                         onChanged: (String? newValue) {
                           setState(() {
-                            selectedType = newValue!;
+                            selectedProductType = newValue!;
                           });
                         },
                         items:
@@ -211,9 +211,9 @@ class _ViewSoldItemsState extends State<SoldItemsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (var entry in groupedProducts.entries)
-                                  if (selectedType ==
+                                  if (selectedProductType ==
                                           AppLocalizations.of(context)!.all ||
-                                      entry.key == selectedType)
+                                      entry.key == selectedProductType)
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,

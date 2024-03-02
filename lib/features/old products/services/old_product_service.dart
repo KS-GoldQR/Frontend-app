@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/models/product_model.dart';
+import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
@@ -13,10 +13,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 class OldProductService {
-  Future<List<Product>> getOldProducts(BuildContext context) async {
+  Future<List<OldProductModel>> getOldProducts(BuildContext context) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    List<Product> products = [];
+    List<OldProductModel> products = [];
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       http.Response response = await http.post(
@@ -28,15 +28,18 @@ class OldProductService {
       httpErrorHandle(
           response: response,
           onSuccess: () {
+            debugPrint("success hit");
             for (int i = 0;
                 i < jsonDecode(response.body)['products'].length;
                 i++) {
               products.add(
-                Product.fromMap(jsonDecode(response.body)['products'][i]),
+                OldProductModel.fromMap(
+                    jsonDecode(response.body)['products'][i]),
               );
             }
           });
     } catch (e) {
+      debugPrint(e.toString());
       showSnackBar(
           title: internalError,
           message: unknownError,
@@ -53,6 +56,9 @@ class OldProductService {
     required double weight,
     String? stone,
     double? stonePrice,
+    double? charge,
+    required double rate,
+    double? loss,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -88,6 +94,9 @@ class OldProductService {
           "weight": weight,
           "stone": stone,
           "stone_price": stonePrice,
+          "charge": charge,
+          "loss": loss,
+          "rate": rate,
         }),
         headers: {'Content-Type': 'application/json'},
       );

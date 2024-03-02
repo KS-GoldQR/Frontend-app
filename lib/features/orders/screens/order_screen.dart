@@ -6,6 +6,7 @@ import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
 import 'package:grit_qr_scanner/models/order_model.dart';
 import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:grit_qr_scanner/utils/widgets/loader.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -86,13 +87,13 @@ class _OrderScreenState extends State<OrderScreen> {
     return totalPrice;
   }
 
-  double getOldJwelleryCharge(Order order) {
-    double totalPrice = 0;
-    for (int i = 0; i < order.old_jwellery!.length; i++) {
-      totalPrice += (order.old_jwellery![i].charge ?? 0.0);
-    }
-    return totalPrice;
-  }
+  // double getOldJwelleryCharge(Order order) {
+  //   double totalPrice = 0;
+  //   for (int i = 0; i < order.old_jwellery!.length; i++) {
+  //     totalPrice += (order.old_jwellery![i].charge ?? 0.0);
+  //   }
+  //   return totalPrice;
+  // }
 
   @override
   void initState() {
@@ -128,6 +129,7 @@ class _OrderScreenState extends State<OrderScreen> {
       PlutoColumn(
         title: AppLocalizations.of(context)!.remaining,
         field: 'amount',
+        formatter: (value) => NumberFormat('#,##,###.00').format(value),
         type: PlutoColumnType.number(
           allowFirstDot: true,
         ),
@@ -203,16 +205,16 @@ class _OrderScreenState extends State<OrderScreen> {
                         double totalOrderedPrice = getOrderTotalPrice(rowOrder);
                         double totalOldJwelleryPrice =
                             getOldJwelleryTotalPrice(rowOrder);
-                        double totalOldJwelleryCharge =
-                            getOldJwelleryCharge(rowOrder);
+                        // double totalOldJwelleryCharge =
+                        //     getOldJwelleryCharge(rowOrder);
 
                         // Update the order with copyWith
                         final updatedOrder = rowOrder.copyWith(
-                          remaining_payment: totalOrderedPrice -
-                              totalOldJwelleryPrice -
-                              rowOrder.advanced_payment -
-                              totalOldJwelleryCharge,
-                        );
+                            remaining_payment: totalOrderedPrice -
+                                totalOldJwelleryPrice -
+                                rowOrder.advanced_payment
+                            //  -totalOldJwelleryCharge
+                            );
 
                         //if you want to get updates orders list
                         /*
@@ -237,7 +239,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               order: updatedOrder,
                               totalOrderedPrice: totalOrderedPrice,
                               totalOldJwelleryPrice: totalOldJwelleryPrice,
-                              totalOldJwelleryCharge: totalOldJwelleryCharge,
+                              // totalOldJwelleryCharge: totalOldJwelleryCharge,
                               deleteOrder: () async {
                                 await deleteOrder(updatedOrder.id, context);
                               },

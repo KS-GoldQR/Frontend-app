@@ -43,4 +43,14 @@ Customer? get customer => _customer;
   void resetCustomer() {
     _customer = null;
   }
+
+    void removeOrderedItemAt(int index) {
+    _orderedItems.removeAt(index);
+    notifyListeners();
+  }
+
+     void removeOldJwelleryItemAt(int index) {
+    _oldJweleries.removeAt(index);
+    notifyListeners();
+  }
 }

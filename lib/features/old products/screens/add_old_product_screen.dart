@@ -31,15 +31,23 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
   final TextEditingController _stonePriceController = TextEditingController();
+  // final TextEditingController _chargeController = TextEditingController();
+  final TextEditingController _lossController = TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
   final _descriptionFocus = FocusNode();
   final _nameFocus = FocusNode();
   final _weightFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
+  final _chargeFocus = FocusNode();
+  final _lossFocus = FocusNode();
+  final _rateFocus = FocusNode();
   late List<String> types;
-  late String selectedType;
+  late String selectedProductType;
+  late String lossWeightType;
   bool _stonePriceFieldVisible = false;
-
+  String customRate = "";
+  bool _isSelectedTypeChanged = false;
   late List<String> weight;
   late String selectedWeight;
   File? image;
@@ -65,23 +73,38 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
   }
 
   Future<void> addOldProduct() async {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, rselectedType, _) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeight,
-        selectedType: selectedType);
+        selectedProductType: selectedProductType);
+
+    var (rlossWeightType, _, _) = translatedTypes(
+        context: context,
+        selectedWeightType: lossWeightType,
+        selectedProductType: selectedProductType);
+
+    double loss = _lossController.text.isEmpty
+        ? 0.0
+        : getWeightInGram(
+            double.tryParse(_lossController.text)!, rlossWeightType!);
 
     await _oldProductService.addOldProduct(
       context: context,
       image: image,
       name: _nameController.text.trim(),
-      productType: rselectedType ?? selectedType,
-      weight: getWeight(double.tryParse(_weightController.text.trim())!,
+      productType: rselectedType ?? selectedProductType,
+      weight: getWeightInGram(double.tryParse(_weightController.text.trim())!,
           rselectedWeightType ?? selectedWeight),
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
       stonePrice: _stonePriceController.text.isEmpty
           ? null
           : double.tryParse(_stonePriceController.text.trim())!,
+      // charge: _chargeController.text.isEmpty
+      //     ? null
+      //     : double.tryParse(_chargeController.text.trim())!,
+      rate: double.tryParse(_rateController.text.trim())!,
+      loss: loss,
     );
   }
 
@@ -153,7 +176,8 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
       selectedWeight = AppLocalizations.of(context)!.gram;
-      selectedType = AppLocalizations.of(context)!.asalChandi;
+      selectedProductType = AppLocalizations.of(context)!.asalChandi;
+      lossWeightType = selectedWeight;
       _dependenciesInitialized = true;
     }
 
@@ -167,11 +191,17 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
     _weightController.dispose();
     _stoneController.dispose();
     _stonePriceController.dispose();
+    // _chargeController.dispose();
+    _lossController.dispose();
+    _rateController.dispose();
     _descriptionFocus.dispose();
     _nameFocus.dispose();
     _weightFocus.dispose();
     _stoneFocus.dispose();
     _stonePriceFocus.dispose();
+    _chargeFocus.dispose();
+    _lossFocus.dispose();
+    _rateFocus.dispose();
     super.dispose();
   }
 
@@ -248,43 +278,43 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                                     fit: BoxFit.contain,
                                     height: size.height * 0.2,
                                     width: double.infinity,
-                                  ): DottedBorder(
-                                        strokeWidth: 1,
-                                        borderType: BorderType.RRect,
-                                        borderPadding: const EdgeInsets.all(5),
-                                        dashPattern: const [10, 4],
-                                        radius: const Radius.circular(15),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(15),
-                                          height: size.height * 0.2,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              const Icon(
-                                                Icons.folder_open_outlined,
-                                                size: 35,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                AppLocalizations.of(context)!
-                                                    .selectProductImages,
-                                                style: TextStyle(
-                                                  fontSize: 25,
-                                                  color: Colors.grey.shade400,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                  )
+                                : DottedBorder(
+                                    strokeWidth: 1,
+                                    borderType: BorderType.RRect,
+                                    borderPadding: const EdgeInsets.all(5),
+                                    dashPattern: const [10, 4],
+                                    radius: const Radius.circular(15),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(15),
+                                      height: size.height * 0.2,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.folder_open_outlined,
+                                            size: 35,
+                                            color: Colors.black,
+                                          ),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .selectProductImages,
+                                            style: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.grey.shade400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                           ),
                           const Gap(10),
                           Text(
@@ -312,7 +342,7 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                           ),
                           const Gap(5),
                           DropdownButtonFormField<String>(
-                            value: selectedType,
+                            value: selectedProductType,
                             iconEnabledColor: const Color(0xFFC3C3C3),
                             iconDisabledColor: const Color(0xFFC3C3C3),
                             iconSize: 25,
@@ -328,7 +358,15 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                             }).toList(),
                             onChanged: (value) {
                               setState(() {
-                                selectedType = value!;
+                                selectedProductType = value!;
+                                _isSelectedTypeChanged = true;
+                                customRate = goldRates[translatedTypes(
+                                            context: context,
+                                            selectedWeightType: selectedWeight,
+                                            selectedProductType: value)
+                                        .$2]
+                                    .toString();
+                                _rateController.text = customRate;
                               });
                             },
                             decoration: customTextfieldDecoration(),
@@ -427,11 +465,12 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                                   controller: _stonePriceController,
                                   focusNode: _stonePriceFocus,
                                   onFieldSubmitted: (value) =>
-                                      _stonePriceFocus.unfocus(),
+                                      _fieldFocusChange(context,
+                                          _stonePriceFocus, _chargeFocus),
                                   keyboardType:
                                       const TextInputType.numberWithOptions(
                                           decimal: true),
-                                  textInputAction: TextInputAction.done,
+                                  textInputAction: TextInputAction.next,
                                   cursorColor: blueColor,
                                   decoration: customTextfieldDecoration(),
                                   autovalidateMode:
@@ -441,6 +480,124 @@ class _AddOldProductScreenState extends State<AddOldProductScreen> {
                                 ),
                               ],
                             ),
+                          ),
+                          const Gap(10),
+                          // Text(
+                          //   AppLocalizations.of(context)!.charge,
+                          //   style: customTextDecoration(),
+                          // ),
+                          // const Gap(5),
+                          // TextFormField(
+                          //   controller: _chargeController,
+                          //   focusNode: _chargeFocus,
+                          //   onFieldSubmitted: (value) => _fieldFocusChange(
+                          //       context, _chargeFocus, _rateFocus),
+                          //   keyboardType: const TextInputType.numberWithOptions(
+                          //       decimal: true),
+                          //   textInputAction: TextInputAction.next,
+                          //   cursorColor: blueColor,
+                          //   decoration: customTextfieldDecoration(),
+                          //   autovalidateMode:
+                          //       AutovalidateMode.onUserInteraction,
+                          //   validator: (value) =>
+                          //       validateCharge(value!, context),
+                          // ),
+                          // const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.rate,
+                            style: customTextDecoration(),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _rateController
+                              ..text = _isSelectedTypeChanged
+                                  ? customRate
+                                  : goldRates[translatedTypes(
+                                              context: context,
+                                              selectedWeightType:
+                                                  selectedWeight,
+                                              selectedProductType:
+                                                  selectedProductType)
+                                          .$2]
+                                      .toString(),
+                            focusNode: _rateFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _rateFocus, _lossFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => validateRate(value!, context),
+                            onChanged: (value) {
+                              _rateController.text = value;
+                              customRate = value;
+                              _isSelectedTypeChanged = true;
+                            },
+                          ),
+                          const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.loss,
+                            style: customTextDecoration(),
+                          ),
+                          const Gap(5),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  controller: _lossController,
+                                  focusNode: _lossFocus,
+                                  onFieldSubmitted: (value) =>
+                                      _lossFocus.unfocus(),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  textInputAction: TextInputAction.done,
+                                  cursorColor: blueColor,
+                                  decoration: customTextfieldDecoration(),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (value) {
+                                    // validateWeight(_weightController.text, context);
+                                    return validateLoss(
+                                        _weightController.text,
+                                        value!,
+                                        selectedWeight,
+                                        lossWeightType,
+                                        context);
+                                  },
+                                ),
+                              ),
+                              const Gap(10),
+                              Expanded(
+                                flex: 1,
+                                child: DropdownButtonFormField<String>(
+                                  value: lossWeightType,
+                                  iconEnabledColor: const Color(0xFFC3C3C3),
+                                  iconDisabledColor: const Color(0xFFC3C3C3),
+                                  iconSize: 25,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                  items: weight.map((category) {
+                                    return DropdownMenuItem<String>(
+                                      value: category,
+                                      child: Text(category),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      lossWeightType = value!;
+                                    });
+                                  },
+                                  decoration: customTextfieldDecoration(),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

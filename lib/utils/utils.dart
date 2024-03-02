@@ -153,13 +153,14 @@ Future<void> getRate(BuildContext context) async {
   }
 }
 
-double getWeight(double weight, String selectedWeightType) {
+//return weight from any type to grams
+double getWeightInGram(double weight, String selectedWeightType) {
   double result;
 
   if (selectedWeightType == "Tola") {
     result = weight * 11.664;
   } else if (selectedWeightType == "Laal") {
-    result = weight * 0.1166;
+    result = weight * 0.11664;
   } else {
     result = weight;
   }
@@ -167,13 +168,14 @@ double getWeight(double weight, String selectedWeightType) {
   return double.parse(result.toStringAsFixed(3));
 }
 
-double getWeightByType(double weight, String selectedWeightType) {
+//return weight in given type
+double getWeightInType(double weight, String selectedWeightType) {
+  //by default whatever weight is passed in this function is in gram, because its from api and in api weight is converted to gram and stored
   double result;
-
   if (selectedWeightType == "Tola") {
     result = weight / 11.664;
   } else if (selectedWeightType == "Laal") {
-    result = weight / 0.1166;
+    result = weight / 0.11664;
   } else {
     result = weight;
   }
@@ -184,14 +186,24 @@ double getWeightByType(double weight, String selectedWeightType) {
 double getTotalPrice(
     {required double weight,
     required double rate,
-    required double? jyalaPercent,
-    required double? jartiPercent,
-    required double stonePrice}) {
-  double itemPrice = weight * rate;
+    String? jartiWeightType,
+    double? loss,
+    double? charge,
+    double? jyala,
+    double? jarti,
+    double? stonePrice}) {
+  double itemPrice = (weight - (loss ?? 0.0)) * rate;
+  double modifiedJarti = jarti == null
+      ? 0.0
+      : jartiWeightType == "Laal"
+          ? getWeightInGram(jarti, "Laal") * rate
+          : itemPrice * (jarti / 100);
 
-  double jyala = jyalaPercent == null ? 0.0 : (itemPrice * jyalaPercent);
-  double jarti = jartiPercent == null ? 0.0 : (itemPrice * jartiPercent);
-  double result = itemPrice + jyala + jarti + stonePrice;
+  double result = itemPrice +
+      (jyala ?? 0.0) +
+      modifiedJarti +
+      (stonePrice ?? 0.0) -
+      (charge ?? 0.0);
   return double.parse(result.toStringAsFixed(3));
 }
 
@@ -205,25 +217,47 @@ String formatDateTimeRange(DateTime date) {
   return DateFormat('d MMM y').format(dateTime);
 }
 
-(String?, String?) translatedTypes(
-    {required BuildContext context,
-    required String selectedWeightType,
-    required String selectedType}) {
+(String?, String?, String?) translatedTypes({
+  required BuildContext context,
+  String? selectedWeightType,
+  String? selectedProductType,
+  String? selectedJartiWeightType,
+}) {
   String countryLanguageUsed = Localizations.localeOf(context).countryCode!;
-  String? rselectedWeightType;
-  String? rselectedType;
   if (countryLanguageUsed == "NP") {
-    rselectedWeightType = selectedWeightType == "ग्राम"
+    String? rselectedWeightType = selectedWeightType == "ग्राम"
         ? "Gram"
         : selectedWeightType == "तोला"
             ? "Tola"
             : "Laal";
 
-    rselectedType = selectedType == "छापावाल"
+    String? rselectedProductType = selectedProductType == "छापावाल"
         ? "Chhapawal"
-        : selectedType == "तेजाबी"
+        : selectedProductType == "तेजाबी"
             ? "Tejabi"
             : "Asal Chandi";
+
+    String? rselectedJartiWeightType =
+        selectedJartiWeightType == "लाल" ? "Laal" : "%";
+
+    return (
+      rselectedWeightType,
+      rselectedProductType,
+      rselectedJartiWeightType
+    );
   }
-  return (rselectedWeightType, rselectedType);
+  return (selectedWeightType, selectedProductType, selectedJartiWeightType);
+}
+
+String getNumberFormat(dynamic value) {
+  return NumberFormat('#,##,###.00').format(value);
+}
+
+List<String> getJartiWeightType(BuildContext context) {
+  List<String> weight = [
+    AppLocalizations.of(context)!.laal,
+    AppLocalizations.of(context)!.percentage,
+  ];
+
+  return weight;
 }

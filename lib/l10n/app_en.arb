@@ -122,6 +122,13 @@
   "charge": "Charge",
   "chargeCannotBeNegative": "Charge cannot be negative",
   "areYouSure": "Are you sure?",
+"rateCannotBeNegative": "Rate cannot be negative",
+"rate":"rate",
+"rateCannotBeEmpty":"rate cannot be empty!",
+"loss":"loss",
+"lossCannotBeNegative":"loss cannot be negative",
+"lossCannotBeMoreThanWeight": "Loss is more than weight",
+"percentage":"%",
   
   "nameEmpty": "Name cannot be empty!",
   "weightEmpty": "Weight cannot be empty!",

@@ -3,7 +3,7 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart';
-import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
+import 'package:grit_qr_scanner/features/orders/screens/check_order_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
@@ -42,7 +42,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late List<String> weight;
   late String selectedWeightType;
   late List<String> types;
-  late String selectedType;
+  late List<String> jartiWeightTypeList;
+  late String selectedProductType;
+  late String selectedJartiWeightType;
   double currentOrderPrice = 0.0;
   double totalPriceToShow = 0.0;
   bool _dependenciesInitialized = false;
@@ -62,7 +64,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         btnCancelColor: blueColor,
         btnCancelOnPress: () {
           addOtherItem(orderProvider, true);
-          Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+          // Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CheckOrderScreen(),
+            ),
+          );
         },
         btnOkOnPress: () {
           addOtherItem(orderProvider, true);
@@ -73,25 +81,30 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void calculateTotalPrice() {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeightType,
-        selectedType: selectedType);
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) =
+        translatedTypes(
+            context: context,
+            selectedWeightType: selectedWeightType,
+            selectedProductType: selectedProductType,
+            selectedJartiWeightType: selectedJartiWeightType);
 
-    double weight = getWeight(
+    double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
-    double jarti = double.tryParse(_jartiController.text.trim())!;
     double stonePrice = _stonePriceController.text.isEmpty
         ? 0.0
         : double.tryParse(_stonePriceController.text.trim())!;
+
+    double jarti = getWeightInGram(
+        double.tryParse(_jartiController.text.trim())!,
+        rselectedJartiWeightType!);
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[rselectedType ?? selectedType]!,
-      jyalaPercent: jyala,
-      jartiPercent: jarti,
+      rate: goldRates[rselectedType ?? selectedProductType]!,
+      jyala: jyala,
+      jarti: jarti,
       stonePrice: stonePrice,
     );
 
@@ -101,34 +114,39 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void addOtherItem(OrderProvider orderProvider, bool isProceed) {
-    var (rselectedWeightType, rselectedType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeightType,
-        selectedType: selectedType);
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) =
+        translatedTypes(
+            context: context,
+            selectedWeightType: selectedWeightType,
+            selectedProductType: selectedProductType,
+            selectedJartiWeightType: selectedJartiWeightType);
 
-    double weight = getWeight(
+    double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
-    double jarti = double.tryParse(_jartiController.text.trim())!;
+    double jarti = getWeightInGram(
+        double.tryParse(_jartiController.text.trim())!,
+        rselectedJartiWeightType!);
     double? stonePrice = _stonePriceController.text.isEmpty
         ? null
         : double.tryParse(_stonePriceController.text.trim())!;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[rselectedType ?? selectedType]!,
-      jyalaPercent: jyala,
-      jartiPercent: jarti,
+      rate: goldRates[rselectedType ?? selectedProductType]!,
+      jyala: jyala,
+      jarti: jarti,
       stonePrice: stonePrice ?? 0.0,
     );
 
     OrderedItems orderedItem = OrderedItems(
       itemName: _itemNameController.text.trim(),
       wt: weight,
-      type: rselectedType ?? selectedType,
+      type: rselectedType ?? selectedProductType,
       jarti: jarti,
       jyala: jyala,
+      jartiType: selectedJartiWeightType,
       stone:
           _stoneController.text.isEmpty ? null : _stoneController.text.trim(),
       stonePrice: stonePrice,
@@ -168,9 +186,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = AppLocalizations.of(context)!.chhapawal;
+      jartiWeightTypeList = getJartiWeightType(context);
+
+      selectedProductType = AppLocalizations.of(context)!.chhapawal;
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
+      selectedJartiWeightType = AppLocalizations.of(context)!.laal;
       _dependenciesInitialized = true;
     }
 
@@ -268,7 +289,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(5),
                       DropdownButtonFormField<String>(
-                        value: selectedType,
+                        value: selectedProductType,
                         iconEnabledColor: const Color(0xFFC3C3C3),
                         iconDisabledColor: const Color(0xFFC3C3C3),
                         iconSize: 25,
@@ -284,7 +305,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         }).toList(),
                         onChanged: (value) {
                           setState(() {
-                            selectedType = value!;
+                            selectedProductType = value!;
                             calculateTotalPrice();
                           });
                         },
@@ -349,7 +370,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "${AppLocalizations.of(context)!.jyala} (%) ",
+                        "${AppLocalizations.of(context)!.jyala} ",
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
@@ -370,24 +391,61 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                       const Gap(10),
                       Text(
-                        "${AppLocalizations.of(context)!.jarti} (%) ",
+                        "${AppLocalizations.of(context)!.jarti}  ",
                         style: customTextDecoration()
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
                       const Gap(5),
-                      TextFormField(
-                        controller: _jartiController,
-                        focusNode: _jartiFocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _jartiFocus, _stoneFocus),
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateJarti(value!, context),
-                        onChanged: (value) => calculateTotalPrice(),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _jartiController,
+                              focusNode: _jartiFocus,
+                              onFieldSubmitted: (value) => _fieldFocusChange(
+                                  context, _jartiFocus, _stoneFocus),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              textInputAction: TextInputAction.next,
+                              cursorColor: blueColor,
+                              decoration: customTextfieldDecoration(),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) =>
+                                  validateJarti(value!, context),
+                              onChanged: (value) => calculateTotalPrice(),
+                            ),
+                          ),
+                          const Gap(10),
+                          Expanded(
+                            flex: 1,
+                            child: DropdownButtonFormField<String>(
+                              value: selectedJartiWeightType,
+                              iconEnabledColor: const Color(0xFFC3C3C3),
+                              iconDisabledColor: const Color(0xFFC3C3C3),
+                              iconSize: 25,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ),
+                              items: jartiWeightTypeList.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category,
+                                  child: Text(category),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedJartiWeightType = value!;
+                                });
+                                calculateTotalPrice();
+                              },
+                              decoration: customTextfieldDecoration(),
+                            ),
+                          ),
+                        ],
                       ),
                       const Gap(10),
                       Text(
@@ -481,7 +539,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '${AppLocalizations.of(context)!.totalPrice}: रु$totalPriceToShow',
+                              '${AppLocalizations.of(context)!.totalPrice}: रु${NumberFormat('#,##,###.00').format(totalPriceToShow)}',
                               key: const ValueKey(true),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 20),

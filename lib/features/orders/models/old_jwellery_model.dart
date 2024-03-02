@@ -73,6 +73,8 @@ class OldJwellery {
   double? stonePrice;
   double price;
   double? charge;
+  double loss;
+  double? rate;
   OldJwellery({
     required this.itemName,
     required this.wt,
@@ -81,6 +83,8 @@ class OldJwellery {
     this.stonePrice,
     required this.price,
     this.charge,
+   required this.loss,
+    this.rate,
   });
 
   Map<String, dynamic> toMap() {
@@ -92,6 +96,8 @@ class OldJwellery {
       'stone_price': stonePrice,
       'price': price,
       'charge': charge,
+      'loss':loss,
+      'rate':rate,
     };
   }
 
@@ -109,6 +115,8 @@ class OldJwellery {
               ? map['charge'] as double?
               : null
           : null,
+      loss: map['loss'] != null ? map['loss'] as double : 0.0,
+      rate: map['rate']!=null ? map['rate'] as double? : null,
     );
   }
 

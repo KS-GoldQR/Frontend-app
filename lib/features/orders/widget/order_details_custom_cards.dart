@@ -4,12 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../models/order_model.dart';
 import '../../../utils/widgets/build_row_info.dart';
 
-Widget buildUserInfoCard(
-    Order order,
-    BuildContext context,
-    double totalOrderedPrice,
-    double totalOldJwelleryPrice,
-    double totalOldJwelleryCharge) {
+Widget buildUserInfoCard(Order order, BuildContext context,
+    double totalOrderedPrice, double totalOldJwelleryPrice) {
   return Card(
     elevation: 5.0,
     shape: RoundedRectangleBorder(
@@ -27,13 +23,10 @@ Widget buildUserInfoCard(
               NumberFormat('#,##,###.00').format(totalOrderedPrice)),
           buildInfoRow(AppLocalizations.of(context)!.oldJewelryTotalPrice,
               NumberFormat('#,##,###.00').format(totalOldJwelleryPrice)),
-          buildInfoRow(AppLocalizations.of(context)!.charge,
-              NumberFormat('#,##,###.00').format(totalOldJwelleryCharge)),
           buildInfoRow(
               AppLocalizations.of(context)!.differencePrice,
-              NumberFormat('#,##,###.00').format(totalOrderedPrice -
-                  totalOldJwelleryPrice -
-                  totalOldJwelleryCharge)),
+              NumberFormat('#,##,###.00')
+                  .format(totalOrderedPrice - totalOldJwelleryPrice)),
           buildInfoRow(AppLocalizations.of(context)!.advancePayment,
               NumberFormat('#,##,###.00').format(order.advanced_payment)),
           buildInfoRow(AppLocalizations.of(context)!.remaining,
@@ -101,9 +94,8 @@ Widget buildOldJwelleryList(Order order, BuildContext context) {
           return Column(
             children: [
               buildInfoRow(
-                oldJwellery.itemName,
-                "${AppLocalizations.of(context)!.type}: ${oldJwellery.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldJwellery.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldJwellery.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldJwellery.price)}",
-              ),
+                  oldJwellery.itemName,
+                  "${AppLocalizations.of(context)!.type}: ${oldJwellery.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldJwellery.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldJwellery.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldJwellery.price)} \n ${AppLocalizations.of(context)!.rate}: ${NumberFormat('#,##,###.00').format(oldJwellery.rate)}"),
               if (index != order.old_jwellery!.length - 1)
                 const Divider(
                   color: Color(0xFFBDBCBC),

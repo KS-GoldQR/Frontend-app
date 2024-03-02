@@ -21,9 +21,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   final TextEditingController _stonePriceController = TextEditingController();
   late List<String> weight;
   late String selectedWeightType;
+  late String selectedJartiWeightType;
+  late List<String> jartiWeightTypeList;
   late List<String> types;
-  late String selectedType;
+  late String selectedProductType;
   bool _dependenciesInitialized = false;
+  late String jartiWeightType;
   double currentOrderPrice = 0.0;
 
   @override
@@ -41,34 +44,40 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         AppLocalizations.of(context)!.asalChandi
       ];
 
-      selectedType = AppLocalizations.of(context)!.chhapawal;
+      jartiWeightTypeList = getJartiWeightType(context);
+
+      selectedProductType = AppLocalizations.of(context)!.chhapawal;
 
       selectedWeightType = AppLocalizations.of(context)!.gram;
+      selectedJartiWeightType = AppLocalizations.of(context)!.laal;
       _dependenciesInitialized = true;
     }
     super.didChangeDependencies();
   }
 
   void calculateTotalPrice() {
-    var(rselectedWeightType, rselectedType) = translatedTypes(
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeightType,
-        selectedType: selectedType);
+        selectedProductType: selectedProductType, selectedJartiWeightType: selectedJartiWeightType);
 
-    double weight = getWeight(
+    double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
       rselectedWeightType ?? selectedWeightType,
     );
     double jyala = double.tryParse(_jyalaController.text.trim())!;
-    double jarti = double.tryParse(_jartiController.text.trim())!;
+    double jarti = getWeightInGram(
+        double.tryParse(_jartiController.text.trim())!,
+        rselectedJartiWeightType!);
     double stonePrice =
         double.tryParse(_stonePriceController.text.trim()) ?? 0.0;
     double totalPrice = getTotalPrice(
       weight: weight,
-      rate: goldRates[rselectedType ?? selectedType]!,
-      jyalaPercent: jyala,
-      jartiPercent: jarti,
+      rate: goldRates[rselectedType ?? selectedProductType]!,
+      jyala: jyala,
+      jarti: jarti,
       stonePrice: stonePrice,
+      jartiWeightType: rselectedJartiWeightType
     );
 
     setState(() {
@@ -76,7 +85,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
@@ -119,7 +128,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     ),
                     const Gap(5),
                     DropdownButtonFormField<String>(
-                      value: selectedType,
+                      value: selectedProductType,
                       iconEnabledColor: const Color(0xFFC3C3C3),
                       iconDisabledColor: const Color(0xFFC3C3C3),
                       iconSize: 25,
@@ -135,7 +144,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedType = value!;
+                          selectedProductType = value!;
                           calculateTotalPrice();
                         });
                       },
@@ -158,8 +167,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                 decimal: true),
                             textInputAction: TextInputAction.next,
                             decoration: customTextfieldDecoration(),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            validator: (value) => validateWeight(value!, context),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateWeight(value!, context),
                             onChanged: (value) => calculateTotalPrice(),
                           ),
                         ),
@@ -194,7 +205,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     ),
                     const Gap(10),
                     Text(
-                      "${AppLocalizations.of(context)!.jyala} (%) ",
+                      "${AppLocalizations.of(context)!.jyala} ",
                       style: customTextDecoration()
                           .copyWith(fontWeight: FontWeight.w600),
                     ),
@@ -207,26 +218,62 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       cursorColor: blueColor,
                       decoration: customTextfieldDecoration(),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value)=> validateJyala(value!, context),
+                      validator: (value) => validateJyala(value!, context),
                       onChanged: (value) => calculateTotalPrice(),
                     ),
                     const Gap(10),
                     Text(
-                      "${AppLocalizations.of(context)!.jarti} (%) ",
+                      "${AppLocalizations.of(context)!.jarti} ",
                       style: customTextDecoration()
                           .copyWith(fontWeight: FontWeight.w600),
                     ),
                     const Gap(5),
-                    TextFormField(
-                      controller: _jartiController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      textInputAction: TextInputAction.next,
-                      cursorColor: blueColor,
-                      decoration: customTextfieldDecoration(),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value)=> validateJarti(value!, context),
-                      onChanged: (value) => calculateTotalPrice(),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _jartiController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateJarti(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
+                          ),
+                        ),
+                        const Gap(10),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: jartiWeightType,
+                            iconEnabledColor: const Color(0xFFC3C3C3),
+                            iconDisabledColor: const Color(0xFFC3C3C3),
+                            iconSize: 25,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                            items: weight.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                jartiWeightType = value!;
+                              });
+                              calculateTotalPrice();
+                            },
+                            decoration: customTextfieldDecoration(),
+                          ),
+                        ),
+                      ],
                     ),
                     const Gap(10),
                     Text(

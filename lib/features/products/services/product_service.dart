@@ -156,6 +156,7 @@ class ProductService {
     double? stonePrice,
     required double jyala,
     required double jarti,
+    required String jartiType,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -194,6 +195,7 @@ class ProductService {
           "stone_price": stonePrice,
           "jyala": jyala,
           "jarti": jarti,
+          "jarti_type":jartiType,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -216,6 +218,7 @@ class ProductService {
               stone_price: stonePrice,
               jyala: jyala,
               jarti: jarti,
+              jartiType: jartiType,
             );
 
             productProvider.setProduct(product);
@@ -240,6 +243,7 @@ class ProductService {
     double? stonePrice,
     required double jyala,
     required double jarti,
+    required String jartiType,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -273,7 +277,8 @@ class ProductService {
           "stone": stone,
           "stone_price": stonePrice,
           "jyala": jyala,
-          "jarti": jarti
+          "jarti": jarti,
+          "jarti_type":jartiType,
         }),
         headers: {"Content-Type": 'application/json'},
       );

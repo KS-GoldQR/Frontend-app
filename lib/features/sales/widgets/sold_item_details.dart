@@ -126,15 +126,15 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                 ProductDetail(
                     label: '${AppLocalizations.of(context)!.weight}: ',
                     value:
-                        "${getWeightByType(widget.product.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
+                        "${getWeightInType(widget.product.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
                 ProductDetail(
                     label: '${AppLocalizations.of(context)!.weight}: ',
                     value:
-                        "${getWeightByType(widget.product.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
+                        "${getWeightInType(widget.product.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
                 ProductDetail(
                     label: '${AppLocalizations.of(context)!.weight}: ',
                     value:
-                        "${getWeightByType(widget.product.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+                        "${getWeightInType(widget.product.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                 if (widget.product.stone != "None")
                   ProductDetail(
                       label: '${AppLocalizations.of(context)!.stone}: ',
@@ -145,10 +145,10 @@ class _SoldItemDetailsState extends State<SoldItemDetails> {
                       value:
                           "रु${NumberFormat('#,##,###.00').format(widget.product.stone_price)}"),
                 ProductDetail(
-                    label: '${AppLocalizations.of(context)!.jyala} (%): ',
+                    label: '${AppLocalizations.of(context)!.jyala} : ',
                     value: widget.product.jyala!.toString()),
                 ProductDetail(
-                    label: '${AppLocalizations.of(context)!.jarti} (%): ',
+                    label: '${AppLocalizations.of(context)!.jarti} : ',
                     value: widget.product.jarti!.toString()),
                 ProductDetail(
                   label: '${AppLocalizations.of(context)!.price}: ',
