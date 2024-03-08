@@ -39,8 +39,6 @@ class SalesService {
             onSuccess: () {
               List<dynamic> salesList = jsonDecode(response.body)['sales'];
               for (int i = 0; i < salesList.length; i++) {
-                debugPrint("hello");
-
                 // Extract and modify the string representation of 'rate'
                 String modifiedRate = salesList[i]['rate']
                     .replaceAll("'", '"')
@@ -81,8 +79,7 @@ class SalesService {
                 salesList[i]['products'] = products;
                 salesList[i]['old_products'] = oldProducts;
 
-                debugPrint("sir");
-
+                debugPrint(salesList[i].toString());
                 // Continue with creating SalesModel
                 sales.add(SalesModel.fromMap(salesList[i]));
 

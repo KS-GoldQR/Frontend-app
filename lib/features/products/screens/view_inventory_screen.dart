@@ -6,6 +6,7 @@ import 'package:remixicon/remixicon.dart';
 
 import '../../../models/product_model.dart';
 import '../../../provider/product_provider.dart';
+import '../../../utils/custom_decorators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';

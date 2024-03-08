@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:grit_qr_scanner/features/home/screens/change_password_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -41,7 +42,7 @@ class CustomDrawer extends StatelessWidget {
             child: UserAccountsDrawerHeader(
               decoration: const BoxDecoration(color: blueColor),
               accountName: Text(greeting),
-              accountEmail: Text(user.name!),
+              accountEmail: null,
               currentAccountPicture: const CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.white,
@@ -61,6 +62,19 @@ class CustomDrawer extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const LanguageSelectionScreen()));
+              scaffoldKey.currentState?.closeDrawer();
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Remix.rotate_lock_line,
+            ),
+            title: Text(AppLocalizations.of(context)!.changePassword),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ChangePasswordScreen()));
               scaffoldKey.currentState?.closeDrawer();
             },
           ),

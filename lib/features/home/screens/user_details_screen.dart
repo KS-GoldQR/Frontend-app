@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/home/screens/change_password_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
@@ -18,7 +20,7 @@ class UserDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Details'),
+        title: Text(AppLocalizations.of(context)!.userDetails),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -36,6 +38,18 @@ class UserDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             buildUserInfoCard(user, context),
+            const Gap(20),
+            changePassword(
+              context: context,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ChangePasswordScreen(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -97,4 +111,36 @@ class UserDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget changePassword(
+    {required VoidCallback onTap, required BuildContext context}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      decoration: BoxDecoration(
+        color: blueColor,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      padding: const EdgeInsets.all(20.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.changePassword,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const Icon(
+            Remix.rotate_lock_line,
+            color: Colors.white,
+            size: 30.0,
+          ),
+        ],
+      ),
+    ),
+  );
 }

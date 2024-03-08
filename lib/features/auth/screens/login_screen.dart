@@ -2,9 +2,9 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:loading_btn/loading_btn.dart';
-import 'package:remixicon/remixicon.dart';
-
+import '../../../utils/custom_decorators.dart';
 import '../../../utils/global_variables.dart';
 import '../../home/widgets/qr_button.dart';
 import '../services/user_service.dart';
@@ -144,12 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       textInputAction: TextInputAction.next,
                       cursorColor: formBorderColor,
                       cursorHeight: 25,
-                      decoration: userIdDecoration(),
+                      decoration: userIdDecoration(hintText: "your user id"),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) return "User Id cannot be Empty!";
-                        return null;
-                      },
+                      validator: (value) => validateUserId(value!, context),
                     ),
                     const SizedBox(height: 15),
                     const Text(
@@ -168,17 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscuringCharacter: "*",
                       cursorColor: formBorderColor,
                       cursorHeight: 25,
-                      decoration: passwordDecoration(),
+                      decoration: passwordDecoration(onPressed: togglePassowordVisibility, isVisible: isVisible, hintText: "enter your password"),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Password cannot be Empty!";
-                        }
-                        if (value.length < 6) {
-                          return "Password must be 6 character long!";
-                        }
-                        return null;
-                      },
+                      validator:(value)=> validatePassword(value!,context),
                     ),
                     Center(
                       child: Padding(
@@ -246,85 +235,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontStyle: FontStyle.italic,
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  InputDecoration passwordDecoration() {
-    return InputDecoration(
-      isDense: true,
-      contentPadding: const EdgeInsets.all(10),
-      hintText: "enter your password",
-      hintStyle: const TextStyle(
-        color: Color(0xFFCBC8C8),
-        fontSize: 16,
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.w400,
-      ),
-      suffixIcon: IconButton(
-        onPressed: togglePassowordVisibility,
-        icon: Icon(isVisible ? Remix.eye_line : Remix.eye_off_line),
-      ),
-      border: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-    );
-  }
-
-  InputDecoration userIdDecoration() {
-    return const InputDecoration(
-      isDense: true,
-      contentPadding: EdgeInsets.all(10),
-      hintText: "enter your user id",
-      hintStyle: TextStyle(
-          color: Color(0xFFCBC8C8),
-          fontSize: 16,
-          fontStyle: FontStyle.italic,
-          fontWeight: FontWeight.w400),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: formBorderColor,
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
         ),
       ),
     );

@@ -82,44 +82,6 @@ Future<List<File>> pickFiles(BuildContext context) async {
   return files;
 }
 
-TextStyle customTextDecoration() {
-  return const TextStyle(
-    color: Color(0xFF282828),
-    fontSize: 15,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-InputDecoration customTextfieldDecoration() {
-  return const InputDecoration(
-    isDense: true,
-    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-    border: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color(0xFFC3C3C3),
-      ),
-      borderRadius: BorderRadius.all(
-        Radius.circular(5),
-      ),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color(0xFFC3C3C3),
-      ),
-      borderRadius: BorderRadius.all(
-        Radius.circular(5),
-      ),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color(0xFFC3C3C3),
-      ),
-      borderRadius: BorderRadius.all(
-        Radius.circular(5),
-      ),
-    ),
-  );
-}
 
 Future<void> getRate(BuildContext context) async {
   String internalError = AppLocalizations.of(context)!.internalError;

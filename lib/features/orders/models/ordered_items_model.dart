@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 class OrderedItems {
@@ -29,7 +28,7 @@ class OrderedItems {
       'wt': wt,
       'type': type,
       'jarti': jarti,
-      'jarti_type':jartiType,
+      'jarti_type': jartiType,
       'jyala': jyala,
       'stone': stone,
       'stone_price': stonePrice,
@@ -43,11 +42,13 @@ class OrderedItems {
       wt: map['wt'] as double,
       type: map['type'] as String,
       jarti: map['jarti'] as double,
-      jartiType: map.containsKey('jarti_type') ? map['jarti_type'] as String : "",
+      jartiType:
+          map.containsKey('jarti_type') ? map['jarti_type'] as String : "",
       jyala: map['jyala'] as double,
       stone: map['stone'] as String?,
-      stonePrice:
-          map['stone_price'] != null ? map['stone_price'] as double : null,
+      stonePrice: map['stone_price'] != null
+          ? double.tryParse(map['stone_price']) as double
+          : null,
       totalPrice: map['total_price'] as double,
     );
   }

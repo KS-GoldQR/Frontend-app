@@ -145,4 +145,45 @@ class UserService {
           contentType: ContentType.warning);
     }
   }
+
+  Future<bool> changePassword(
+      {required BuildContext context,
+      required String currentPassword,
+      required String newPassword}) async {
+    final UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$hostedUrl/prod/users/changePassword"),
+        body: jsonEncode({
+          'sessionToken': userProvider.user.sessionToken,
+          "oldPassword": currentPassword,
+          "newPassword": newPassword
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        showSnackBar(
+            title: jsonDecode(response.body)['message'],
+            message: "",
+            contentType: ContentType.success);
+        return true;
+      } else {
+        showSnackBar(
+            title: jsonDecode(response.body)['message'],
+            message: "",
+            contentType: ContentType.failure);
+        return false;
+      }
+    } catch (e) {
+      showSnackBar(
+          title: "Internal Error ",
+          message: "Something went wrong",
+          contentType: ContentType.failure);
+    }
+    return false;
+  }
 }

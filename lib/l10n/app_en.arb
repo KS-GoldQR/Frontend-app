@@ -146,5 +146,16 @@
   "addressEmpty": "Address cannot be empty!",
   "advancePaymentEmpty": "Advance payment cannot be empty!",
   "enterValidNumber": "Enter a valid number!",
-  "advancePaymentNonNegative": "Advance cannot be less than 0"
+  "advancePaymentNonNegative": "Advance cannot be less than 0",
+  "changePassword": "Change Password",
+  "currentPassword":"Current Password",
+  "newPassword":"New Password",
+  "confirmNewPassword":"Confirm New Password",
+  "yourCurrentPassword":"your current password",
+  "yourNewPassword":"your new password",
+  "userDetails":"User Details",
+"passwordEmpty": "Password cannot be Empty!",
+"passwordLength": "Password must be 6 character long",
+"confirmPasswordMatch": "Password didn't matched",
+"userIdEmpty": "User Id cannot be Empty"
 }

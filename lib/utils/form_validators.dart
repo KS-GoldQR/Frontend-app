@@ -2,6 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'utils.dart';
 
+validatePassword(String value, BuildContext context) {
+  if (value.isEmpty) {
+    return AppLocalizations.of(context)!.passwordEmpty;
+  }
+  if (value.length < 6) {
+    return AppLocalizations.of(context)!.passwordLength;
+  }
+  return null;
+}
+
+validateUserId(String value, BuildContext context) {
+  if (value.isEmpty) return AppLocalizations.of(context)!.userIdEmpty;
+  return null;
+}
+
+validateConfirmPassword(
+    String value, String newPassword, BuildContext context) {
+  if (value.isEmpty) {
+    return AppLocalizations.of(context)!.passwordEmpty;
+  }
+  if (value.length < 6) {
+    return AppLocalizations.of(context)!.passwordLength;
+  }
+  if (value != newPassword) {
+    return AppLocalizations.of(context)!.confirmPasswordMatch;
+  }
+  return null;
+}
+
 validateName(String value, BuildContext context) {
   if (value.isEmpty) {
     return AppLocalizations.of(context)!.nameEmpty;

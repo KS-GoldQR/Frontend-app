@@ -137,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -179,12 +178,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Remix.logout_box_r_line,
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Remix.settings_3_line,
-              ),
-            ),
+            // IconButton(
+            //   onPressed: () {},
+            //   icon: const Icon(
+            //     Remix.settings_3_line,
+            //   ),
+            // ),
             const Gap(10),
           ],
         ),

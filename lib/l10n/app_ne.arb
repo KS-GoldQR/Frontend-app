@@ -148,5 +148,16 @@
   "invalidPhoneNumber": "सही १० अंकको फोन नम्बर प्रविष्ट गर्नुहोस्!",
   "addressEmpty": "ठेगाना खाली हुन सकदैन!",
   "advancePaymentEmpty": "अग्रिम भुक्तान खाली हुन सकदैन!",
-  "advancePaymentNonNegative": "अग्रिम 0 भन्दा कम हुन सकदैन"
+  "advancePaymentNonNegative": "अग्रिम 0 भन्दा कम हुन सकदैन",
+  "changePassword": "चेन्ज पासवर्ड",
+  "currentPassword": "हालको पासवर्ड",
+  "newPassword": "नयाँ पासवर्ड",
+  "confirmNewPassword": "नयाँ पासवर्ड कन्फर्म गर्नुहोस्",
+  "yourCurrentPassword": "तपाईको हालको पासवर्ड",
+  "yourNewPassword": "तपाईको नयाँ पासवर्ड",
+  "userDetails": "प्रयोगकर्ता विवरण",
+  "passwordEmpty": "पासवर्ड खाली हुन सक्दैन",
+  "passwordLength": "पासवर्ड कम्तिमा ६ अक्षर लामो हुनुपर्छ",
+  "confirmPasswordMatch": "नयाँ पासवर्ड मिलेन",
+  "userIdEmpty": "प्रयोगकर्ता आईडी खाली हुन सक्दैन"
 }

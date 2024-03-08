@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/order_provider.dart';
+import '../../../utils/custom_decorators.dart';
 import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
@@ -139,6 +140,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       jarti: jarti,
       stonePrice: stonePrice ?? 0.0,
     );
+
+    debugPrint("jarti type sent to api " + selectedJartiWeightType);
 
     OrderedItems orderedItem = OrderedItems(
       itemName: _itemNameController.text.trim(),
