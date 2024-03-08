@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/models/product_model.dart';
-import 'package:grit_qr_scanner/provider/product_provider.dart';
-import 'package:grit_qr_scanner/utils/widgets/loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../../../models/product_model.dart';
+import '../../../provider/product_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../../utils/widgets/loader.dart';
+import '../services/product_service.dart';
+import 'about_product_screen.dart';
 
 class ViewInventoryScreen extends StatefulWidget {
   static const String routeName = '/view-inventory-screen';

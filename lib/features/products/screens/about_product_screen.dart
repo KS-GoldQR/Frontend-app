@@ -1,23 +1,23 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
-import 'package:grit_qr_scanner/features/sales/models/sold_product_model.dart';
-import 'package:grit_qr_scanner/features/sales/screens/sold_product_preview_screen.dart';
-import 'package:grit_qr_scanner/provider/product_provider.dart';
-import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:remixicon/remixicon.dart';
 
 import '../../../models/product_model.dart';
+import '../../../provider/product_provider.dart';
+import '../../../provider/sales_provider.dart';
+import '../../../utils/form_validators.dart';
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
-import '../../../utils/global_variables.dart';
+import '../../sales/models/sold_product_model.dart';
+import '../../sales/screens/sold_product_preview_screen.dart';
 import '../widgets/product_detail_card.dart';
+import 'edit_product_screen.dart';
 
 class AboutProduct extends StatefulWidget {
   static const String routeName = '/about-product-screen';

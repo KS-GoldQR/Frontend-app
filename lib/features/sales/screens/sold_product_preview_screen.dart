@@ -1,21 +1,21 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
-import 'package:grit_qr_scanner/features/reusable%20components/final_preview_screen.dart';
-import 'package:grit_qr_scanner/features/sales/models/sold_product_model.dart';
-import 'package:grit_qr_scanner/features/sales/widgets/customer_details_form.dart';
-import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
+import '../../../provider/sales_provider.dart';
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../home/screens/qr_scanner_screen.dart';
+import '../../orders/screens/old_jwellery_screen.dart';
 import '../../products/screens/view_inventory_screen.dart';
+import '../../reusable%20components/final_preview_screen.dart';
+import '../models/sold_product_model.dart';
 import '../widgets/custom_cards.dart';
+import '../widgets/customer_details_form.dart';
 
 class SoldProductPreviewScreen extends StatefulWidget {
   static const String routeName = "/sold-product-preview-screen";

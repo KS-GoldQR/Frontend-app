@@ -3,23 +3,24 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
-import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
-import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/splash_screen.dart';
-import 'package:grit_qr_scanner/provider/language_provider.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/provider/product_provider.dart';
-import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:grit_qr_scanner/routers.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'features/auth/screens/login_screen.dart';
+import 'features/auth/services/user_service.dart';
+import 'features/home/screens/home_screen.dart';
+import 'features/home/screens/splash_screen.dart';
+import 'provider/language_provider.dart';
+import 'provider/order_provider.dart';
+import 'provider/product_provider.dart';
+import 'provider/sales_provider.dart';
+import 'provider/user_provider.dart';
+import 'routers.dart';
+import 'utils/global_variables.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

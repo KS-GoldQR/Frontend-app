@@ -22,7 +22,7 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   List<Order>? orders;
-  GlobalKey _modalProgressHUDKeyOrderScreen = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyOrderScreen = GlobalKey();
   final OrderService _orderService = OrderService();
   final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   late List<PlutoColumn> columns;

@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
-import 'package:grit_qr_scanner/features/sales/models/sold_product_model.dart';
+import '../features/orders/models/old_jwellery_model.dart';
+import '../features/sales/models/sold_product_model.dart';
 
 class SalesModel {
   final String id;

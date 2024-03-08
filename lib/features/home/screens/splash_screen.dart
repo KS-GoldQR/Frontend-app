@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
+import '../../../utils/global_variables.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

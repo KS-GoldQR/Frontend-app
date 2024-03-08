@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/auth/services/user_service.dart';
-import 'package:grit_qr_scanner/features/home/screens/calculator_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/gold_rates_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
-import 'package:grit_qr_scanner/features/old%20products/screens/old_product_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/features/home/widgets/custom_drawer.dart';
-import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_card.dart';
+import '../../../utils/widgets/error_page.dart';
+import '../../auth/services/user_service.dart';
+import '../../old%20products/screens/old_product_screen.dart';
+import '../../orders/screens/order_screen.dart';
+import '../../products/screens/view_inventory_screen.dart';
 import '../../sales/screens/sales_screen.dart';
+import '../widgets/custom_drawer.dart';
+import 'calculator_screen.dart';
+import 'gold_rates_screen.dart';
+import 'qr_scanner_screen.dart';
+import 'user_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home-screen";
@@ -29,7 +30,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final UserService _userService = UserService();
-  GlobalKey _modalProgressHUDKeyHomeScreen = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyHomeScreen = GlobalKey();
   bool isLoggingOut = false;
 
   List<String> cardsText = [];

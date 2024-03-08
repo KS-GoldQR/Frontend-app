@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:intl/intl.dart';
+
+import '../../../models/sales_model.dart';
 import '../../../utils/widgets/build_row_info.dart';
 
 Widget buildSalesUserInfoCard(SalesModel sale, BuildContext context,

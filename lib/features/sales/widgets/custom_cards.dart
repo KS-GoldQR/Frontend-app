@@ -1,12 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
+import '../../../provider/sales_provider.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/build_row_info.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget buildSalesItemsList(BuildContext context) {
   final salesProvider = Provider.of<SalesProvider>(context);

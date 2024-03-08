@@ -4,19 +4,19 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
-import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../utils/form_validators.dart';
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../../utils/widgets/custom_button.dart';
+import '../../home/screens/qr_scanner_screen.dart';
+import '../services/product_service.dart';
+import 'about_product_screen.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const String routeName = '/edit-product-screen';
@@ -29,7 +29,7 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _addProductFormKey = GlobalKey<FormState>();
-  GlobalKey _modalProgressHUDKeyEditProduct = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyEditProduct = GlobalKey();
   final ProductService _productService = ProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();

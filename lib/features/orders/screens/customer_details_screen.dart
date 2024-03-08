@@ -1,18 +1,18 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
-import 'package:grit_qr_scanner/models/customer_model.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../models/customer_model.dart';
+import '../../../provider/order_provider.dart';
+import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
+import '../services/order_service.dart';
 
 class CustomerDetailsScreen extends StatefulWidget {
   static const String routeName = '/customer-details-screen';
@@ -24,7 +24,7 @@ class CustomerDetailsScreen extends StatefulWidget {
 
 class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final _customerDetailsFormKey = GlobalKey<FormState>();
-  GlobalKey _modalProgressHUDKeyCustomerDetails = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyCustomerDetails = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();

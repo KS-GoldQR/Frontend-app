@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
+import '../../../provider/order_provider.dart';
+import '../../../utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

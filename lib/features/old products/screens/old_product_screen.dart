@@ -1,10 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
-import 'package:grit_qr_scanner/features/old%20products/screens/add_old_product_screen.dart';
-import 'package:grit_qr_scanner/features/old%20products/screens/view_old_product_screen.dart';
-import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:remixicon/remixicon.dart';
@@ -12,6 +8,10 @@ import 'package:remixicon/remixicon.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
+import '../../old%20products/models/old_product_model.dart';
+import '../../old%20products/screens/add_old_product_screen.dart';
+import '../../old%20products/screens/view_old_product_screen.dart';
+import '../../old%20products/services/old_product_service.dart';
 
 class OldProductsScreen extends StatefulWidget {
   static const String routeName = "/old-products-screen";

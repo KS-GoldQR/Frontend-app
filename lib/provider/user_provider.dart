@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/models/user_model.dart';
+import '../models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
   User _user = User(userId: '', sessionToken: '');

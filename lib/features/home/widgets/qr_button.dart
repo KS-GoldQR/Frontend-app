@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
 import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/global_variables.dart';
+import '../screens/qr_scanner_screen.dart';
 
 class QrButton extends StatelessWidget {
  const QrButton({

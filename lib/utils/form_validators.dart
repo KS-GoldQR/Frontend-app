@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
+import 'utils.dart';
 
 validateName(String value, BuildContext context) {
   if (value.isEmpty) {

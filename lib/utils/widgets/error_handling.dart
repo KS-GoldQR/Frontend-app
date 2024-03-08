@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:http/http.dart' as http;
+
+import '../global_variables.dart';
+import '../utils.dart';
+
 void httpErrorHandle({
   required http.Response response,
   required VoidCallback onSuccess,

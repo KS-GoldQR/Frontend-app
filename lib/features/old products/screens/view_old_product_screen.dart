@@ -2,10 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
 import 'package:intl/intl.dart';
+
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../old%20products/models/old_product_model.dart';
 import '../../products/widgets/product_detail_card.dart';
 
 class ViewOldProductScreen extends StatefulWidget {

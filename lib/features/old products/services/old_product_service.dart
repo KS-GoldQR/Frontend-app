@@ -3,14 +3,15 @@ import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/old%20products/models/old_product_model.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
-import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../../../provider/user_provider.dart';
+import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
+import '../../../utils/widgets/error_handling.dart';
+import '../../old%20products/models/old_product_model.dart';
 
 class OldProductService {
   Future<List<OldProductModel>> getOldProducts(BuildContext context) async {

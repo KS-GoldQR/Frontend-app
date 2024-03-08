@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
-import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../models/sales_model.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/loader.dart';
 import '../../reusable components/module_details_screen.dart';
+import '../service/sales_service.dart';
 
 class SalesScreen extends StatefulWidget {
   static const String routeName = '/sold-items-screen';
@@ -23,7 +23,7 @@ class _SalesScreenState extends State<SalesScreen> {
   final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   List<SalesModel>? soldProducts;
   final SalesService _salesService = SalesService();
-  GlobalKey _modalProgressHudSalesScreenKey = GlobalKey();
+  final GlobalKey _modalProgressHudSalesScreenKey = GlobalKey();
   late List<PlutoColumn> columns;
   bool _isDeleting = false;
 

@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
+import '../../old%20products/services/old_product_service.dart';
 
 class AddOldProductScreen extends StatefulWidget {
   const AddOldProductScreen({super.key});
@@ -24,7 +24,7 @@ class AddOldProductScreen extends StatefulWidget {
 
 class _AddOldProductScreenState extends State<AddOldProductScreen> {
   final _addOldProductFormKey = GlobalKey<FormState>();
-  GlobalKey _modalProgressHUDKeyAboutOldProduct = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyAboutOldProduct = GlobalKey();
   final OldProductService _oldProductService = OldProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();

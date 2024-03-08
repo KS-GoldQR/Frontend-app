@@ -1,19 +1,19 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/product_model.dart';
 import '../../../provider/product_provider.dart';
+import '../../../provider/user_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/error_page.dart';
+import '../../products/screens/about_product_screen.dart';
+import '../../products/screens/edit_product_screen.dart';
+import '../../products/services/product_service.dart';
 
 // ignore: must_be_immutable
 class QRScannerScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   final ProductService _productService = ProductService();
   Product? product;
   bool isScanning = false;
-  GlobalKey _modalProgressHUDKeyQrScreen = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyQrScreen = GlobalKey();
 
   Future<void> getProductInfo(String productId, String sessionToken) async {
     try {

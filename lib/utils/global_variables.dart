@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/utils/env.dart';
+import 'env.dart';
 
 String hostedUrl = Env.hostedUrl;
 String s3ImageUrl = Env.s3ImageUrl;

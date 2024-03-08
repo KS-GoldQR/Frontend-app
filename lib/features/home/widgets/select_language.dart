@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:grit_qr_scanner/provider/language_provider.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../provider/language_provider.dart';
+import '../../../utils/global_variables.dart';
 
 class MyWidget extends StatefulWidget {
   const MyWidget({super.key});
@@ -33,7 +34,7 @@ class LanguageSelectionScreen extends StatefulWidget {
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   late Language selectedLanguage;
   bool _isChanging = false;
-  GlobalKey _modalProgressHUDKeyLanguage = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyLanguage = GlobalKey();
 
   @override
   void initState() {

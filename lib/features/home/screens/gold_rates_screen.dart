@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
 
 class GoldRatesScreen extends StatefulWidget {
   const GoldRatesScreen({super.key});

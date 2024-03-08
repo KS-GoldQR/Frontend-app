@@ -2,18 +2,19 @@ import 'dart:convert';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
-import 'package:grit_qr_scanner/models/user_model.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
-import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../models/user_model.dart';
 import '../../../provider/product_provider.dart';
+import '../../../provider/user_provider.dart';
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
+import '../../../utils/widgets/error_handling.dart';
+import '../../home/screens/home_screen.dart';
+import '../screens/login_screen.dart';
 
 class UserService {
   Future<void> userLogin(

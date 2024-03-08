@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/home/screens/user_details_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/create_order_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/customer_details_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/view_inventory_screen.dart';
-import 'package:grit_qr_scanner/features/products/screens/about_product_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
-import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
-import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
-import 'package:grit_qr_scanner/features/reusable%20components/final_preview_screen.dart';
-import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
+
+import 'features/auth/screens/login_screen.dart';
+import 'features/home/screens/home_screen.dart';
+import 'features/home/screens/qr_scanner_screen.dart';
+import 'features/home/screens/user_details_screen.dart';
+import 'features/orders/screens/create_order_screen.dart';
+import 'features/orders/screens/customer_details_screen.dart';
+import 'features/orders/screens/old_jwellery_screen.dart';
+import 'features/orders/screens/order_screen.dart';
+import 'features/products/screens/about_product_screen.dart';
+import 'features/products/screens/edit_product_screen.dart';
+import 'features/products/screens/view_inventory_screen.dart';
+import 'features/reusable%20components/final_preview_screen.dart';
+import 'utils/widgets/error_page.dart';
+
 import 'features/old products/screens/old_product_screen.dart';
 import 'features/sales/screens/sales_screen.dart';
 

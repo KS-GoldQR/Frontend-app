@@ -7,10 +7,10 @@ import '../../provider/order_provider.dart';
 import '../../provider/sales_provider.dart';
 import '../../utils/global_variables.dart';
 import '../../utils/widgets/custom_button.dart';
+import '../orders/screens/customer_details_screen.dart';
+import '../orders/widget/check_order_custom_cards.dart';
 import '../sales/widgets/check_sales_custom_card.dart';
 import '../sales/widgets/customer_details_form.dart';
-import '../orders/widget/check_order_custom_cards.dart';
-import '../orders/screens/customer_details_screen.dart';
 
 class FinalPreviewScreen extends StatelessWidget {
   static const String routeName = "/final-preview-screen";

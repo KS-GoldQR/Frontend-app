@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
+import '../global_variables.dart';
 
 class ErrorPage extends StatelessWidget {
   static const String routeName = '/error-page';

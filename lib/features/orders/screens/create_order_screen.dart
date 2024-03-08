@@ -1,18 +1,18 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart';
-import 'package:grit_qr_scanner/features/reusable%20components/final_preview_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../provider/order_provider.dart';
+import '../../../utils/form_validators.dart';
+import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
+import '../../../utils/widgets/custom_button.dart';
+import '../../reusable%20components/final_preview_screen.dart';
+import '../models/ordered_items_model.dart';
+import 'old_jwellery_screen.dart';
 
 class CreateOrderScreen extends StatefulWidget {
   static const String routeName = '/create-order-screen';

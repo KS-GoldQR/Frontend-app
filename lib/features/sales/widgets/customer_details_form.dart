@@ -1,19 +1,19 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
-import 'package:grit_qr_scanner/models/sales_model.dart';
-import 'package:grit_qr_scanner/provider/sales_provider.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../../models/sales_model.dart';
+import '../../../provider/sales_provider.dart';
+import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
+import '../service/sales_service.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
   const CustomerDetailsForm({super.key});
@@ -24,7 +24,7 @@ class CustomerDetailsForm extends StatefulWidget {
 
 class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   final _customerDetailsFormFormKey = GlobalKey<FormState>();
-  GlobalKey _modalProgressHUDKeyCust = GlobalKey();
+  final GlobalKey _modalProgressHUDKeyCust = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();

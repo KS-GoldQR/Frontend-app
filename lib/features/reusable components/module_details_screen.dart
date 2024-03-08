@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
 
-import 'package:grit_qr_scanner/features/sales/screens/sale_details_custom_cards.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/widgets/custom_button.dart';
-
+import '../../utils/global_variables.dart';
+import '../../utils/widgets/custom_button.dart';
 import '../orders/widget/order_details_custom_cards.dart';
+import '../sales/screens/sale_details_custom_cards.dart';
 
 class ModuleDetailsScreen extends StatelessWidget {
   final dynamic module;
