@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:grit_qr_scanner/features/orders/screens/create_order_screen.dart';
-import 'package:grit_qr_scanner/features/orders/screens/order_details_screen.dart';
-import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
-import 'package:grit_qr_scanner/models/order_model.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/widgets/loader.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../models/order_model.dart';
+import '../../../utils/global_variables.dart';
+import '../../../utils/widgets/loader.dart';
+import '../../reusable%20components/module_details_screen.dart';
+import '../services/order_service.dart';
+import 'create_order_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   static const String routeName = '/order-screen';
@@ -21,41 +22,19 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   List<Order>? orders;
-  final _modalProgressHUDKeyOrderScreen = GlobalKey();
+  GlobalKey _modalProgressHUDKeyOrderScreen = GlobalKey();
   final OrderService _orderService = OrderService();
   final GlobalKey _circularProgressIndicatorKey = GlobalKey();
   late List<PlutoColumn> columns;
   bool _isDeleting = false;
 
   Future<void> getAllOrders() async {
+    debugPrint("hello yadava");
     orders = await _orderService.getAllOrders(context);
     setState(() {});
+    debugPrint("hellow niesh");
+    debugPrint(orders.toString());
   }
-
-  // Future<void> _showChoiceDialog(String orderId, BuildContext context) async {
-  //   AwesomeDialog(
-  //     context: context,
-  //     dialogType: DialogType.question,
-  //     animType: AnimType.rightSlide,
-  //     title: 'Delete Order',
-  //     desc: 'deleteing order is irreversible action!',
-  //     btnOkText: 'Yes',
-  //     btnCancelText: 'No',
-  //     btnOkColor: Colors.green,
-  //     btnCancelColor: Colors.red,
-  //     btnCancelOnPress: () {},
-  //     btnOkOnPress: () async {
-  //       setState(() {
-  //         _isDeleting = true;
-  //       });
-  //       await _orderService.deleteOrder(context: context, orderId: orderId);
-  //       orders!.removeWhere((element) => element.id == orderId);
-  //       setState(() {
-  //         _isDeleting = false;
-  //       });
-  //     },
-  //   ).show();
-  // }
 
   Future<void> deleteOrder(String orderId, BuildContext context) async {
     setState(() {
@@ -235,12 +214,13 @@ class _OrderScreenState extends State<OrderScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => OrderDetailsScreen(
-                              order: updatedOrder,
-                              totalOrderedPrice: totalOrderedPrice,
-                              totalOldJwelleryPrice: totalOldJwelleryPrice,
+                            builder: (context) => ModuleDetailsScreen(
+                              module: updatedOrder,
+                              totalModulePrice: totalOrderedPrice,
+                              totalOldModulePrice: totalOldJwelleryPrice,
                               // totalOldJwelleryCharge: totalOldJwelleryCharge,
-                              deleteOrder: () async {
+                              isSales: false,
+                              deleteModule: () async {
                                 await deleteOrder(updatedOrder.id, context);
                               },
                             ),

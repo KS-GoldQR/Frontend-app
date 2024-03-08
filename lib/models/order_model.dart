@@ -46,13 +46,13 @@ class Order {
     return Order(
       remaining_payment: double.tryParse(map['remaining_payment']) ?? 0.0,
       advanced_payment: double.tryParse(map['advanced_payment']) ?? 0.0,
-      user_id: map['user_id'] as String,
+      user_id: map['user_id'].toString(),
       old_jwellery: (map['old_jwellery'] as List<dynamic>?)
           ?.map<OldJwellery>(
               (x) => OldJwellery.fromMap(x as Map<String, dynamic>))
           .toList(),
-      expected_deadline: DateTime.parse(map['expected_deadline']),
-      id: map['id'] as String,
+      expected_deadline: DateTime.parse(map['expected_deadline'].toString()),
+      id: map['id'].toString(),
       customer_phone: map['customer_phone'] as String,
       customer_name: map['customer_name'] as String,
       ordered_items: (map['ordered_items'] as List<dynamic>?)

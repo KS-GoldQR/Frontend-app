@@ -1,28 +1,28 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
-import 'package:grit_qr_scanner/features/orders/screens/check_order_screen.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
+import '../../../provider/order_provider.dart';
+import '../../../provider/sales_provider.dart';
+import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
+import '../../reusable%20components/final_preview_screen.dart';
+import '../models/old_jwellery_model.dart';
 
 class OldJwelleryScreen extends StatefulWidget {
   static const String routeName = '/old-jwellery-screen';
-  const OldJwelleryScreen({super.key});
+  final bool isSales;
+  const OldJwelleryScreen({super.key, required this.isSales});
 
   @override
   State<OldJwelleryScreen> createState() => _OldJwelleryScreenState();
 }
 
 class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
-  final _oldJwelleryFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _oldJwelleryFormKey = GlobalKey<FormState>();
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _stoneController = TextEditingController();
@@ -37,7 +37,6 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   final _chargeFocus = FocusNode();
   final _lossFocus = FocusNode();
   final _rateFocus = FocusNode();
-  bool _showTotalPrice = false;
   late List<String> weight;
   late String selectedWeightType;
   late String lossWeightType;
@@ -90,7 +89,8 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
     });
   }
 
-  void addOtherItem(OrderProvider orderProvider, bool isProceed) {
+  void addOtherItem(OrderProvider orderProvider, SalesProvider salesProvider,
+      bool isProceed) {
     var (rselectedWeightType, rselectedType, _) = translatedTypes(
         context: context,
         selectedWeightType: selectedWeightType,
@@ -139,22 +139,31 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
       loss: loss,
     );
 
-    orderProvider.addOldJewelry(oldJwellery);
-    // showSnackBar(
-    //     title: AppLocalizations.of(context)!.oldJewelryAdded,
-    //     message: "",
-    //     contentType: ContentType.success);
+    if (widget.isSales) {
+      salesProvider.addOldProduct(oldJwellery);
+    } else {
+      orderProvider.addOldJwellery(oldJwellery);
+    }
 
     if (isProceed) {
-      // Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+      _oldJwelleryFormKey.currentState!.reset();
+
+      Navigator.popAndPushNamed(context, OldJwelleryScreen.routeName,
+          arguments: widget.isSales);
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const CheckOrderScreen(),
+          builder: (context) => FinalPreviewScreen(
+            isSales: widget.isSales,
+          ),
         ),
       );
     } else {
-      Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName);
+      debugPrint("old jwellery screen called");
+      debugPrint(widget.isSales.toString());
+      Navigator.pushReplacementNamed(context, OldJwelleryScreen.routeName,
+          arguments: widget.isSales);
     }
   }
 
@@ -217,448 +226,396 @@ class _OldJwelleryScreenState extends State<OldJwelleryScreen> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        orderProvider.resetOldJwelries();
-        if (orderProvider.orderedItems.isNotEmpty) {
-          orderProvider.orderedItems
-              .removeAt(orderProvider.orderedItems.length - 1);
-        }
-        showSnackBar(
-            title: AppLocalizations.of(context)!.oldJewelryReset,
-            message: "",
-            contentType: ContentType.warning);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!.oldJewelryItem,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          centerTitle: false,
+    final salesProvider = Provider.of<SalesProvider>(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!.oldJewelleryItem,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            child: Column(
-              children: [
-                const Gap(10),
-                Text(
-                  AppLocalizations.of(context)!.fillFormToShowOldJewelry,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: blueColor),
-                ),
-                const Gap(10),
-                Form(
-                  key: _oldJwelleryFormKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.itemName,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
+        centerTitle: false,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          child: Column(
+            children: [
+              const Gap(10),
+              Text(
+                AppLocalizations.of(context)!.fillFormToShowOldJwellery,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: blueColor),
+              ),
+              const Gap(10),
+              Form(
+                key: _oldJwelleryFormKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.itemName,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _itemNameController,
+                      focusNode: _itemNamefocus,
+                      onFieldSubmitted: (value) => _fieldFocusChange(
+                          context, _itemNamefocus, _weightFocus),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => validateName(value!, context),
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.type,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    DropdownButtonFormField<String>(
+                      value: selectedProductType,
+                      iconEnabledColor: const Color(0xFFC3C3C3),
+                      iconDisabledColor: const Color(0xFFC3C3C3),
+                      iconSize: 25,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
                       ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _itemNameController,
-                        focusNode: _itemNamefocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _itemNamefocus, _weightFocus),
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateName(value!, context),
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.type,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      DropdownButtonFormField<String>(
-                        value: selectedProductType,
-                        iconEnabledColor: const Color(0xFFC3C3C3),
-                        iconDisabledColor: const Color(0xFFC3C3C3),
-                        iconSize: 25,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
+                      items: types.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedProductType = value!;
+                          _isSelectedTypeChanged = true;
+                          customRate = goldRates[translatedTypes(
+                                      context: context,
+                                      selectedWeightType: selectedWeightType,
+                                      selectedProductType: value)
+                                  .$2]
+                              .toString();
+                          _rateController.text = customRate;
+                          calculateTotalPrice();
+                        });
+                      },
+                      decoration: customTextfieldDecoration(),
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.weight,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _weightController,
+                            focusNode: _weightFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _weightFocus, _stoneFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateWeight(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
+                          ),
                         ),
-                        items: types.map((category) {
-                          return DropdownMenuItem<String>(
-                            value: category,
-                            child: Text(category),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedProductType = value!;
-                            _isSelectedTypeChanged = true;
-                            customRate = goldRates[translatedTypes(
+                        const Gap(10),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: selectedWeightType,
+                            iconEnabledColor: const Color(0xFFC3C3C3),
+                            iconDisabledColor: const Color(0xFFC3C3C3),
+                            iconSize: 25,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                            items: weight.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedWeightType = value!;
+                                calculateTotalPrice();
+                              });
+                            },
+                            decoration: customTextfieldDecoration(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.stone,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _stoneController,
+                      focusNode: _stoneFocus,
+                      onFieldSubmitted: (value) => _fieldFocusChange(
+                          context,
+                          _stoneFocus,
+                          _stonePriceFieldVisible
+                              ? _stonePriceFocus
+                              : _rateFocus),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      onChanged: (value) {
+                        setState(() {
+                          _stonePriceFieldVisible = value.isNotEmpty;
+                          if (!_stonePriceFieldVisible) {
+                            _stonePriceController.text = "";
+                          }
+                        });
+                      },
+                    ),
+                    const Gap(10),
+                    Visibility(
+                      visible: _stonePriceFieldVisible,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.stonePrice,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _stonePriceController,
+                            focusNode: _stonePriceFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _stonePriceFocus, _rateFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.done,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateStonePrice(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
+                          ),
+                          const Gap(10),
+                        ],
+                      ),
+                    ),
+                    // Text(
+                    //   AppLocalizations.of(context)!.charge,
+                    //   style: customTextDecoration()
+                    //       .copyWith(fontWeight: FontWeight.w600),
+                    // ),
+                    // const Gap(5),
+                    // TextFormField(
+                    //   controller: _chargeController,
+                    //   focusNode: _chargeFocus,
+                    //   onFieldSubmitted: (value) => _fieldFocusChange(
+                    //       context, _chargeFocus, _rateFocus),
+                    //   keyboardType: const TextInputType.numberWithOptions(
+                    //       decimal: true),
+                    //   textInputAction: TextInputAction.next,
+                    //   cursorColor: blueColor,
+                    //   decoration: customTextfieldDecoration(),
+                    //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                    //   validator: (value) => validateCharge(value!, context),
+                    //   onChanged: (value) => calculateTotalPrice(),
+                    // ),
+                    // const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.rate,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _rateController
+                        ..text = _isSelectedTypeChanged
+                            ? customRate
+                            : goldRates[translatedTypes(
                                         context: context,
                                         selectedWeightType: selectedWeightType,
-                                        selectedProductType: value)
+                                        selectedProductType:
+                                            selectedProductType)
                                     .$2]
-                                .toString();
-                            _rateController.text = customRate;
-                            calculateTotalPrice();
-                          });
-                        },
-                        decoration: customTextfieldDecoration(),
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.weight,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _weightController,
-                              focusNode: _weightFocus,
-                              onFieldSubmitted: (value) => _fieldFocusChange(
-                                  context, _weightFocus, _stoneFocus),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.next,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) =>
-                                  validateWeight(value!, context),
-                              onChanged: (value) => calculateTotalPrice(),
-                            ),
-                          ),
-                          const Gap(10),
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField<String>(
-                              value: selectedWeightType,
-                              iconEnabledColor: const Color(0xFFC3C3C3),
-                              iconDisabledColor: const Color(0xFFC3C3C3),
-                              iconSize: 25,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ),
-                              items: weight.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedWeightType = value!;
-                                  calculateTotalPrice();
-                                });
-                              },
-                              decoration: customTextfieldDecoration(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.stone,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _stoneController,
-                        focusNode: _stoneFocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context,
-                            _stoneFocus,
-                            _stonePriceFieldVisible
-                                ? _stonePriceFocus
-                                : _rateFocus),
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        onChanged: (value) {
-                          setState(() {
-                            _stonePriceFieldVisible = value.isNotEmpty;
-                            if (!_stonePriceFieldVisible) {
-                              _stonePriceController.text = "";
-                            }
-                          });
-                        },
-                      ),
-                      const Gap(10),
-                      Visibility(
-                        visible: _stonePriceFieldVisible,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.stonePrice,
-                              style: customTextDecoration()
-                                  .copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            const Gap(5),
-                            TextFormField(
-                              controller: _stonePriceController,
-                              focusNode: _stonePriceFocus,
-                              onFieldSubmitted: (value) => _fieldFocusChange(
-                                  context, _stonePriceFocus, _rateFocus),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.done,
-                              cursorColor: blueColor,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) =>
-                                  validateStonePrice(value!, context),
-                              onChanged: (value) => calculateTotalPrice(),
-                            ),
-                            const Gap(10),
-                          ],
-                        ),
-                      ),
-                      // Text(
-                      //   AppLocalizations.of(context)!.charge,
-                      //   style: customTextDecoration()
-                      //       .copyWith(fontWeight: FontWeight.w600),
-                      // ),
-                      // const Gap(5),
-                      // TextFormField(
-                      //   controller: _chargeController,
-                      //   focusNode: _chargeFocus,
-                      //   onFieldSubmitted: (value) => _fieldFocusChange(
-                      //       context, _chargeFocus, _rateFocus),
-                      //   keyboardType: const TextInputType.numberWithOptions(
-                      //       decimal: true),
-                      //   textInputAction: TextInputAction.next,
-                      //   cursorColor: blueColor,
-                      //   decoration: customTextfieldDecoration(),
-                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
-                      //   validator: (value) => validateCharge(value!, context),
-                      //   onChanged: (value) => calculateTotalPrice(),
-                      // ),
-                      // const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.rate,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _rateController
-                          ..text = _isSelectedTypeChanged
-                              ? customRate
-                              : goldRates[translatedTypes(
-                                          context: context,
-                                          selectedWeightType:
-                                              selectedWeightType,
-                                          selectedProductType:
-                                              selectedProductType)
-                                      .$2]
-                                  .toString(),
-                        focusNode: _rateFocus,
-                        onFieldSubmitted: (value) =>
-                            _fieldFocusChange(context, _rateFocus, _lossFocus),
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateRate(value!, context),
-                        onChanged: (value) {
-                          _rateController.text = value;
-                          customRate = value;
-                          _isSelectedTypeChanged = true;
-                          calculateTotalPrice();
-                        },
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.loss,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _lossController,
-                              focusNode: _lossFocus,
-                              onFieldSubmitted: (value) => _lossFocus.unfocus(),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.done,
-                              cursorColor: blueColor,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                // validateWeight(_weightController.text, context);
-                                debugPrint(lossWeightType);
-                                return validateLoss(
-                                    _weightController.text,
-                                    value!,
-                                    selectedWeightType,
-                                    lossWeightType,
-                                    context);
-                              },
-                              onChanged: (value) => calculateTotalPrice(),
-                            ),
-                          ),
-                          const Gap(10),
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField<String>(
-                              value: lossWeightType,
-                              iconEnabledColor: const Color(0xFFC3C3C3),
-                              iconDisabledColor: const Color(0xFFC3C3C3),
-                              iconSize: 25,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ),
-                              items: weight.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  lossWeightType = value!;
-                                });
-                                calculateTotalPrice();
-                              },
-                              decoration: customTextfieldDecoration(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Gap(10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${AppLocalizations.of(context)!.currentPrice}: ",
-                        style: const TextStyle(
-                            color: greyColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                      ),
-                      Text(
-                        "रु${NumberFormat('#,##,###.00').format(currentJwelleryPrice)}",
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-                const Gap(10),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child: _showTotalPrice
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${AppLocalizations.of(context)!.totalPrice}: रु$totalPriceToShow',
-                              key: const ValueKey(true),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!
-                                  .noteTotalPriceExcludingCurrentOrderPrice,
-                              style: const TextStyle(
-                                  fontSize: 10,
-                                  fontStyle: FontStyle.italic,
-                                  color: greyColor),
-                            )
-                          ],
-                        )
-                      : ElevatedButton(
-                          key: const ValueKey(false),
-                          onPressed: () {
-                            for (int i = 0;
-                                i < orderProvider.oldJweleries.length;
-                                i++) {
-                              totalPriceToShow +=
-                                  orderProvider.oldJweleries[i].price;
-                            }
-                            setState(() {
-                              _showTotalPrice = !_showTotalPrice;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: blueColor,
-                          ),
-                          child: Text(
-                            '${AppLocalizations.of(context)!.totalPrice}?',
-                            style: const TextStyle(color: Colors.white),
+                                .toString(),
+                      focusNode: _rateFocus,
+                      onFieldSubmitted: (value) =>
+                          _fieldFocusChange(context, _rateFocus, _lossFocus),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => validateRate(value!, context),
+                      onChanged: (value) {
+                        _rateController.text = value;
+                        customRate = value;
+                        _isSelectedTypeChanged = true;
+                        calculateTotalPrice();
+                      },
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.loss,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _lossController,
+                            focusNode: _lossFocus,
+                            onFieldSubmitted: (value) => _lossFocus.unfocus(),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.done,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              // validateWeight(_weightController.text, context);
+                              // debugPrint(lossWeightType);
+                              return validateLoss(
+                                  _weightController.text,
+                                  value!,
+                                  selectedWeightType,
+                                  lossWeightType,
+                                  context);
+                            },
+                            onChanged: (value) => calculateTotalPrice(),
                           ),
                         ),
-                ),
-                const Gap(15),
-                CustomButton(
-                  onPressed: () {
-                    if (_oldJwelleryFormKey.currentState!.validate()) {
-                      addOtherItem(orderProvider, false);
-                    }
-                  },
-                  text: AppLocalizations.of(context)!.addOtherItem,
-                  textColor: Colors.white,
-                  backgroundColor: blueColor,
-                ),
-                const Gap(10),
-                CustomButton(
-                  onPressed: () {
-                    if (_itemNameController.text.isEmpty &&
-                            _weightController.text.isEmpty &&
-                            _stoneController.text.isEmpty
-                        // && _chargeController.text.isEmpty
-                        ) {
-                      // Navigator.pushNamed(
-                      //     context, CustomerDetailsScreen.routeName);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CheckOrderScreen(),
+                        const Gap(10),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: lossWeightType,
+                            iconEnabledColor: const Color(0xFFC3C3C3),
+                            iconDisabledColor: const Color(0xFFC3C3C3),
+                            iconSize: 25,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                            items: weight.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                lossWeightType = value!;
+                              });
+                              calculateTotalPrice();
+                            },
+                            decoration: customTextfieldDecoration(),
+                          ),
                         ),
-                      );
-                    } else if (_oldJwelleryFormKey.currentState!.validate()) {
-                      addOtherItem(orderProvider, true);
-                    }
-                  },
-                  text: AppLocalizations.of(context)!.proceed,
-                  textColor: Colors.white,
-                  backgroundColor: blueColor,
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const Gap(10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${AppLocalizations.of(context)!.currentPrice}: ",
+                      style: const TextStyle(
+                          color: greyColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    Text(
+                      "रु${getNumberFormat(currentJwelleryPrice)}",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(10),
+              CustomButton(
+                onPressed: () {
+                  if (_oldJwelleryFormKey.currentState!.validate()) {
+                    addOtherItem(orderProvider, salesProvider, false);
+                  }
+                },
+                text: AppLocalizations.of(context)!.addOtherItem,
+                textColor: Colors.white,
+                backgroundColor: blueColor,
+              ),
+              const Gap(10),
+              CustomButton(
+                onPressed: () {
+                  if (_itemNameController.text.isEmpty &&
+                          _weightController.text.isEmpty &&
+                          _stoneController.text.isEmpty
+                      // && _chargeController.text.isEmpty
+                      ) {
+                    // if (widget.isSales) {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) =>const CustomerDetailsForm(),
+                    //     ),
+                    //   );
+                    // }else{
+                    //   Navigator.pushNamed(
+                    //     context, CustomerDetailsScreen.routeName);
+                    // }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            FinalPreviewScreen(isSales: widget.isSales),
+                      ),
+                    );
+                  } else if (_oldJwelleryFormKey.currentState!.validate()) {
+                    addOtherItem(orderProvider, salesProvider, true);
+                  }
+                },
+                text: AppLocalizations.of(context)!.proceed,
+                textColor: Colors.white,
+                backgroundColor: blueColor,
+              ),
+            ],
           ),
         ),
       ),

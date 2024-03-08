@@ -2,8 +2,8 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
-import 'package:grit_qr_scanner/features/sales/screens/sales_details_screen.dart';
-import 'package:grit_qr_scanner/models/sales_model.dart';
+import 'package:grit_qr_scanner/features/sales/models/sold_product_model.dart';
+import 'package:grit_qr_scanner/features/sales/screens/sold_product_preview_screen.dart';
 import 'package:grit_qr_scanner/provider/product_provider.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
@@ -43,50 +43,45 @@ class _AboutProductState extends State<AboutProduct> {
 
   final String productDescription = "Description not added yet!";
 
-  // void navigateToCustomerDetailsForm(
-  //     BuildContext context, Product product, double jyala, double jarti, double totalPrice) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => CustomerDetailsForm(
-  //         product: product,
-  //         jyala: jyala,
-  //         jarti: jarti,
-  //         totalPrice: totalPrice,
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void navigateToSalesDetailsScreen(
-      SalesProvider salesProvider,
-      Product product,
-      double jyala,
-      double jarti,
-      double totalPrice,
-      double weight) {
-    for (int i = 0; i < salesProvider.saleItems.length; i++) {
-      if (salesProvider.saleItems[i].product.id == product.id) {
-        showSnackBar(
-            title: AppLocalizations.of(context)!.duplicateFound,
-            message: AppLocalizations.of(context)!.itemAlreadyInList,
-            contentType: ContentType.warning);
-        return;
+      SalesProvider salesProvider, Product product) {
+    if (salesProvider.products.isNotEmpty) {
+      for (int i = 0; i < salesProvider.products.length; i++) {
+        if (salesProvider.products[i].id == product.id) {
+          showSnackBar(
+              title: AppLocalizations.of(context)!.duplicateFound,
+              message: AppLocalizations.of(context)!.itemAlreadyInList,
+              contentType: ContentType.warning);
+          return;
+        }
       }
     }
 
-    SalesModel item = SalesModel(
-        product: product,
-        price: totalPrice,
-        weight: weight,
-        jyalaPercentage: jyala,
-        jartiPercentage: jarti);
+    double amount = getTotalPrice(
+        weight: product.weight!,
+        rate: goldRates[product.productType!]!,
+        jyala: double.tryParse(_jyalaController.text) ?? product.jyala!,
+        jarti: double.tryParse(_jartiController.text) ?? product.jarti,
+        jartiWeightType: product.jartiType,
+        stonePrice: product.stone_price ?? 0.0);
 
-    salesProvider.addSaleItem(item);
+    SoldProduct soldProduct = SoldProduct(
+        id: product.id,
+        name: product.name!,
+        image: product.image!,
+        type: product.productType!,
+        weight: product.weight!,
+        rate: goldRates[product.productType!]!,
+        jyala: double.tryParse(_jyalaController.text) ?? product.jyala!,
+        jarti: double.tryParse(_jartiController.text) ?? product.jarti!,
+        jartiType: product.jartiType!,
+        amount: amount);
+
+    salesProvider.addProduct(soldProduct);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SalesDetailsScreen(),
+        builder: (context) => const SoldProductPreviewScreen(),
       ),
     );
   }
@@ -120,7 +115,7 @@ class _AboutProductState extends State<AboutProduct> {
 
   @override
   Widget build(BuildContext context) {
-    final salesProvider = Provider.of<SalesProvider>(context, listen: false);
+    final salesProvider = Provider.of<SalesProvider>(context);
     product = Provider.of<ProductProvider>(context).currentProduct;
     return Scaffold(
       appBar: AppBar(
@@ -353,7 +348,7 @@ class _AboutProductState extends State<AboutProduct> {
                           child: TextFormField(
                             controller: _totalPriceController
                               ..text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: product!.jyala!, jarti: product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}",
+                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: product!.jyala!, jarti: product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}",
                             enabled: false, // Disable user input
                             style: const TextStyle(color: Colors.black),
                             decoration: const InputDecoration(
@@ -371,7 +366,7 @@ class _AboutProductState extends State<AboutProduct> {
                             ),
                             onChanged: (value) {
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
+                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
                             },
                           ),
                         ),
@@ -411,49 +406,8 @@ class _AboutProductState extends State<AboutProduct> {
                           Expanded(
                             child: CustomButton(
                               onPressed: () {
-                                // navigateToCustomerDetailsForm(
-                                //     context,
-                                //     product!,
-                                //     double.tryParse(_jyalaController.text) ??
-                                //         product!.jyala!,
-                                //     double.tryParse(_jartiController.text) ??
-                                //         product!.jarti!,
-                                //     double.tryParse(_totalPriceController.text) ??
-                                //         getTotalPrice(
-                                //             weight: product!.weight!,
-                                //             rate: goldRates[product!.productType!]!,
-                                //             jyala: double.tryParse(
-                                //                     _jyalaController.text) ??
-                                //                 product!.jyala!,
-                                //             jarti: double.tryParse(
-                                //                     _jartiController.text) ??
-                                //                 product!.jarti,
-                                //             stonePrice: product!.stone_price ?? 0.0));
-
                                 navigateToSalesDetailsScreen(
-                                    salesProvider,
-                                    product!,
-                                    double.tryParse(_jyalaController.text) ??
-                                        product!.jyala!,
-                                    double.tryParse(_jartiController.text) ??
-                                        product!.jarti!,
-                                    double.tryParse(
-                                            _totalPriceController.text) ??
-                                        getTotalPrice(
-                                            weight: product!.weight!,
-                                            rate: goldRates[
-                                                product!.productType!]!,
-                                            jyala: double.tryParse(
-                                                    _jyalaController.text) ??
-                                                product!.jyala!,
-                                            jarti: double.tryParse(
-                                                    _jartiController.text) ??
-                                                product!.jarti,
-                                            stonePrice:
-                                                product!.stone_price ?? 0.0,
-                                            jartiWeightType:
-                                                product!.jartiType),
-                                    product!.weight!);
+                                    salesProvider, product!);
                               },
                               text: AppLocalizations.of(context)!.sellItem,
                               iconColor: blueColor,

@@ -24,7 +24,7 @@ class CustomerDetailsScreen extends StatefulWidget {
 
 class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final _customerDetailsFormKey = GlobalKey<FormState>();
-  final _modalProgressHUDKeyCustomerDetails = GlobalKey();
+  GlobalKey _modalProgressHUDKeyCustomerDetails = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -95,15 +95,15 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         canPop: true,
         onPopInvoked: (didPop) {
           orderProvider.resetCustomer();
-          if (orderProvider.oldJweleries.isNotEmpty) {
-            orderProvider.oldJweleries
-                .removeAt(orderProvider.oldJweleries.length - 1);
+          if (orderProvider.oldJwelleries.isNotEmpty) {
+            orderProvider.oldJwelleries
+                .removeAt(orderProvider.oldJwelleries.length - 1);
           }
 
-          if (orderProvider.orderedItems.isNotEmpty) {
-            orderProvider.orderedItems
-                .removeAt(orderProvider.orderedItems.length - 1);
-          }
+          // if (orderProvider.orderedItems.isNotEmpty) {
+          //   orderProvider.orderedItems
+          //       .removeAt(orderProvider.orderedItems.length - 1);
+          // }
           showSnackBar(
               title: AppLocalizations.of(context)!.customerDetailsCleared,
               message: "",

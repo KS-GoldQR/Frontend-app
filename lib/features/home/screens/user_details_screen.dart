@@ -56,7 +56,6 @@ class UserDetailsScreen extends StatelessWidget {
             buildInfoRow(AppLocalizations.of(context)!.name, user.name!),
             buildInfoRow(
                 AppLocalizations.of(context)!.contactNumber, user.phoneNo!),
-            buildInfoRow(AppLocalizations.of(context)!.userId, user.userId),
             buildInfoRow(AppLocalizations.of(context)!.subscriptionEndsAt,
                 DateFormat.yMMMd().format(user.subscriptionEndsAt!)),
             buildInfoRow(

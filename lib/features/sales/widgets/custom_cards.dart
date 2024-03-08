@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget buildSalesItemsList(BuildContext context) {
   final salesProvider = Provider.of<SalesProvider>(context);
-  final sales = salesProvider.saleItems;
+  final products = salesProvider.products;
 
   Future<void> showChoiceDialogDelete(BuildContext context, int index) async {
     AwesomeDialog(
@@ -25,12 +25,12 @@ Widget buildSalesItemsList(BuildContext context) {
       btnCancelColor: Colors.red,
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        salesProvider.removeItemAt(index);
+        salesProvider.removeProductItemAt(index);
       },
     ).show();
   }
 
-  return sales.isEmpty
+  return products.isEmpty
       ? Text(AppLocalizations.of(context)!.noProductToSell)
       : Card(
           elevation: 5.0,
@@ -42,19 +42,18 @@ Widget buildSalesItemsList(BuildContext context) {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: sales.length,
+              itemCount: products.length,
               itemBuilder: (context, index) {
-                final saleItem = sales[index];
+                final product = products[index];
 
                 return Column(
                   children: [
                     Row(
                       children: [
                         Expanded(
-                          // TODO(UI): change jarti and jarti-type in sales model, sales api and change here to show accordingly
                           child: buildInfoRow(
-                            saleItem.product.name!,
-                            "${AppLocalizations.of(context)!.type}: ${saleItem.product.productType == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : saleItem.product.productType == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${saleItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: ${saleItem.jyalaPercentage}% \n ${AppLocalizations.of(context)!.jarti}: ${saleItem.jartiPercentage}% \n ${AppLocalizations.of(context)!.price}: ${getNumberFormat(saleItem.price)}",
+                            product.name,
+                            "${AppLocalizations.of(context)!.type}: ${product.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : product.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${product.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: रु${product.jyala}\n ${AppLocalizations.of(context)!.jarti}: ${product.jarti} ${product.jartiType == "%" ? AppLocalizations.of(context)!.percentage : AppLocalizations.of(context)!.laal} \n ${AppLocalizations.of(context)!.price}: ${getNumberFormat(product.amount)}",
                           ),
                         ),
                         IconButton(
@@ -68,7 +67,7 @@ Widget buildSalesItemsList(BuildContext context) {
                         ),
                       ],
                     ),
-                    if (index != sales.length - 1)
+                    if (index != products.length - 1)
                       const Divider(
                         color: Color(0xFFBDBCBC),
                         thickness: 1,

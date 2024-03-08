@@ -17,6 +17,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../utils/widgets/custom_card.dart';
+import '../../sales/screens/sales_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home-screen";
@@ -28,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final UserService _userService = UserService();
-  final _modalProgressHUDKeyHomeScreen = GlobalKey();
+  GlobalKey _modalProgressHUDKeyHomeScreen = GlobalKey();
   bool isLoggingOut = false;
 
   List<String> cardsText = [];
@@ -44,11 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
       size: 30,
       color: Colors.white,
     ),
-    // const Icon(
-    //   Remix.product_hunt_line,
-    //   size: 30,
-    //   color: Colors.white,
-    // ),
+    const Icon(
+      Remix.product_hunt_line,
+      size: 30,
+      color: Colors.white,
+    ),
     const Icon(
       Remix.shopping_cart_2_line,
       size: 30,
@@ -82,27 +83,27 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       //due to requirement change, sales details are avoided my be needed in future, just uncomment and adjust indexes
-      // case 2:
-      //   Navigator.pushNamed(context, SoldItemsScreen.routeName);
-      //   break;
-
       case 2:
-        Navigator.pushNamed(context, OrderScreen.routeName);
+        Navigator.pushNamed(context, SalesScreen.routeName);
         break;
 
       case 3:
+        Navigator.pushNamed(context, OrderScreen.routeName);
+        break;
+
+      case 4:
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GoldRatesScreen()),
         );
         break;
 
-      case 4:
+      case 5:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const CalculatorScreen()));
         break;
 
-      case 5:
+      case 6:
         Navigator.pushNamed(context, OldProductsScreen.routeName);
         break;
 
@@ -126,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
     cardsText = [
       AppLocalizations.of(context)!.scanQR,
       AppLocalizations.of(context)!.inventory,
-      // AppLocalizations.of(context)!.soldItems,
+      AppLocalizations.of(context)!.soldItems,
       AppLocalizations.of(context)!.orders,
       AppLocalizations.of(context)!.rates,
       AppLocalizations.of(context)!.calculator,
@@ -134,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
     super.didChangeDependencies();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,12 +178,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Remix.logout_box_r_line,
               ),
             ),
-            // IconButton(
-            //   onPressed: () {},
-            //   icon: const Icon(
-            //     Remix.settings_3_line,
-            //   ),
-            // ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Remix.settings_3_line,
+              ),
+            ),
             const Gap(10),
           ],
         ),

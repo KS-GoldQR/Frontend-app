@@ -1,9 +1,8 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart';
-import 'package:grit_qr_scanner/features/orders/screens/check_order_screen.dart';
+import 'package:grit_qr_scanner/features/reusable%20components/final_preview_screen.dart';
 import 'package:grit_qr_scanner/features/orders/screens/old_jwellery_screen.dart';
 import 'package:grit_qr_scanner/provider/order_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
@@ -38,7 +37,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _jartiFocus = FocusNode();
   final _stoneFocus = FocusNode();
   final _stonePriceFocus = FocusNode();
-  bool _showTotalPrice = false;
+  // bool _showTotalPrice = false;
   late List<String> weight;
   late String selectedWeightType;
   late List<String> types;
@@ -50,31 +49,32 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   bool _dependenciesInitialized = false;
   bool _stonePriceFieldVisible = false;
 
-  void _showChoiceDialog(OrderProvider orderProvider) {
+  void _showChoiceDialog(OrderProvider orderProvider, bool allEmptyField) {
     Future.delayed(Duration.zero, () {
       AwesomeDialog(
         context: context,
         dialogType: DialogType.question,
         animType: AnimType.rightSlide,
         title: AppLocalizations.of(context)!.oldJewellery,
-        desc: AppLocalizations.of(context)!.anyOldJewelryDeposited,
+        desc: AppLocalizations.of(context)!.anyOldJwelleryDeposited,
         btnOkText: AppLocalizations.of(context)!.yes,
         btnCancelText: AppLocalizations.of(context)!.no,
         btnOkColor: blueColor,
         btnCancelColor: blueColor,
         btnCancelOnPress: () {
-          addOtherItem(orderProvider, true);
-          // Navigator.pushNamed(context, CustomerDetailsScreen.routeName);
+          if (!allEmptyField) addOtherItem(orderProvider, true);
+
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CheckOrderScreen(),
+              builder: (context) => const FinalPreviewScreen(isSales: false),
             ),
           );
         },
         btnOkOnPress: () {
-          addOtherItem(orderProvider, true);
-          Navigator.pushNamed(context, OldJwelleryScreen.routeName);
+          if (!allEmptyField) addOtherItem(orderProvider, true);
+          Navigator.pushNamed(context, OldJwelleryScreen.routeName,
+              arguments: false);
         },
       ).show();
     });
@@ -153,12 +153,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       totalPrice: totalPrice,
     );
 
+    debugPrint("order adding.");
     orderProvider.addOrderedItems(orderedItem);
+    _createOrderFormKey.currentState!.reset();
 
-    // showSnackBar(
-    //     title: AppLocalizations.of(context)!.orderAdded,
-    //     message: "",
-    //     contentType: ContentType.success);
+    Navigator.popAndPushNamed(
+        context, CreateOrderScreen.routeName); //to reset form details
 
     if (!isProceed) {
       Navigator.pushReplacementNamed(context, CreateOrderScreen.routeName);
@@ -225,382 +225,382 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        orderProvider.resetOrders();
-        showSnackBar(
-            title: AppLocalizations.of(context)!.orderCancelled,
-            message: "",
-            contentType: ContentType.warning);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!.createOrder,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          centerTitle: false,
+    final orderProvider = Provider.of<OrderProvider>(context, listen: true);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!.createOrder,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            child: Column(
-              children: [
-                const Gap(10),
-                Text(
-                  AppLocalizations.of(context)!.fillFormToCreateOrder,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: blueColor),
-                ),
-                const Gap(10),
-                Form(
-                  key: _createOrderFormKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.name,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
+        centerTitle: false,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          child: Column(
+            children: [
+              const Gap(10),
+              Text(
+                AppLocalizations.of(context)!.fillFormToCreateOrder,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: blueColor),
+              ),
+              const Gap(10),
+              Form(
+                key: _createOrderFormKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.name,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _itemNameController,
+                      focusNode: _itemNamefocus,
+                      onFieldSubmitted: (value) => _fieldFocusChange(
+                          context, _itemNamefocus, _weightFocus),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => validateName(value!, context),
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.type,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    DropdownButtonFormField<String>(
+                      value: selectedProductType,
+                      iconEnabledColor: const Color(0xFFC3C3C3),
+                      iconDisabledColor: const Color(0xFFC3C3C3),
+                      iconSize: 25,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
                       ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _itemNameController,
-                        focusNode: _itemNamefocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _itemNamefocus, _weightFocus),
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateName(value!, context),
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.type,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      DropdownButtonFormField<String>(
-                        value: selectedProductType,
-                        iconEnabledColor: const Color(0xFFC3C3C3),
-                        iconDisabledColor: const Color(0xFFC3C3C3),
-                        iconSize: 25,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
+                      items: types.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedProductType = value!;
+                          calculateTotalPrice();
+                        });
+                      },
+                      decoration: customTextfieldDecoration(),
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.weight,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _weightController,
+                            focusNode: _weightFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _weightFocus, _jyalaFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateWeight(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
+                          ),
                         ),
-                        items: types.map((category) {
-                          return DropdownMenuItem<String>(
-                            value: category,
-                            child: Text(category),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedProductType = value!;
-                            calculateTotalPrice();
-                          });
-                        },
-                        decoration: customTextfieldDecoration(),
-                      ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.weight,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _weightController,
-                              focusNode: _weightFocus,
-                              onFieldSubmitted: (value) => _fieldFocusChange(
-                                  context, _weightFocus, _jyalaFocus),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.next,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) =>
-                                  validateWeight(value!, context),
-                              onChanged: (value) => calculateTotalPrice(),
+                        const Gap(10),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: selectedWeightType,
+                            iconEnabledColor: const Color(0xFFC3C3C3),
+                            iconDisabledColor: const Color(0xFFC3C3C3),
+                            iconSize: 25,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
                             ),
-                          ),
-                          const Gap(10),
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField<String>(
-                              value: selectedWeightType,
-                              iconEnabledColor: const Color(0xFFC3C3C3),
-                              iconDisabledColor: const Color(0xFFC3C3C3),
-                              iconSize: 25,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ),
-                              items: weight.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedWeightType = value!;
-                                  calculateTotalPrice();
-                                });
-                              },
-                              decoration: customTextfieldDecoration(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Gap(10),
-                      Text(
-                        "${AppLocalizations.of(context)!.jyala} ",
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _jyalaController,
-                        focusNode: _jyalaFocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _jyalaFocus, _jartiFocus),
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validateJyala(value!, context),
-                        onChanged: (value) => calculateTotalPrice(),
-                      ),
-                      const Gap(10),
-                      Text(
-                        "${AppLocalizations.of(context)!.jarti}  ",
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _jartiController,
-                              focusNode: _jartiFocus,
-                              onFieldSubmitted: (value) => _fieldFocusChange(
-                                  context, _jartiFocus, _stoneFocus),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.next,
-                              cursorColor: blueColor,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) =>
-                                  validateJarti(value!, context),
-                              onChanged: (value) => calculateTotalPrice(),
-                            ),
-                          ),
-                          const Gap(10),
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField<String>(
-                              value: selectedJartiWeightType,
-                              iconEnabledColor: const Color(0xFFC3C3C3),
-                              iconDisabledColor: const Color(0xFFC3C3C3),
-                              iconSize: 25,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ),
-                              items: jartiWeightTypeList.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedJartiWeightType = value!;
-                                });
+                            items: weight.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedWeightType = value!;
                                 calculateTotalPrice();
-                              },
-                              decoration: customTextfieldDecoration(),
+                              });
+                            },
+                            decoration: customTextfieldDecoration(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(10),
+                    Text(
+                      "${AppLocalizations.of(context)!.jyala} ",
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _jyalaController,
+                      focusNode: _jyalaFocus,
+                      onFieldSubmitted: (value) =>
+                          _fieldFocusChange(context, _jyalaFocus, _jartiFocus),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => validateJyala(value!, context),
+                      onChanged: (value) => calculateTotalPrice(),
+                    ),
+                    const Gap(10),
+                    Text(
+                      "${AppLocalizations.of(context)!.jarti}  ",
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _jartiController,
+                            focusNode: _jartiFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _jartiFocus, _stoneFocus),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateJarti(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
+                          ),
+                        ),
+                        const Gap(10),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField<String>(
+                            value: selectedJartiWeightType,
+                            iconEnabledColor: const Color(0xFFC3C3C3),
+                            iconDisabledColor: const Color(0xFFC3C3C3),
+                            iconSize: 25,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
                             ),
+                            items: jartiWeightTypeList.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedJartiWeightType = value!;
+                              });
+                              calculateTotalPrice();
+                            },
+                            decoration: customTextfieldDecoration(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.stone,
+                      style: customTextDecoration()
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const Gap(5),
+                    TextFormField(
+                      controller: _stoneController,
+                      focusNode: _stoneFocus,
+                      onFieldSubmitted: (value) => _fieldFocusChange(
+                          context, _stoneFocus, _stonePriceFocus),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      cursorColor: blueColor,
+                      decoration: customTextfieldDecoration(),
+                      onChanged: (value) {
+                        setState(() {
+                          _stonePriceFieldVisible = value.isNotEmpty;
+                          if (!_stonePriceFieldVisible) {
+                            _stonePriceController.text = "";
+                          }
+                        });
+                      },
+                    ),
+                    const Gap(10),
+                    Visibility(
+                      visible: _stonePriceFieldVisible,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.stonePrice,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _stonePriceController,
+                            focusNode: _stonePriceFocus,
+                            onFieldSubmitted: (value) =>
+                                _stonePriceFocus.unfocus(),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.done,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateStonePrice(value!, context),
+                            onChanged: (value) => calculateTotalPrice(),
                           ),
                         ],
                       ),
-                      const Gap(10),
-                      Text(
-                        AppLocalizations.of(context)!.stone,
-                        style: customTextDecoration()
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const Gap(5),
-                      TextFormField(
-                        controller: _stoneController,
-                        focusNode: _stoneFocus,
-                        onFieldSubmitted: (value) => _fieldFocusChange(
-                            context, _stoneFocus, _stonePriceFocus),
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                        cursorColor: blueColor,
-                        decoration: customTextfieldDecoration(),
-                        onChanged: (value) {
-                          setState(() {
-                            _stonePriceFieldVisible = value.isNotEmpty;
-                            if (!_stonePriceFieldVisible) {
-                              _stonePriceController.text = "";
-                            }
-                          });
-                        },
-                      ),
-                      const Gap(10),
-                      Visibility(
-                        visible: _stonePriceFieldVisible,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.stonePrice,
-                              style: customTextDecoration()
-                                  .copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            const Gap(5),
-                            TextFormField(
-                              controller: _stonePriceController,
-                              focusNode: _stonePriceFocus,
-                              onFieldSubmitted: (value) =>
-                                  _stonePriceFocus.unfocus(),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              textInputAction: TextInputAction.done,
-                              cursorColor: blueColor,
-                              decoration: customTextfieldDecoration(),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) =>
-                                  validateStonePrice(value!, context),
-                              onChanged: (value) => calculateTotalPrice(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const Gap(10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${AppLocalizations.of(context)!.currentPrice}: ",
-                        style: const TextStyle(
-                            color: greyColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+              ),
+              const Gap(10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${AppLocalizations.of(context)!.currentPrice}: ",
+                      style: const TextStyle(
+                          color: greyColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    Text(
+                      "रु${NumberFormat('#,##,###.00').format(currentOrderPrice)}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        "रु${NumberFormat('#,##,###.00').format(currentOrderPrice)}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const Gap(10),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child: _showTotalPrice
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${AppLocalizations.of(context)!.totalPrice}: रु${NumberFormat('#,##,###.00').format(totalPriceToShow)}',
-                              key: const ValueKey(true),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!
-                                  .noteTotalPriceExcludingCurrentOrderPrice,
-                              style: const TextStyle(
-                                  fontSize: 10,
-                                  fontStyle: FontStyle.italic,
-                                  color: greyColor),
-                            )
-                          ],
-                        )
-                      : ElevatedButton(
-                          key: const ValueKey(false),
-                          onPressed: () {
-                            for (int i = 0;
-                                i < orderProvider.orderedItems.length;
-                                i++) {
-                              totalPriceToShow +=
-                                  orderProvider.orderedItems[i].totalPrice;
-                            }
-                            setState(() {
-                              _showTotalPrice = !_showTotalPrice;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: blueColor,
-                          ),
-                          child: Text(
-                            '${AppLocalizations.of(context)!.totalPrice}?',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                ),
-                const Gap(15),
-                CustomButton(
-                  onPressed: () {
-                    if (_createOrderFormKey.currentState!.validate()) {
-                      addOtherItem(orderProvider, false);
-                    }
-                  },
-                  text: AppLocalizations.of(context)!.addOtherItem,
-                  textColor: Colors.white,
-                  backgroundColor: blueColor,
-                ),
-                const Gap(10),
-                CustomButton(
-                  onPressed: () {
-                    if (_createOrderFormKey.currentState!.validate()) {
-                      _showChoiceDialog(orderProvider);
-                    }
-                  },
-                  text: AppLocalizations.of(context)!.proceed,
-                  textColor: Colors.white,
-                  backgroundColor: blueColor,
-                ),
-                const Gap(20),
-              ],
-            ),
+              ),
+              const Gap(10),
+              // AnimatedSwitcher(
+              //   duration: const Duration(milliseconds: 500),
+              //   child: _showTotalPrice
+              //       ? Column(
+              //           crossAxisAlignment: CrossAxisAlignment.center,
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           children: [
+              //             Text(
+              //               '${AppLocalizations.of(context)!.totalPrice}: रु${NumberFormat('#,##,###.00').format(totalPriceToShow)}',
+              //               key: const ValueKey(true),
+              //               textAlign: TextAlign.center,
+              //               style: const TextStyle(fontSize: 20),
+              //             ),
+              //             Text(
+              //               AppLocalizations.of(context)!
+              //                   .noteTotalPriceExcludingCurrentOrderPrice,
+              //               style: const TextStyle(
+              //                   fontSize: 10,
+              //                   fontStyle: FontStyle.italic,
+              //                   color: greyColor),
+              //             )
+              //           ],
+              //         )
+              //       : ElevatedButton(
+              //           key: const ValueKey(false),
+              //           onPressed: () {
+              //             for (int i = 0;
+              //                 i < orderProvider.orderedItems.length;
+              //                 i++) {
+              //               totalPriceToShow +=
+              //                   orderProvider.orderedItems[i].totalPrice;
+              //             }
+              //             setState(() {
+              //               _showTotalPrice = !_showTotalPrice;
+              //             });
+              //           },
+              //           style: ElevatedButton.styleFrom(
+              //             backgroundColor: blueColor,
+              //           ),
+              //           child: Text(
+              //             '${AppLocalizations.of(context)!.totalPrice}?',
+              //             style: const TextStyle(color: Colors.white),
+              //           ),
+              //         ),
+              // ),
+              const Gap(15),
+              CustomButton(
+                onPressed: () {
+                  if (_createOrderFormKey.currentState!.validate()) {
+                    addOtherItem(orderProvider, false);
+                  }
+                },
+                text: AppLocalizations.of(context)!.addOtherItem,
+                textColor: Colors.white,
+                backgroundColor: blueColor,
+              ),
+              const Gap(10),
+              CustomButton(
+                onPressed: () {
+                  if ((_itemNameController.text.isEmpty &&
+                          _weightController.text.isEmpty &&
+                          _jyalaController.text.isEmpty &&
+                          _jartiController.text.isEmpty &&
+                          _stoneController.text.isEmpty) ||
+                      _createOrderFormKey.currentState!.validate()) {
+                    _showChoiceDialog(
+                        orderProvider,
+                        (_itemNameController.text.isEmpty &&
+                                _weightController.text.isEmpty &&
+                                _jyalaController.text.isEmpty &&
+                                _jartiController.text.isEmpty &&
+                                _stoneController.text.isEmpty)
+                            ? true
+                            : false);
+                  }
+                },
+                text: AppLocalizations.of(context)!.proceed,
+                textColor: Colors.white,
+                backgroundColor: blueColor,
+              ),
+              const Gap(20),
+            ],
           ),
         ),
       ),

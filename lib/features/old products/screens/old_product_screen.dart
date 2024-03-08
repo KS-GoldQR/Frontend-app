@@ -41,12 +41,14 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
   }
 
   Future<void> deleteOldProduct(String productId) async {
-    await _oldProductService.deleteOldProduct(
+    bool isDeleted = await _oldProductService.deleteOldProduct(
         context: context, productId: productId);
     //update without hitting api
     setState(() {
-      products?.removeWhere((element) => element.id == productId);
-      getGroupedProduct();
+      if (isDeleted) {
+        products?.removeWhere((element) => element.id == productId);
+        getGroupedProduct();
+      }
     });
   }
 

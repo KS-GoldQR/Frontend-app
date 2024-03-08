@@ -4,7 +4,6 @@ import 'package:grit_qr_scanner/features/products/screens/about_product_screen.d
 import 'package:grit_qr_scanner/features/products/screens/edit_product_screen.dart';
 import 'package:grit_qr_scanner/features/products/services/product_service.dart';
 import 'package:grit_qr_scanner/provider/user_provider.dart';
-// import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -32,7 +31,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   final ProductService _productService = ProductService();
   Product? product;
   bool isScanning = false;
-  final _modalProgressHUDKeyQrScreen = GlobalKey();
+  GlobalKey _modalProgressHUDKeyQrScreen = GlobalKey();
 
   Future<void> getProductInfo(String productId, String sessionToken) async {
     try {
@@ -183,11 +182,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                   'fromRouteName': QRScannerScreen.routeName,
                                 });
                           } else {
-                            // navigatorKey.currentState!
-                            //     .pushNamed(AboutProduct.routeName, arguments: {
-                            //   'product': product,
-                            //   'fromInventory': false,
-                            // });
                             final productProvider =
                                 // ignore: use_build_context_synchronously
                                 Provider.of<ProductProvider>(context,

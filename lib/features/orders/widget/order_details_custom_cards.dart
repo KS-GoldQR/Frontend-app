@@ -21,7 +21,7 @@ Widget buildUserInfoCard(Order order, BuildContext context,
               order.customer_phone),
           buildInfoRow(AppLocalizations.of(context)!.orderedItemsTotalPrice,
               NumberFormat('#,##,###.00').format(totalOrderedPrice)),
-          buildInfoRow(AppLocalizations.of(context)!.oldJewelryTotalPrice,
+          buildInfoRow(AppLocalizations.of(context)!.oldJwelleryTotalPrice,
               NumberFormat('#,##,###.00').format(totalOldJwelleryPrice)),
           buildInfoRow(
               AppLocalizations.of(context)!.differencePrice,

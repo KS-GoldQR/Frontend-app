@@ -1,23 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/models/sales_model.dart';
+import 'package:grit_qr_scanner/features/sales/models/sold_product_model.dart';
+
+import '../features/orders/models/old_jwellery_model.dart';
+import '../models/customer_model.dart';
 
 class SalesProvider extends ChangeNotifier {
-  final List<SalesModel> _saleItems = [];
+  final List<SoldProduct> _products = [];
+  final List<OldJwellery> _oldProduct = [];
+  Customer? _customer;
 
-  List<SalesModel> get saleItems => _saleItems;
+  List<SoldProduct> get products => _products;
+  List<OldJwellery> get oldProducts => _oldProduct;
+  Customer? get customer => _customer;
 
-  void addSaleItem(SalesModel item) {
-    _saleItems.add(item);
+  void addProduct(SoldProduct product) {
+    _products.add(product);
     notifyListeners();
   }
 
-  void resetSaleItem() {
-    _saleItems.clear();
+  void addOldProduct(OldJwellery oldJwellery) {
+    _oldProduct.add(oldJwellery);
     notifyListeners();
   }
 
-    void removeItemAt(int index) {
-    _saleItems.removeAt(index);
+  void addCustomerDetails(Customer details) {
+    _customer = details;
+    notifyListeners();
+  }
+
+  void resetSales() {
+    _products.clear();
+    _oldProduct.clear();
+    _customer = null;
+    notifyListeners();
+  }
+
+  void resetOldProducts() {
+    _oldProduct.clear();
+    notifyListeners();
+  }
+
+  void resetCustomer() {
+    _customer = null;
+  }
+
+  void removeProductItemAt(int index) {
+    _products.removeAt(index);
+    notifyListeners();
+  }
+
+  void removeOldProductItemAt(int index) {
+    _oldProduct.removeAt(index);
     notifyListeners();
   }
 }

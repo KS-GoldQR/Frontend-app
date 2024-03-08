@@ -33,7 +33,7 @@ class LanguageSelectionScreen extends StatefulWidget {
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   late Language selectedLanguage;
   bool _isChanging = false;
-  final _modalProgressHUDKeyLanguage = GlobalKey();
+  GlobalKey _modalProgressHUDKeyLanguage = GlobalKey();
 
   @override
   void initState() {

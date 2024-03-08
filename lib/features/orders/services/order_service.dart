@@ -3,25 +3,23 @@ import 'dart:core';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/features/orders/screens/order_screen.dart';
-import 'package:grit_qr_scanner/models/order_model.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
-import 'package:grit_qr_scanner/provider/user_provider.dart';
-import 'package:grit_qr_scanner/utils/global_variables.dart';
-import 'package:grit_qr_scanner/utils/utils.dart';
-import 'package:grit_qr_scanner/utils/widgets/error_handling.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+import '../../../models/order_model.dart';
+import '../../../provider/order_provider.dart';
+import '../../../provider/user_provider.dart';
+import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
+import '../../../utils/widgets/error_handling.dart';
 import '../../home/screens/home_screen.dart';
-
-String testingSessionToken =
-    "f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b";
+import '../screens/order_screen.dart';
 
 class OrderService {
   Future<List<Order>> getAllOrders(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -53,11 +51,11 @@ class OrderService {
 
             if (ordersJson is String) {
               final modifiedOrdersJson = jsonDecode(ordersJson);
+              debugPrint(modifiedOrdersJson.toString());
 
               if (modifiedOrdersJson is List<dynamic>) {
                 orders = modifiedOrdersJson.map((orderJson) {
                   if (orderJson is Map<String, dynamic>) {
-                    debugPrint(orderJson.toString());
                     return Order.fromMap(orderJson);
                   } else {
                     return Order.fromJson(orderJson.toString());
@@ -65,6 +63,7 @@ class OrderService {
                 }).toList();
               }
             }
+            orderProvider.resetOrders();
           });
     } catch (e) {
       debugPrint(e.toString());
@@ -91,10 +90,10 @@ class OrderService {
           "customer_name": orderProvider.customer!.name,
           "customer_phone": orderProvider.customer!.phone,
           "expected_deadline":
-              orderProvider.customer!.expectedDeadline.toIso8601String(),
+              orderProvider.customer!.expectedDeadline?.toIso8601String(),
           "advance_payment": orderProvider.customer!.advance,
           "ordered_items": orderProvider.orderedItems,
-          "old_jwellery": orderProvider.oldJweleries,
+          "old_jwellery": orderProvider.oldJwelleries,
           "address": orderProvider.customer!.address,
         }),
         headers: <String, String>{
@@ -146,14 +145,6 @@ class OrderService {
       );
 
       if (response.statusCode == 200) {
-        httpErrorHandle(
-            response: response,
-            onSuccess: () {
-              // showSnackBar(
-              //     title: "Order Deleted",
-              //     message: "order is been delete form list",
-              //     contentType: ContentType.success);
-            });
         return true;
       } else {
         return false;

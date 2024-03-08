@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -44,8 +43,7 @@ class CustomButton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if(icon!=null)
-            icon!,
+          if (icon != null) icon!,
           if (iconPath != null)
             SvgPicture.asset(
               iconPath!,

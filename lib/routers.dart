@@ -10,9 +10,10 @@ import 'package:grit_qr_scanner/features/products/screens/about_product_screen.d
 import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
 import 'package:grit_qr_scanner/features/auth/screens/login_screen.dart';
 import 'package:grit_qr_scanner/features/home/screens/qr_scanner_screen.dart';
+import 'package:grit_qr_scanner/features/reusable%20components/final_preview_screen.dart';
 import 'package:grit_qr_scanner/utils/widgets/error_page.dart';
 import 'features/old products/screens/old_product_screen.dart';
-import 'features/sales/screens/sold_items_screen.dart';
+import 'features/sales/screens/sales_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
   switch (routeSettings.name) {
@@ -40,10 +41,10 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         builder: (context) => const ViewInventoryScreen(),
       );
 
-    case SoldItemsScreen.routeName:
+    case SalesScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (context) => const SoldItemsScreen(),
+        builder: (context) => const SalesScreen(),
       );
 
     case AboutProduct.routeName:
@@ -69,8 +70,9 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       );
 
     case OldJwelleryScreen.routeName:
+      final bool isSales = routeSettings.arguments as bool;
       return MaterialPageRoute(
-        builder: (context) => const OldJwelleryScreen(),
+        builder: (context) => OldJwelleryScreen(isSales: isSales),
       );
 
     case OldProductsScreen.routeName:
@@ -86,6 +88,12 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
     case UserDetailsScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => const UserDetailsScreen(),
+      );
+
+    case FinalPreviewScreen.routeName:
+      final bool isSales = routeSettings.arguments as bool;
+      return MaterialPageRoute(
+        builder: (context) => FinalPreviewScreen(isSales: isSales),
       );
 
     case ErrorPage.routeName:

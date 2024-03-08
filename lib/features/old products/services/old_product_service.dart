@@ -80,10 +80,6 @@ class OldProductService {
         }
       }
 
-      // debugPrint(
-      //     "$name $imageUrl $productType ${weight.toInt()} $stone $stonePrice $jyala $jarti");
-
-      //problem from backed is 500 this is because float is not acceptable in backend...
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/oldProduct/addoldProduct"),
         body: jsonEncode({
@@ -104,11 +100,6 @@ class OldProductService {
       httpErrorHandle(
           response: response,
           onSuccess: () {
-            //
-            // showSnackBar(
-            //     title: "Success",
-            //     message: jsonDecode(response.body)['message'],
-            //     contentType: ContentType.success);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
@@ -119,7 +110,7 @@ class OldProductService {
     }
   }
 
-  Future<void> deleteOldProduct(
+  Future<bool> deleteOldProduct(
       {required BuildContext context, required String productId}) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
@@ -131,20 +122,18 @@ class OldProductService {
               {"sessionToken": user.sessionToken, "product_id": productId}),
           headers: {"Content-Type": "application/json"});
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            // showSnackBar(
-            //     title: "Deleted",
-            //     message: "Old product deleted successfully",
-            //     contentType: ContentType.success);
-          });
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       showSnackBar(
           title: internalError,
           message: unknownError,
           contentType: ContentType.warning);
     }
+    return false;
   }
 
   Future<String?> uploadImageToS3(

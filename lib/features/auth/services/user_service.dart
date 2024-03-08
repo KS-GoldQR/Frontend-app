@@ -20,8 +20,6 @@ class UserService {
       String phoneNo, String password, BuildContext context) async {
     String internalError = AppLocalizations.of(context)!.internalError;
     String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    String successTitle = AppLocalizations.of(context)!.success;
-    String successMessage = AppLocalizations.of(context)!.successfullyLoggedIn;
 
     try {
       http.Response response = await http.post(
@@ -47,21 +45,9 @@ class UserService {
               bool isValidated = await validateSession(context);
 
               if (isValidated) {
-                showSnackBar(
-                    title: successTitle,
-                    message: successMessage,
-                    contentType: ContentType.success);
                 navigatorKey.currentState!.pushNamedAndRemoveUntil(
                     HomeScreen.routeName, (route) => false);
               }
-
-              // User user = User(
-              //     userId: jsonDecode(response.body)['userId'],
-              //     phoneNo: phoneNo,
-              //     password: password,
-              //     sessionToken: jsonDecode(response.body)['sessionToken']);
-
-              // userProvider.setUserFromModel(user);
             });
       } else {
         showSnackBar(
@@ -109,6 +95,7 @@ class UserService {
               );
 
               userProvider.setUserFromModel(updatedUser);
+              debugPrint("user token is $token");
             });
 
         return true;
@@ -147,10 +134,6 @@ class UserService {
             userProvider.removeUser();
             productProvider.resetCurrentProduct();
 
-            showSnackBar(
-                title: "Success",
-                message: "successfully logged out",
-                contentType: ContentType.success);
             navigatorKey.currentState!.pushNamedAndRemoveUntil(
                 LoginScreen.routeName, (route) => false);
           });

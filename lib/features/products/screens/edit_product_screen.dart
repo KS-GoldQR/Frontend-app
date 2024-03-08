@@ -29,7 +29,7 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _addProductFormKey = GlobalKey<FormState>();
-  final _modalProgressHUDKeyEditProduct = GlobalKey();
+  GlobalKey _modalProgressHUDKeyEditProduct = GlobalKey();
   final ProductService _productService = ProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -236,6 +236,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
               .$3!;
       // widget.args['product'].jartiType == "Laal" ? "Laal" : "%";
       _dependenciesInitialized = true;
+
+      debugPrint(widget.args['product'].jartiType);
     }
 
     super.didChangeDependencies();

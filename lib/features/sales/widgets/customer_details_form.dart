@@ -3,9 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/home/screens/home_screen.dart';
 import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
-import 'package:grit_qr_scanner/features/sales/widgets/sold_status_card.dart';
 import 'package:grit_qr_scanner/models/sales_model.dart';
 import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:grit_qr_scanner/utils/form_validators.dart';
@@ -26,7 +24,7 @@ class CustomerDetailsForm extends StatefulWidget {
 
 class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
   final _customerDetailsFormFormKey = GlobalKey<FormState>();
-  final _modalProgressHUDKeyCust = GlobalKey();
+  GlobalKey _modalProgressHUDKeyCust = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -43,20 +41,14 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
       _isSelling = true;
     });
     try {
-      for (int i = 0; i < salesProvider.saleItems.length; i++) {
-        SalesModel sales = salesProvider.saleItems[i];
-        soldStatus[sales] = await _salesService.sellProduct(
+      await _salesService.sellProduct(
           context: context,
-          productId: sales.product.id,
           customerName: _nameController.text.trim(),
           customerPhone: _phoneController.text.trim(),
-          customerAddress: _addressController.text.trim(),
-          productTotalPrice: sales.price,
-          jyala: sales.jyalaPercentage,
-          jarti: sales.jartiPercentage,
-        );
-      }
+          products: salesProvider.products,
+          oldProducts: salesProvider.oldProducts);
     } catch (e) {
+      debugPrint("error here occursing");
       debugPrint(e.toString());
     } finally {
       if (mounted) {
@@ -65,30 +57,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm> {
           _isSelling = false;
         });
       }
-
-      salesProvider.resetSaleItem();
-
-      if (soldStatus.isNotEmpty && mounted) {
-        Navigator.popUntil(context, ModalRoute.withName(HomeScreen.routeName));
-
-        Navigator.of(context).pushNamed(HomeScreen.routeName);
-        showFullScreenDialog(context, soldStatus);
-      }
     }
-  }
-
-  Future<void> showFullScreenDialog(
-      BuildContext context, Map<SalesModel, bool> soldStatus) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SoldStatusCard(status: soldStatus)));
-      },
-    );
   }
 
   void _fieldFocusChange(

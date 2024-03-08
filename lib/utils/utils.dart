@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:grit_qr_scanner/provider/user_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'global_variables.dart';
 
@@ -122,9 +124,13 @@ InputDecoration customTextfieldDecoration() {
 Future<void> getRate(BuildContext context) async {
   String internalError = AppLocalizations.of(context)!.internalError;
   String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
+  final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
   try {
     http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/users/getGoldRate"),
+        body: jsonEncode({
+          'user_id':userProvider.user.userId,
+        }),
         headers: {"Content-Type": "application/json"});
 
     if (response.statusCode == 200) {

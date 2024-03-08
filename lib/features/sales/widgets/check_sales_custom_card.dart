@@ -1,6 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:grit_qr_scanner/provider/order_provider.dart';
+import 'package:grit_qr_scanner/provider/sales_provider.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,9 +9,9 @@ import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/widgets/build_row_info.dart';
 
-Widget buildCheckOrderedItems(BuildContext context) {
-  final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-  final orders = orderProvider.orderedItems;
+Widget buildCheckSoldProduct(BuildContext context) {
+  final salesProvider = Provider.of<SalesProvider>(context, listen: false);
+  final sales = salesProvider.products;
 
   Future<void> showChoiceDialogDelete(BuildContext context, int index) async {
     AwesomeDialog(
@@ -26,13 +26,13 @@ Widget buildCheckOrderedItems(BuildContext context) {
       btnCancelColor: Colors.red,
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        orderProvider.removeOrderedItemAt(index);
+             salesProvider.removeProductItemAt(index);
       },
     ).show();
   }
 
-  return orders.isEmpty
-      ? const Center(child: Text("No Items are ordered"))
+  return  sales.isEmpty
+      ? const Center(child: Text("No items are sold"))
       : Card(
           elevation: 5.0,
           shape: RoundedRectangleBorder(
@@ -43,9 +43,9 @@ Widget buildCheckOrderedItems(BuildContext context) {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: orders.length,
+              itemCount: sales.length,
               itemBuilder: (context, index) {
-                final order = orders[index];
+                final sale = sales[index];
 
                 return Column(
                   children: [
@@ -53,8 +53,8 @@ Widget buildCheckOrderedItems(BuildContext context) {
                       children: [
                         Expanded(
                           child: buildInfoRow(
-                            order.itemName,
-                            "${AppLocalizations.of(context)!.type}: ${order.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : order.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${order.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: रु${getNumberFormat(order.jyala)} \n ${AppLocalizations.of(context)!.jarti}: ${getNumberFormat(order.jarti)} ${order.jartiType == "Laal" ? AppLocalizations.of(context)!.laal : AppLocalizations.of(context)!.percentage} \n ${AppLocalizations.of(context)!.price}: रु${getNumberFormat(order.totalPrice)}",
+                            sale.name,
+                            "${AppLocalizations.of(context)!.type}: ${sale.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : sale.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${sale.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: रु${getNumberFormat(sale.jyala)} \n ${AppLocalizations.of(context)!.jarti}: ${getNumberFormat(sale.jarti)} ${sale.jartiType == "Laal" ? AppLocalizations.of(context)!.laal : AppLocalizations.of(context)!.percentage} \n ${AppLocalizations.of(context)!.price}: रु${getNumberFormat(sale.amount)}",
                           ),
                         ),
                         IconButton(
@@ -68,7 +68,7 @@ Widget buildCheckOrderedItems(BuildContext context) {
                         ),
                       ],
                     ),
-                    if (index != orders.length - 1)
+                    if (index != sales.length - 1)
                       const Divider(
                         color: Color(0xFFBDBCBC),
                         thickness: 1,
@@ -84,9 +84,9 @@ Widget buildCheckOrderedItems(BuildContext context) {
         );
 }
 
-Widget buildCheckOldJwelleryItems(BuildContext context) {
-  final orderProvider = Provider.of<OrderProvider>(context);
-  final orders = orderProvider.oldJwelleries;
+Widget buildCheckSoldOldProduct(BuildContext context) {
+  final salesProvider = Provider.of<SalesProvider>(context);
+  final sales = salesProvider.oldProducts;
 
   Future<void> showChoiceDialogDelete(BuildContext context, int index) async {
     AwesomeDialog(
@@ -101,12 +101,12 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
       btnCancelColor: Colors.red,
       btnCancelOnPress: () {},
       btnOkOnPress: () {
-        orderProvider.removeOldJwelleryItemAt(index);
+        salesProvider.removeOldProductItemAt(index);
       },
     ).show();
   }
 
-  return orders.isEmpty
+  return sales.isEmpty
       ? const Center(child: Text("No old Items are ordered"))
       : Card(
           elevation: 5.0,
@@ -118,9 +118,9 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: orders.length,
+              itemCount: sales.length,
               itemBuilder: (context, index) {
-                final order = orders[index];
+                final sale = sales[index];
 
                 return Column(
                   children: [
@@ -128,8 +128,8 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
                       children: [
                         Expanded(
                           child: buildInfoRow(
-                            order.itemName,
-                            "${AppLocalizations.of(context)!.type}: ${order.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : order.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${order.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.rate}: ${order.rate} \n ${AppLocalizations.of(context)!.loss}: ${order.loss} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(order.price)}",
+                            sale.itemName,
+                            "${AppLocalizations.of(context)!.type}: ${sale.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : sale.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${sale.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.rate}: ${sale.rate} \n ${AppLocalizations.of(context)!.loss}: ${sale.loss} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(sale.price)}",
                           ),
                         ),
                         IconButton(
@@ -143,7 +143,7 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
                         ),
                       ],
                     ),
-                    if (index != orders.length - 1)
+                    if (index != sales.length - 1)
                       const Divider(
                         color: Color(0xFFBDBCBC),
                         thickness: 1,

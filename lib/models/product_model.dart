@@ -55,7 +55,7 @@ class Product {
       'id': id,
       'image': image,
       'jarti': jarti,
-      'jarti_type':jartiType,
+      'jarti_type': jartiType,
       'jyala': jyala,
       'name': name,
       'owned_by': owned_by,
@@ -68,8 +68,8 @@ class Product {
       'customer_name': customerName,
       'customer_address': customerAddress,
       'customer_phone': customerPhone,
-      'updated_at': updatedAt,
-      'sold_at': soldAt,
+      'updated_at': updatedAt?.toIso8601String(),
+      'sold_at': soldAt?.toIso8601String(),
       'owner_name': owner_name,
       'owner_phone': owner_phone,
       'validSession': validSession,
@@ -81,7 +81,11 @@ class Product {
       id: map['id'] as String,
       image: map['image'] as String?,
       jarti: double.tryParse(map['jarti']) ?? 0.0,
-      jartiType: map.containsKey('jarti_type') ? map['jarti_type'] as String? : null,
+      jartiType: map.containsKey('jarti_type')
+          ? map['jarti_type'] != "None"
+              ? map['jarti_type'] as String?
+              : "Laal"
+          : "Laal",
       jyala: double.tryParse(map['jyala']) ?? 0.0,
       name: map['name'] as String?,
       owned_by: int.tryParse(map['owned_by']) ?? 0,

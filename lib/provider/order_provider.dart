@@ -6,20 +6,21 @@ import '../models/customer_model.dart';
 
 class OrderProvider with ChangeNotifier {
   final List<OrderedItems> _orderedItems = [];
-final  List<OldJwellery> _oldJweleries = [];
+  final List<OldJwellery> _oldJwelleries = [];
   Customer? _customer;
 
   List<OrderedItems> get orderedItems => _orderedItems;
-List<OldJwellery> get oldJweleries => _oldJweleries;
-Customer? get customer => _customer;
+  List<OldJwellery> get oldJwelleries => _oldJwelleries;
+  Customer? get customer => _customer;
 
   void addOrderedItems(OrderedItems order) {
     _orderedItems.add(order);
+    debugPrint("adding in provider");
     notifyListeners();
   }
 
-  void addOldJewelry(OldJwellery oldJewelry) {
-    _oldJweleries.add(oldJewelry);
+  void addOldJwellery(OldJwellery oldJwellery) {
+    _oldJwelleries.add(oldJwellery);
     notifyListeners();
   }
 
@@ -30,13 +31,13 @@ Customer? get customer => _customer;
 
   void resetOrders() {
     _orderedItems.clear();
-    _oldJweleries.clear();
+    _oldJwelleries.clear();
     _customer = null;
     notifyListeners();
   }
 
   void resetOldJwelries() {
-    _oldJweleries.clear();
+    _oldJwelleries.clear();
     notifyListeners();
   }
 
@@ -44,13 +45,13 @@ Customer? get customer => _customer;
     _customer = null;
   }
 
-    void removeOrderedItemAt(int index) {
+  void removeOrderedItemAt(int index) {
     _orderedItems.removeAt(index);
     notifyListeners();
   }
 
-     void removeOldJwelleryItemAt(int index) {
-    _oldJweleries.removeAt(index);
+  void removeOldJwelleryItemAt(int index) {
+    _oldJwelleries.removeAt(index);
     notifyListeners();
   }
 }

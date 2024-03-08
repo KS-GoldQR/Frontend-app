@@ -24,7 +24,7 @@ class AddOldProductScreen extends StatefulWidget {
 
 class _AddOldProductScreenState extends State<AddOldProductScreen> {
   final _addOldProductFormKey = GlobalKey<FormState>();
-  final _modalProgressHUDKeyAboutOldProduct = GlobalKey();
+  GlobalKey _modalProgressHUDKeyAboutOldProduct = GlobalKey();
   final OldProductService _oldProductService = OldProductService();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();

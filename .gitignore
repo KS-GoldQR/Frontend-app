@@ -2,6 +2,7 @@
 env.dart
 env.g.dart
 notes.txt
+web
 # Miscellaneous
 *.class
 *.log
