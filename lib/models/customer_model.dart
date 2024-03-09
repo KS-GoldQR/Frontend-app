@@ -7,12 +7,14 @@ class Customer {
   String? address;
   DateTime? expectedDeadline;
   double? advance;
+  double? remainingPayment;
   Customer({
     required this.name,
     this.phone,
     this.address,
     this.expectedDeadline,
     this.advance,
+    this.remainingPayment,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class Customer {
       'customer_address': address,
       'expected_deadline': expectedDeadline?.millisecondsSinceEpoch,
       'advance_payment': advance,
+      'remaining_payment':remainingPayment,
     };
   }
 
@@ -32,6 +35,7 @@ class Customer {
       address: map['customer_address'] as String?,
       expectedDeadline: DateTime.tryParse(map['expected_deadline'].toString()),
       advance: double.tryParse(map['advance_payment']),
+      remainingPayment: double.tryParse(map['remaining_payment']),
     );
   }
 

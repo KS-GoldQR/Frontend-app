@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:grit_qr_scanner/features/home/screens/change_password_screen.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-import '../../../provider/user_provider.dart';
+// import '../../../provider/user_provider.dart';
 import '../../../utils/global_variables.dart';
 import '../screens/user_details_screen.dart';
 import 'select_language.dart';
@@ -27,7 +27,7 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
+    // final user = Provider.of<UserProvider>(context).user;
     final greeting = _getGreeting(context);
 
     return Drawer(

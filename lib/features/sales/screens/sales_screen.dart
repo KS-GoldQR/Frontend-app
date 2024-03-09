@@ -28,7 +28,7 @@ class _SalesScreenState extends State<SalesScreen> {
   bool _isDeleting = false;
 
   Future<void> getSoldItems() async {
-    soldProducts = await _salesService.viewSoldItems(context);
+    soldProducts = await _salesService.getSales(context);
     setState(() {});
   }
 

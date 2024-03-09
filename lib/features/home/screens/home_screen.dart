@@ -1,7 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
+import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
+import 'package:grit_qr_scanner/features/products/services/product_service.dart';
+import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
+import 'package:grit_qr_scanner/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:remixicon/remixicon.dart';
@@ -31,7 +39,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final UserService _userService = UserService();
   final GlobalKey _modalProgressHUDKeyHomeScreen = GlobalKey();
-  bool isLoggingOut = false;
+  bool _isLoggingOut = false;
+  bool _isRefreshing = false;
 
   List<String> cardsText = [];
 
@@ -115,11 +124,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void userLogout() async {
     setState(() {
-      isLoggingOut = true;
+      _isLoggingOut = true;
     });
     await _userService.userLogout(context: context);
     setState(() {
-      isLoggingOut = false;
+      _isLoggingOut = false;
+    });
+  }
+
+  Future<void> refreshCache() async {
+    setState(() {
+      _isRefreshing = true;
+    });
+    await APICacheManager().emptyCache();
+    await ProductService().getInventory(context);
+    await OrderService().getOrders(context);
+    await SalesService().getSales(context);
+    await OldProductService().getOldProducts(context);
+    setState(() {
+      _isRefreshing = false;
     });
   }
 
@@ -141,10 +164,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return ModalProgressHUD(
-      inAsyncCall: isLoggingOut,
+      inAsyncCall: _isLoggingOut || _isRefreshing,
       key: _modalProgressHUDKeyHomeScreen,
       blur: 0.5,
-      progressIndicator: const SpinKitSquareCircle(
+      progressIndicator: const SpinKitDoubleBounce(
         color: blueColor,
         size: 70,
       ),
@@ -268,6 +291,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: blueColor,
+          onPressed: () async {
+            await refreshCache();
+            showSnackBar(title: "updated", contentType: ContentType.success);
+          },
+          child: const Icon(
+            Remix.refresh_line,
+            color: Colors.white,
+            size: 35,
+          ),
         ),
       ),
     );

@@ -1,8 +1,9 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
+import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
+import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -70,6 +71,22 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
+  double getOrderTotalPrice(List<OrderedItems> order) {
+    double totalPrice = 0;
+    for (int i = 0; i < order.length; i++) {
+      totalPrice += order[i].totalPrice;
+    }
+    return totalPrice;
+  }
+
+  double getOldJwelleryTotalPrice(List<OldJwellery> order) {
+    double totalPrice = 0;
+    for (int i = 0; i < order.length; i++) {
+      totalPrice += order[i].price;
+    }
+    return totalPrice;
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -107,162 +124,179 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
           // }
           showSnackBar(
               title: AppLocalizations.of(context)!.customerDetailsCleared,
-              message: "",
               contentType: ContentType.warning);
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              AppLocalizations.of(context)!.customerDetails,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                AppLocalizations.of(context)!.customerDetails,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              centerTitle: false,
             ),
-            centerTitle: false,
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              child: Column(
-                children: [
-                  const Gap(10),
-                  Text(
-                    AppLocalizations.of(context)!.fillCustomerDetails,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: blueColor),
-                  ),
-                  const Gap(10),
-                  Form(
-                    key: _customerDetailsFormKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.name,
-                          style: customTextDecoration()
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const Gap(5),
-                        TextFormField(
-                          controller: _nameController,
-                          focusNode: _nameFocus,
-                          onFieldSubmitted: (value) => _fieldFocusChange(
-                              context, _nameFocus, _phoneFocus),
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.next,
-                          cursorColor: blueColor,
-                          decoration: customTextfieldDecoration(),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) => validateName(value!, context),
-                        ),
-                        const Gap(10),
-                        Text(
-                          AppLocalizations.of(context)!.contactNumber,
-                          style: customTextDecoration()
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const Gap(5),
-                        TextFormField(
-                          controller: _phoneController,
-                          focusNode: _phoneFocus,
-                          onFieldSubmitted: (value) => _fieldFocusChange(
-                              context, _phoneFocus, _addressFocus),
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.next,
-                          cursorColor: blueColor,
-                          decoration: customTextfieldDecoration(),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) =>
-                              validateContactNumber(value!, context),
-                        ),
-                        const Gap(10),
-                        Text(
-                          AppLocalizations.of(context)!.address,
-                          style: customTextDecoration()
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const Gap(5),
-                        TextFormField(
-                          controller: _addressController,
-                          focusNode: _addressFocus,
-                          onFieldSubmitted: (value) => _fieldFocusChange(
-                              context, _addressFocus, _advancePaymentFocus),
-                          keyboardType: TextInputType.streetAddress,
-                          textInputAction: TextInputAction.next,
-                          cursorColor: blueColor,
-                          decoration: customTextfieldDecoration(),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) =>
-                              validateAddress(value!, context),
-                        ),
-                        const Gap(10),
-                        Text(
-                          AppLocalizations.of(context)!.advancePayment,
-                          style: customTextDecoration()
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const Gap(5),
-                        TextFormField(
-                          controller: _advancePaymentController,
-                          focusNode: _advancePaymentFocus,
-                          onFieldSubmitted: (value) =>
-                              _advancePaymentFocus.unfocus(),
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          textInputAction: TextInputAction.done,
-                          cursorColor: blueColor,
-                          decoration: customTextfieldDecoration(),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) =>
-                              validateAdvancePayment(value!, context),
-                        ),
-                        const Gap(10),
-                        Text(
-                          AppLocalizations.of(context)!.deadline,
-                          style: customTextDecoration()
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        TextButton.icon(
-                          onPressed: () => _selectDate(context),
-                          icon: const Icon(
-                            Icons.calendar_month_outlined,
-                            color: blueColor,
+            body: SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                child: Column(
+                  children: [
+                    const Gap(10),
+                    Text(
+                      AppLocalizations.of(context)!.fillCustomerDetails,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: blueColor),
+                    ),
+                    const Gap(10),
+                    Form(
+                      key: _customerDetailsFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.name,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
                           ),
-                          label: Text(
-                            formatDateTime(expectedDeadline),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
+                          const Gap(5),
+                          TextFormField(
+                            controller: _nameController,
+                            focusNode: _nameFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _nameFocus, _phoneFocus),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => validateName(value!, context),
+                          ),
+                          const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.contactNumber,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _phoneController,
+                            focusNode: _phoneFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _phoneFocus, _addressFocus),
+                            keyboardType: TextInputType.phone,
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateContactNumber(value!, context),
+                          ),
+                          const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.address,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _addressController,
+                            focusNode: _addressFocus,
+                            onFieldSubmitted: (value) => _fieldFocusChange(
+                                context, _addressFocus, _advancePaymentFocus),
+                            keyboardType: TextInputType.streetAddress,
+                            textInputAction: TextInputAction.next,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateAddress(value!, context),
+                          ),
+                          const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.advancePayment,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const Gap(5),
+                          TextFormField(
+                            controller: _advancePaymentController,
+                            focusNode: _advancePaymentFocus,
+                            onFieldSubmitted: (value) =>
+                                _advancePaymentFocus.unfocus(),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textInputAction: TextInputAction.done,
+                            cursorColor: blueColor,
+                            decoration: customTextfieldDecoration(),
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) =>
+                                validateAdvancePayment(value!, context),
+                          ),
+                          const Gap(10),
+                          Text(
+                            AppLocalizations.of(context)!.deadline,
+                            style: customTextDecoration()
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _selectDate(context),
+                            icon: const Icon(
+                              Icons.calendar_month_outlined,
+                              color: blueColor,
+                            ),
+                            label: Text(
+                              formatDateTime(expectedDeadline),
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const Gap(15),
-                  CustomButton(
-                    onPressed: () {
-                      if (_customerDetailsFormKey.currentState!.validate()) {
-                        orderProvider.setCustomerDetails(
-                          Customer(
-                            name: _nameController.text.trim(),
-                            phone: _phoneController.text.trim(),
-                            address: _addressController.text.trim(),
-                            expectedDeadline: expectedDeadline,
-                            advance: double.tryParse(
-                                _advancePaymentController.text)!,
-                          ),
-                        );
-                        submitOrder();
-                      }
-                    },
-                    text: AppLocalizations.of(context)!.submitOrder,
-                    textColor: Colors.white,
-                    backgroundColor: blueColor,
-                  ),
-                  const Gap(10),
-                ],
+                    const Gap(15),
+                    CustomButton(
+                      onPressed: () {
+                        if (_customerDetailsFormKey.currentState!.validate()) {
+                          orderProvider.setCustomerDetails(
+                            Customer(
+                              name: _nameController.text.trim(),
+                              phone: _phoneController.text.trim(),
+                              address: _addressController.text.trim(),
+                              expectedDeadline: expectedDeadline,
+                              advance: double.tryParse(
+                                  _advancePaymentController.text)!,
+                              remainingPayment: getOrderTotalPrice(
+                                      orderProvider.orderedItems) -
+                                  getOldJwelleryTotalPrice(
+                                      orderProvider.oldJwelleries) -
+                                  double.tryParse(
+                                      _advancePaymentController.text)!,
+                            ),
+                          );
+
+                          debugPrint(orderProvider.customer!.remainingPayment
+                              .toString());
+                          submitOrder();
+                        }
+                      },
+                      text: AppLocalizations.of(context)!.submitOrder,
+                      textColor: Colors.white,
+                      backgroundColor: blueColor,
+                    ),
+                    const Gap(10),
+                  ],
+                ),
               ),
             ),
           ),

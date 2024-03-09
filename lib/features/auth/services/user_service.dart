@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +20,6 @@ class UserService {
   Future<void> userLogin(
       String phoneNo, String password, BuildContext context) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
 
     try {
       http.Response response = await http.post(
@@ -52,14 +51,12 @@ class UserService {
             });
       } else {
         showSnackBar(
-            title: "Unauthorized",
-            message: jsonDecode(response.body)['message'],
+            title: jsonDecode(response.body)['message'],
             contentType: ContentType.warning);
       }
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
   }
@@ -114,7 +111,6 @@ class UserService {
         Provider.of<ProductProvider>(context, listen: false);
 
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/users/logout'),
@@ -132,6 +128,8 @@ class UserService {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.remove('session-token');
 
+            await APICacheManager().emptyCache();
+
             userProvider.removeUser();
             productProvider.resetCurrentProduct();
 
@@ -141,7 +139,6 @@ class UserService {
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
   }
@@ -168,20 +165,17 @@ class UserService {
       if (response.statusCode == 200) {
         showSnackBar(
             title: jsonDecode(response.body)['message'],
-            message: "",
             contentType: ContentType.success);
         return true;
       } else {
         showSnackBar(
             title: jsonDecode(response.body)['message'],
-            message: "",
             contentType: ContentType.failure);
         return false;
       }
     } catch (e) {
       showSnackBar(
-          title: "Internal Error ",
-          message: "Something went wrong",
+          title: "Something went wrong",
           contentType: ContentType.failure);
     }
     return false;

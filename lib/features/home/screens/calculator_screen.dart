@@ -27,7 +27,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   late List<String> types;
   late String selectedProductType;
   bool _dependenciesInitialized = false;
-  late String jartiWeightType;
   double currentOrderPrice = 0.0;
 
   @override
@@ -57,10 +56,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   void calculateTotalPrice() {
-    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) = translatedTypes(
-        context: context,
-        selectedWeightType: selectedWeightType,
-        selectedProductType: selectedProductType, selectedJartiWeightType: selectedJartiWeightType);
+    var (rselectedWeightType, rselectedType, rselectedJartiWeightType) =
+        translatedTypes(
+            context: context,
+            selectedWeightType: selectedWeightType,
+            selectedProductType: selectedProductType,
+            selectedJartiWeightType: selectedJartiWeightType);
 
     double weight = getWeightInGram(
       double.tryParse(_weightController.text.trim())!,
@@ -73,13 +74,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     double stonePrice =
         double.tryParse(_stonePriceController.text.trim()) ?? 0.0;
     double totalPrice = getTotalPrice(
-      weight: weight,
-      rate: goldRates[rselectedType ?? selectedProductType]!,
-      jyala: jyala,
-      jarti: jarti,
-      stonePrice: stonePrice,
-      jartiWeightType: rselectedJartiWeightType
-    );
+        weight: weight,
+        rate: goldRates[rselectedType ?? selectedProductType]!,
+        jyala: jyala,
+        jarti: jarti,
+        stonePrice: stonePrice,
+        jartiWeightType: rselectedJartiWeightType);
 
     setState(() {
       currentOrderPrice = totalPrice;
@@ -251,7 +251,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                         Expanded(
                           flex: 1,
                           child: DropdownButtonFormField<String>(
-                            value: jartiWeightType,
+                            value: selectedJartiWeightType,
                             iconEnabledColor: const Color(0xFFC3C3C3),
                             iconDisabledColor: const Color(0xFFC3C3C3),
                             iconSize: 25,
@@ -259,7 +259,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               fontWeight: FontWeight.normal,
                               color: Colors.black,
                             ),
-                            items: weight.map((category) {
+                            items: jartiWeightTypeList.map((category) {
                               return DropdownMenuItem<String>(
                                 value: category,
                                 child: Text(category),
@@ -267,7 +267,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                             }).toList(),
                             onChanged: (value) {
                               setState(() {
-                                jartiWeightType = value!;
+                                selectedJartiWeightType = value!;
                               });
                               calculateTotalPrice();
                             },

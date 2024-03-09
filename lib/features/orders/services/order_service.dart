@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:api_cache_manager/api_cache_manager.dart';
+import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -17,60 +18,51 @@ import '../../home/screens/home_screen.dart';
 import '../screens/order_screen.dart';
 
 class OrderService {
-  Future<List<Order>> getAllOrders(BuildContext context) async {
+  Future<List<Order>> getOrders(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Order> orders = [];
     try {
-      http.Response response = await http.post(
-        Uri.parse("$hostedUrl/prod/orders/viewOrders"),
-        body: jsonEncode({
-          'sessionToken': user.sessionToken,
-        }),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-      );
+      var isCacheExist = 
+      await APICacheManager().isAPICacheKeyExist(cacheGetOrders);
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            //Response is modified to convert it as valid json object: Should be removed if json is valid & not a good practice
-            final jsonResponse = jsonDecode(response.body);
-            dynamic ordersJson = jsonResponse['orders']
-                .replaceAll("'", '"')
-                .replaceAll('Decimal(', '')
-                .replaceAll(')', '')
-                .replaceAll('["', '[')
-                .replaceAll('"]', ']')
-                .replaceAll('"{', '{')
-                .replaceAll('}"', '}');
+      if (!isCacheExist) {
+        http.Response response = await http.post(
+          Uri.parse("$hostedUrl/prod/orders/viewOrders"),
+          body: jsonEncode({
+            'sessionToken': user.sessionToken,
+          }),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+        );
 
-            if (ordersJson is String) {
-              final modifiedOrdersJson = jsonDecode(ordersJson);
-              debugPrint(modifiedOrdersJson.toString());
+        httpErrorHandle(
+            response: response,
+            onSuccess: () async {
+              debugPrint("order api hit : api");
+              //Response is modified to convert it as valid json object: Should be removed if json is valid & not a good practice
+              final jsonResponse = jsonDecode(response.body);
+              orders = getResultantOrder(jsonResponse['orders']);
 
-              if (modifiedOrdersJson is List<dynamic>) {
-                orders = modifiedOrdersJson.map((orderJson) {
-                  if (orderJson is Map<String, dynamic>) {
-                    return Order.fromMap(orderJson);
-                  } else {
-                    return Order.fromJson(orderJson.toString());
-                  }
-                }).toList();
-              }
-            }
-            orderProvider.resetOrders();
-          });
+              debugPrint(orders.toString());
+
+              APICacheDBModel cacheDBModel =
+                  APICacheDBModel(key: cacheGetOrders, syncData: response.body);
+              await APICacheManager().addCacheData(cacheDBModel);
+              orderProvider.resetOrders();
+            });
+      } else {
+        var cacheData = await APICacheManager().getCacheData(cacheGetOrders);
+        debugPrint("order api hit : cache");
+        orders = getResultantOrder(jsonDecode(cacheData.syncData)['orders']);
+        orderProvider.resetOrders();
+      }
     } catch (e) {
       debugPrint(e.toString());
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
 
     return orders;
@@ -81,7 +73,6 @@ class OrderService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     try {
       http.Response response = await http.post(
         Uri.parse('$hostedUrl/prod/orders/addOrder'),
@@ -95,7 +86,8 @@ class OrderService {
           "ordered_items": orderProvider.orderedItems,
           "old_jwellery": orderProvider.oldJwelleries,
           "address": orderProvider.customer!.address,
-        }),
+          "remaining_payment":orderProvider.customer!.remainingPayment
+          }),
         headers: <String, String>{
           'Content-Type': 'application/json',
         },
@@ -103,12 +95,13 @@ class OrderService {
 
       httpErrorHandle(
           response: response,
-          onSuccess: () {
-            showSnackBar(
-                title: "Order Added!",
-                message: jsonDecode(response.body)['message'],
-                contentType: ContentType.success);
+          onSuccess: () async {
+            // showSnackBar(
+            //     title: "Order Added!",
+            //     message: jsonDecode(response.body)['message'],
+            //     contentType: ContentType.success);
 
+            await APICacheManager().deleteCache(cacheGetOrders);
             orderProvider.resetOrders();
 
             // Navigate to HomeScreen and remove all screens until HomeScreen
@@ -119,10 +112,7 @@ class OrderService {
             navigatorKey.currentState!.pushNamed(OrderScreen.routeName);
           });
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
   }
 
@@ -131,7 +121,6 @@ class OrderService {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     try {
       http.Response response = await http.post(
         Uri.parse("$hostedUrl/prod/orders/deleteOrder"),
@@ -145,16 +134,42 @@ class OrderService {
       );
 
       if (response.statusCode == 200) {
+        await APICacheManager().deleteCache(cacheGetOrders);
         return true;
       } else {
         return false;
       }
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
     return false;
+  }
+
+  List<Order> getResultantOrder(String response) {
+    List<Order> orders = [];
+    dynamic ordersJson = response
+        .replaceAll("'", '"')
+        .replaceAll('Decimal(', '')
+        .replaceAll(')', '')
+        .replaceAll('["', '[')
+        .replaceAll('"]', ']')
+        .replaceAll('"{', '{')
+        .replaceAll('}"', '}');
+
+    if (ordersJson is String) {
+      final modifiedOrdersJson = jsonDecode(ordersJson);
+      debugPrint(modifiedOrdersJson.toString());
+
+      if (modifiedOrdersJson is List<dynamic>) {
+        orders = modifiedOrdersJson.map((orderJson) {
+          if (orderJson is Map<String, dynamic>) {
+            return Order.fromMap(orderJson);
+          } else {
+            return Order.fromJson(orderJson.toString());
+          }
+        }).toList();
+      }
+    }
+    return orders;
   }
 }

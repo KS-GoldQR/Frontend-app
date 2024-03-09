@@ -46,9 +46,8 @@ class OrderedItems {
           map.containsKey('jarti_type') ? map['jarti_type'] as String : "",
       jyala: map['jyala'] as double,
       stone: map['stone'] as String?,
-      stonePrice: map['stone_price'] != null
-          ? double.tryParse(map['stone_price']) as double
-          : null,
+      stonePrice:
+          map['stone_price'] != null ? map['stone_price'] as double? : null,
       totalPrice: map['total_price'] as double,
     );
   }

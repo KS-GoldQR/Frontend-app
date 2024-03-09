@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+// import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'widgets/error_handling.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -12,27 +13,32 @@ import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 import 'global_variables.dart';
 
-void showSnackBar(
-    {required String title,
-    required String message,
-    required ContentType contentType}) {
+void showSnackBar({required String title, required ContentType contentType}) {
   final SnackBar snackBar = SnackBar(
-    elevation: 0,
+    content: Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+      ),
+    ),
+    backgroundColor: contentType == ContentType.success
+        ? Colors.green
+        : contentType == ContentType.warning
+            ? blueColor
+            : Colors.red, // Change background color
     behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
     dismissDirection: DismissDirection.horizontal,
-    content: AwesomeSnackbarContent(
-      title: title,
-      message: message,
-      contentType: contentType,
-      inMaterialBanner: true,
-      color: contentType == ContentType.success
-          ? Colors.green
-          : contentType == ContentType.failure
-              ? Colors.red
-              : contentType == ContentType.warning
-                  ? Colors.red
-                  : blueColor,
+    duration: const Duration(seconds: 3), // Set duration
+    action: SnackBarAction(
+      label: 'OK',
+      textColor: Colors.white,
+      onPressed: () {
+        snackbarKey.currentState?.hideCurrentSnackBar();
+      },
     ),
   );
   snackbarKey.currentState?.showSnackBar(snackBar);
@@ -40,7 +46,6 @@ void showSnackBar(
 
 Future<File?> pickFile(BuildContext context, ImageSource source) async {
   String internalError = AppLocalizations.of(context)!.internalError;
-  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   File? image;
   try {
     final pickedImage = await ImagePicker().pickImage(
@@ -52,17 +57,13 @@ Future<File?> pickFile(BuildContext context, ImageSource source) async {
       image = File(pickedImage.path);
     }
   } catch (e) {
-    showSnackBar(
-        title: internalError,
-        message: unknownError,
-        contentType: ContentType.warning);
+    showSnackBar(title: internalError, contentType: ContentType.warning);
   }
   return image!;
 }
 
 Future<List<File>> pickFiles(BuildContext context) async {
   String internalError = AppLocalizations.of(context)!.internalError;
-  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
   List<File> files = [];
   try {
     final pickedFiles = await ImagePicker().pickMultiImage(
@@ -74,26 +75,49 @@ Future<List<File>> pickFiles(BuildContext context) async {
       }
     }
   } catch (e) {
-    showSnackBar(
-        title: internalError,
-        message: unknownError,
-        contentType: ContentType.warning);
+    showSnackBar(title: internalError, contentType: ContentType.warning);
   }
   return files;
 }
 
+Future<String?> uploadImageToS3(
+    {required BuildContext context, required File file}) async {
+  String internalError = AppLocalizations.of(context)!.internalError;
+  String? fileName;
+  try {
+    List<int> imageBytes = file.readAsBytesSync();
+    String base64Image = base64Encode(imageBytes);
+
+    http.Response response = await http.put(Uri.parse("$hostedUrl/prod/upload"),
+        body: jsonEncode({"file": base64Image}),
+        headers: {"Content-Type": "application/json"});
+
+    httpErrorHandle(
+        response: response,
+        onSuccess: () {
+          fileName = jsonDecode(response.body)['fileName'];
+          // showSnackBar(
+          //     title: "image Upload Success",
+          //     message: "",
+          //     contentType: ContentType.success);
+        });
+  } catch (e) {
+    showSnackBar(title: internalError, contentType: ContentType.warning);
+  }
+  return fileName!;
+}
 
 Future<void> getRate(BuildContext context) async {
   String internalError = AppLocalizations.of(context)!.internalError;
-  String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-  final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+  final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
   try {
-    http.Response response = await http.post(
-        Uri.parse("$hostedUrl/prod/users/getGoldRate"),
-        body: jsonEncode({
-          'user_id':userProvider.user.userId,
-        }),
-        headers: {"Content-Type": "application/json"});
+    http.Response response =
+        await http.post(Uri.parse("$hostedUrl/prod/users/getGoldRate"),
+            body: jsonEncode({
+              'user_id': userProvider.user.userId,
+            }),
+            headers: {"Content-Type": "application/json"});
 
     if (response.statusCode == 200) {
       Map<String, dynamic> rawRates = json.decode(response.body);
@@ -114,10 +138,7 @@ Future<void> getRate(BuildContext context) async {
       return;
     }
   } catch (e) {
-    showSnackBar(
-        title: internalError,
-        message: unknownError,
-        contentType: ContentType.warning);
+    showSnackBar(title: internalError, contentType: ContentType.warning);
   }
 }
 

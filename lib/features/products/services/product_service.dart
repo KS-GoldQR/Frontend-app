@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:api_cache_manager/api_cache_manager.dart';
+import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -15,45 +16,55 @@ import '../../../utils/utils.dart';
 import '../../../utils/widgets/error_handling.dart';
 import '../../../utils/widgets/error_page.dart';
 
-String testingSessionToken =
-    'f992f891da40c3d251cd6fb9a5828cd84cdd363f03f7bf2571c027369afa2b8b';
-
 class ProductService {
   Future<List<Product>> getInventory(BuildContext context) async {
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<Product> products = [];
     try {
-      http.Response response = await http.post(
-        Uri.parse('$hostedUrl/prod/users/viewInventory'),
-        body: jsonEncode({
-          'sessionToken': user.sessionToken,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      );
+      var isCacheExist =
+          await APICacheManager().isAPICacheKeyExist(cacheGetInventory);
 
-      if (response.statusCode == 200) {
+      debugPrint(isCacheExist.toString());
+
+      if (!isCacheExist) {
+        debugPrint("form api hit");
+        http.Response response = await http.post(
+          Uri.parse('$hostedUrl/prod/users/viewInventory'),
+          body: jsonEncode({
+            'sessionToken': user.sessionToken,
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+
         httpErrorHandle(
             response: response,
-            onSuccess: () {
+            onSuccess: () async {
               for (int i = 0; i < jsonDecode(response.body).length; i++) {
                 products.add(
                   Product.fromMap(jsonDecode(response.body)[i]),
                 );
               }
+
+              APICacheDBModel cacheDBModel = APICacheDBModel(
+                  key: cacheGetInventory, syncData: response.body);
+
+              await APICacheManager().addCacheData(cacheDBModel);
             });
       } else {
-        // showSnackBar(
-        //     title: 'Error',
-        //     message: "No products in Inventory",
-        //     contentType: ContentType.failure);
+        debugPrint("from cache hit");
+        var cacheData = await APICacheManager().getCacheData(cacheGetInventory);
+
+        for (int i = 0; i < jsonDecode(cacheData.syncData).length; i++) {
+          products.add(
+            Product.fromMap(jsonDecode(cacheData.syncData)[i]),
+          );
+        }
       }
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
 
@@ -63,7 +74,6 @@ class ProductService {
   Future<Product?> viewProduct(
       BuildContext context, String productId, String sessionToken) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
 
     final user = Provider.of<UserProvider>(context, listen: false).user;
 
@@ -122,8 +132,7 @@ class ProductService {
         // debugPrint(
         // "inside success of seet product view ${response.statusCode}");
         showSnackBar(
-          title: 'Error',
-          message: jsonDecode(response.body)['message'],
+          title: jsonDecode(response.body)['message'],
           contentType: ContentType.failure,
         );
         navigatorKey.currentState!.popAndPushNamed(
@@ -134,7 +143,6 @@ class ProductService {
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
       navigatorKey.currentState!.popAndPushNamed(
         ErrorPage.routeName,
@@ -159,7 +167,6 @@ class ProductService {
     required String jartiType,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
@@ -172,8 +179,7 @@ class ProductService {
 
         if (imageNameFromS3 == null) {
           showSnackBar(
-              title: "Upload Failed",
-              message: "failed to upload image!",
+              title: "Failed to upload image!",
               contentType: ContentType.failure);
           return;
         } else {
@@ -195,19 +201,15 @@ class ProductService {
           "stone_price": stonePrice,
           "jyala": jyala,
           "jarti": jarti,
-          "jarti_type":jartiType,
+          "jarti_type": jartiType,
         }),
         headers: {'Content-Type': 'application/json'},
       );
 
       httpErrorHandle(
           response: response,
-          onSuccess: () {
-            // showSnackBar(
-            //     title: "Success",
-            //     message: jsonDecode(response.body)['message'],
-            //     contentType: ContentType.success);
-            // productProvider.setProduct(product);
+          onSuccess: () async {
+            await APICacheManager().deleteCache(cacheGetInventory);
 
             Product product = productProvider.currentProduct!.copyWith(
               name: name,
@@ -227,7 +229,6 @@ class ProductService {
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
   }
@@ -246,7 +247,6 @@ class ProductService {
     required String jartiType,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       String? imageNameFromS3;
@@ -278,57 +278,21 @@ class ProductService {
           "stone_price": stonePrice,
           "jyala": jyala,
           "jarti": jarti,
-          "jarti_type":jartiType,
+          "jarti_type": jartiType,
         }),
         headers: {"Content-Type": 'application/json'},
       );
 
       httpErrorHandle(
           response: response,
-          onSuccess: () {
-            // showSnackBar(
-            //     title: "Success",
-            //     message: "product set successfully",
-            //     contentType: ContentType.success);
+          onSuccess: () async {
+            await APICacheManager().deleteCache(cacheGetInventory);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
-  }
-
-  Future<String?> uploadImageToS3(
-      {required BuildContext context, required File file}) async {
-    String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    String? fileName;
-    try {
-      List<int> imageBytes = file.readAsBytesSync();
-      String base64Image = base64Encode(imageBytes);
-
-      http.Response response = await http.put(
-          Uri.parse("$hostedUrl/prod/upload"),
-          body: jsonEncode({"file": base64Image}),
-          headers: {"Content-Type": "application/json"});
-
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            fileName = jsonDecode(response.body)['fileName'];
-            // showSnackBar(
-            //     title: "image Upload Success",
-            //     message: "",
-            //     contentType: ContentType.success);
-          });
-    } catch (e) {
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
-    }
-    return fileName!;
   }
 }

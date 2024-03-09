@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:api_cache_manager/api_cache_manager.dart';
+import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -16,34 +17,55 @@ import '../../old%20products/models/old_product_model.dart';
 class OldProductService {
   Future<List<OldProductModel>> getOldProducts(BuildContext context) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     List<OldProductModel> products = [];
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
-      http.Response response = await http.post(
-        Uri.parse("$hostedUrl/prod/oldProduct/viewOldProducts"),
-        body: jsonEncode({"sessionToken": user.sessionToken}),
-        headers: {"Content-Type": "application/json"},
-      );
+      var isCacheExist =
+          await APICacheManager().isAPICacheKeyExist(cacheGetOldProducts);
 
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            debugPrint("success hit");
-            for (int i = 0;
-                i < jsonDecode(response.body)['products'].length;
-                i++) {
-              products.add(
-                OldProductModel.fromMap(
-                    jsonDecode(response.body)['products'][i]),
-              );
-            }
-          });
+      if (!isCacheExist) {
+        http.Response response = await http.post(
+          Uri.parse("$hostedUrl/prod/oldProduct/viewOldProducts"),
+          body: jsonEncode({"sessionToken": user.sessionToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        httpErrorHandle(
+            response: response,
+            onSuccess: () async {
+              debugPrint("success api hit");
+              for (int i = 0;
+                  i < jsonDecode(response.body)['products'].length;
+                  i++) {
+                products.add(
+                  OldProductModel.fromMap(
+                      jsonDecode(response.body)['products'][i]),
+                );
+              }
+
+              APICacheDBModel cacheDBModel = APICacheDBModel(
+                  key: cacheGetOldProducts, syncData: response.body);
+
+              await APICacheManager().addCacheData(cacheDBModel);
+            });
+      } else {
+        var cacheData =
+            await APICacheManager().getCacheData(cacheGetOldProducts);
+
+        debugPrint("cache hit");
+        for (int i = 0;
+            i < jsonDecode(cacheData.syncData)['products'].length;
+            i++) {
+          products.add(
+            OldProductModel.fromMap(
+                jsonDecode(cacheData.syncData)['products'][i]),
+          );
+        }
+      }
     } catch (e) {
       debugPrint(e.toString());
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
     return products;
@@ -62,7 +84,6 @@ class OldProductService {
     double? loss,
   }) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       String? imageNameFromS3;
@@ -72,8 +93,7 @@ class OldProductService {
 
         if (imageNameFromS3 == null) {
           showSnackBar(
-              title: "Upload Failed",
-              message: "failed to upload image!",
+              title: "Failed to upload image!",
               contentType: ContentType.failure);
           return;
         } else {
@@ -100,13 +120,13 @@ class OldProductService {
 
       httpErrorHandle(
           response: response,
-          onSuccess: () {
+          onSuccess: () async {
+            await APICacheManager().deleteCache(cacheGetOldProducts);
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
   }
@@ -114,7 +134,6 @@ class OldProductService {
   Future<bool> deleteOldProduct(
       {required BuildContext context, required String productId}) async {
     String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
     final user = Provider.of<UserProvider>(context, listen: false).user;
     try {
       http.Response response = await http.post(
@@ -124,6 +143,7 @@ class OldProductService {
           headers: {"Content-Type": "application/json"});
 
       if (response.statusCode == 200) {
+        await APICacheManager().deleteCache(cacheGetOldProducts);
         return true;
       } else {
         return false;
@@ -131,41 +151,8 @@ class OldProductService {
     } catch (e) {
       showSnackBar(
           title: internalError,
-          message: unknownError,
           contentType: ContentType.warning);
     }
     return false;
-  }
-
-  Future<String?> uploadImageToS3(
-      {required BuildContext context, required File file}) async {
-    String internalError = AppLocalizations.of(context)!.internalError;
-    String unknownError = AppLocalizations.of(context)!.unknownErrorOccurred;
-    String? fileName;
-    try {
-      List<int> imageBytes = file.readAsBytesSync();
-      String base64Image = base64Encode(imageBytes);
-
-      http.Response response = await http.put(
-          Uri.parse("$hostedUrl/prod/upload"),
-          body: jsonEncode({"file": base64Image}),
-          headers: {"Content-Type": "application/json"});
-
-      httpErrorHandle(
-          response: response,
-          onSuccess: () {
-            fileName = jsonDecode(response.body)['fileName'];
-            // showSnackBar(
-            //     title: "image Upload Success",
-            //     message: "",
-            //     contentType: ContentType.success);
-          });
-    } catch (e) {
-      showSnackBar(
-          title: internalError,
-          message: unknownError,
-          contentType: ContentType.warning);
-    }
-    return fileName!;
   }
 }

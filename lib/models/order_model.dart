@@ -51,7 +51,7 @@ class Order {
           ?.map<OldJwellery>(
               (x) => OldJwellery.fromMap(x as Map<String, dynamic>))
           .toList(),
-      expected_deadline: DateTime.parse(map['expected_deadline'].toString()),
+      expected_deadline: DateTime.parse(map['expected_deadline']),
       id: map['id'].toString(),
       customer_phone: map['customer_phone'] as String,
       customer_name: map['customer_name'] as String,

@@ -1,5 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
@@ -114,9 +113,7 @@ class _SoldProductPreviewScreenState extends State<SoldProductPreviewScreen> {
               onPressed: () {
                 salesProvider.resetSales();
                 showSnackBar(
-                    title: AppLocalizations.of(context)!.salesCleared,
-                    message:
-                        AppLocalizations.of(context)!.allProductsWillBeCleared,
+                    title: AppLocalizations.of(context)!.allProductsWillBeCleared,
                     contentType: ContentType.warning);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

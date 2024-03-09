@@ -1,4 +1,3 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -49,8 +48,7 @@ class _AboutProductState extends State<AboutProduct> {
       for (int i = 0; i < salesProvider.products.length; i++) {
         if (salesProvider.products[i].id == product.id) {
           showSnackBar(
-              title: AppLocalizations.of(context)!.duplicateFound,
-              message: AppLocalizations.of(context)!.itemAlreadyInList,
+              title: AppLocalizations.of(context)!.itemAlreadyInList,
               contentType: ContentType.warning);
           return;
         }

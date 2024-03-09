@@ -28,12 +28,12 @@ class _OrderScreenState extends State<OrderScreen> {
   late List<PlutoColumn> columns;
   bool _isDeleting = false;
 
-  Future<void> getAllOrders() async {
+  Future<void> getOrders() async {
     debugPrint("hello yadava");
-    orders = await _orderService.getAllOrders(context);
+    orders = await _orderService.getOrders(context);
     setState(() {});
     debugPrint("hellow niesh");
-    debugPrint(orders.toString()); 
+    debugPrint(orders.toString());
   }
 
   Future<void> deleteOrder(String orderId, BuildContext context) async {
@@ -77,7 +77,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, getAllOrders);
+    Future.delayed(Duration.zero, getOrders);
   }
 
   @override
