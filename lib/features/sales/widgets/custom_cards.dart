@@ -1,6 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:gap/gap.dart';
+import '../../../utils/custom_decorators.dart';
+import '../../../utils/global_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -49,11 +53,14 @@ Widget buildSalesItemsList(BuildContext context) {
                 return Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: buildInfoRow(
-                            product.name,
-                            "${AppLocalizations.of(context)!.type}: ${product.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : product.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${product.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: रु${product.jyala}\n ${AppLocalizations.of(context)!.jarti}: ${product.jarti} ${product.jartiType == "%" ? AppLocalizations.of(context)!.percentage : AppLocalizations.of(context)!.laal} \n ${AppLocalizations.of(context)!.price}: ${getNumberFormat(product.amount)}",
+                        AutoSizeText(
+                          product.name,
+                          style: customTextDecoration().copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
                         IconButton(
@@ -65,6 +72,30 @@ Widget buildSalesItemsList(BuildContext context) {
                             color: Colors.red,
                           ),
                         ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        buildInfoRow(
+                            AppLocalizations.of(context)!.type,
+                            product.type == "Chhapawal"
+                                ? AppLocalizations.of(context)!.chhapawal
+                                : product.type == "Tejabi"
+                                    ? AppLocalizations.of(context)!.tejabi
+                                    : AppLocalizations.of(context)!.asalChandi),
+                        buildInfoRow(AppLocalizations.of(context)!.weight,
+                            "${product.weight} ${AppLocalizations.of(context)!.gram}"),
+                        buildInfoRow(AppLocalizations.of(context)!.jyala,
+                            " रु ${product.jyala}"),
+                        buildInfoRow(AppLocalizations.of(context)!.jarti,
+                            "${product.jarti} ${product.jartiType == "%" ? AppLocalizations.of(context)!.percentage : AppLocalizations.of(context)!.laal} "),
+                        buildInfoRow(AppLocalizations.of(context)!.actualPrice,
+                            "रु ${getNumberFormat(getTotalPrice(weight: product.weight, rate: goldRates[product.type]!))}",
+                            isPrice: true),
+                        buildInfoRow(AppLocalizations.of(context)!.price,
+                            "रु ${getNumberFormat(product.amount)}",
+                            isPrice: true),
+                        const Gap(10),
                       ],
                     ),
                     if (index != products.length - 1)

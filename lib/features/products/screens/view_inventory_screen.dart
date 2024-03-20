@@ -10,7 +10,7 @@ import '../../../utils/custom_decorators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
-import '../services/product_service.dart';
+import '../../../services/product_service.dart';
 import 'about_product_screen.dart';
 
 class ViewInventoryScreen extends StatefulWidget {
@@ -227,17 +227,17 @@ class _ViewInventoryScreenState extends State<ViewInventoryScreen> {
                                             //     ? const Text(
                                             //         "error fetching rates...")
                                             //     : Text(
-                                            //         "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                            //         "रु ${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
                                             subtitle: product.updatedAt != null
                                                 ? Text(
-                                                    "${AppLocalizations.of(context)!.lastUpdate}: ${formatDateTimeRange(product.updatedAt!)}")
+                                                    "${AppLocalizations.of(context)!.lastUpdate}: ${formatDateTime(product.updatedAt!)}")
                                                 : goldRates.isEmpty
                                                     ? const Text(
                                                         "error fetching rates...")
                                                     : Text(
-                                                        "रु${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
+                                                        "रु ${getTotalPrice(weight: product.weight!, rate: goldRates[product.productType!]!, jyala: product.jyala!, jarti: product.jarti!, stonePrice: product.stone_price ?? 0.0)}"),
                                             // trailing: Text(
-                                            //     "रु${NumberFormat('#,##,###.00').format(product.price!)}"),
+                                            //     "रु ${getNumberFormat(product.price!)}"),
                                             leading: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(5),

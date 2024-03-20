@@ -7,7 +7,7 @@ import '../../../utils/custom_decorators.dart';
 import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_button.dart';
-import '../../auth/services/user_service.dart';
+import '../../../services/user_service.dart';
 
 enum PasswordType {
   newPassword,

@@ -1,7 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:gap/gap.dart';
 import '../../../models/order_model.dart';
+import '../../../utils/custom_decorators.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/build_row_info.dart';
 
 Widget buildUserInfoCard(Order order, BuildContext context,
@@ -20,19 +23,22 @@ Widget buildUserInfoCard(Order order, BuildContext context,
           buildInfoRow(AppLocalizations.of(context)!.contactNumber,
               order.customer_phone),
           buildInfoRow(AppLocalizations.of(context)!.orderedItemsTotalPrice,
-              NumberFormat('#,##,###.00').format(totalOrderedPrice)),
+              "रु ${getNumberFormat(totalOrderedPrice)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.oldJwelleryTotalPrice,
-              NumberFormat('#,##,###.00').format(totalOldJwelleryPrice)),
-          buildInfoRow(
-              AppLocalizations.of(context)!.differencePrice,
-              NumberFormat('#,##,###.00')
-                  .format(totalOrderedPrice - totalOldJwelleryPrice)),
+              "रु ${getNumberFormat(totalOldJwelleryPrice)}",
+              isPrice: true),
+          buildInfoRow(AppLocalizations.of(context)!.differencePrice,
+              "रु ${getNumberFormat(totalOrderedPrice - totalOldJwelleryPrice)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.advancePayment,
-              NumberFormat('#,##,###.00').format(order.advanced_payment)),
+              "रु ${getNumberFormat(order.advanced_payment)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.remaining,
-              NumberFormat('#,##,###.00').format(order.remaining_payment)),
+              "रु ${getNumberFormat(order.remaining_payment)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.deadline,
-              DateFormat.yMMMd().format(order.expected_deadline)),
+              formatDateTime(order.expected_deadline)),
         ],
       ),
     ),
@@ -55,10 +61,31 @@ Widget buildOrderedItemsList(Order order, BuildContext context) {
           final orderedItem = order.ordered_items![index];
 
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildInfoRow(
+              AutoSizeText(
                 orderedItem.itemName,
-                "${AppLocalizations.of(context)!.type}: ${orderedItem.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : orderedItem.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${orderedItem.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(orderedItem.totalPrice)}",
+                style: customTextDecoration().copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              Column(
+                children: [
+                  buildInfoRow(
+                      AppLocalizations.of(context)!.type,
+                      orderedItem.type == "Chhapawal"
+                          ? AppLocalizations.of(context)!.chhapawal
+                          : orderedItem.type == "Tejabi"
+                              ? AppLocalizations.of(context)!.tejabi
+                              : AppLocalizations.of(context)!.asalChandi),
+                  buildInfoRow(AppLocalizations.of(context)!.weight,
+                      "${orderedItem.wt} ${AppLocalizations.of(context)!.gram}"),
+                  buildInfoRow(AppLocalizations.of(context)!.price,
+                      "रु ${getNumberFormat(orderedItem.totalPrice)}",
+                      isPrice: true),
+                  const Gap(10),
+                ],
               ),
               if (index != order.ordered_items!.length - 1)
                 const Divider(
@@ -89,13 +116,42 @@ Widget buildOldJwelleryList(Order order, BuildContext context) {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: order.old_jwellery?.length ?? 0,
         itemBuilder: (context, index) {
-          final oldJwellery = order.old_jwellery![index];
+          final oldProduct = order.old_jwellery![index];
 
           return Column(
             children: [
-              buildInfoRow(
-                  oldJwellery.itemName,
-                  "${AppLocalizations.of(context)!.type}: ${oldJwellery.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldJwellery.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldJwellery.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldJwellery.price)} \n ${AppLocalizations.of(context)!.rate}: ${NumberFormat('#,##,###.00').format(oldJwellery.rate)}"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AutoSizeText(
+                    oldProduct.itemName,
+                    style: customTextDecoration().copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  buildInfoRow(
+                      AppLocalizations.of(context)!.type,
+                      oldProduct.type == "Chhapawal"
+                          ? AppLocalizations.of(context)!.chhapawal
+                          : oldProduct.type == "Tejabi"
+                              ? AppLocalizations.of(context)!.tejabi
+                              : AppLocalizations.of(context)!.asalChandi),
+                  buildInfoRow(AppLocalizations.of(context)!.weight,
+                      "${oldProduct.wt} ${AppLocalizations.of(context)!.gram}"),
+                  buildInfoRow(AppLocalizations.of(context)!.rate,
+                      "रु ${oldProduct.rate}"),
+                  buildInfoRow(AppLocalizations.of(context)!.price,
+                      "रु ${getNumberFormat(oldProduct.price)}",
+                      isPrice: true),
+                  const Gap(10),
+                ],
+              ),
               if (index != order.old_jwellery!.length - 1)
                 const Divider(
                   color: Color(0xFFBDBCBC),

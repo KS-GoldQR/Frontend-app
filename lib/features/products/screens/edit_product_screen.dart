@@ -16,7 +16,7 @@ import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
 import '../../home/screens/qr_scanner_screen.dart';
-import '../services/product_service.dart';
+import '../../../services/product_service.dart';
 import 'about_product_screen.dart';
 
 class EditProductScreen extends StatefulWidget {

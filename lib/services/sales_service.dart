@@ -5,18 +5,19 @@ import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/sales_model.dart';
-import '../../../provider/sales_provider.dart';
-import '../../../provider/user_provider.dart';
-import '../../../utils/global_variables.dart';
-import '../../../utils/utils.dart';
-import '../../../utils/widgets/error_handling.dart';
-import '../../home/screens/home_screen.dart';
-import '../../orders/models/old_jwellery_model.dart';
-import '../models/sold_product_model.dart';
-import '../screens/sales_screen.dart';
+import '../models/sales_model.dart';
+import '../provider/sales_provider.dart';
+import '../provider/user_provider.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../utils/widgets/error_handling.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/orders/models/old_jwellery_model.dart';
+import '../features/sales/models/sold_product_model.dart';
+import '../features/sales/screens/sales_screen.dart';
 
 class SalesService {
   Future<List<SalesModel>> getSales(BuildContext context) async {
@@ -69,9 +70,7 @@ class SalesService {
       }
     } catch (e) {
       debugPrint(e.toString());
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
     return sales;
   }
@@ -114,9 +113,7 @@ class SalesService {
       }
     } catch (e) {
       debugPrint(e.toString());
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
       return false;
     }
   }
@@ -143,9 +140,7 @@ class SalesService {
         return false;
       }
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
       return false;
     }
   }
@@ -182,15 +177,38 @@ class SalesService {
           .replaceAll('"{', '{')
           .replaceAll('}"', '}');
 
+      // Input date string
+      final dateStr = salesList[i]['created_at'];
+
+// Split the date and time components
+      final dateComponents = dateStr.split(" ");
+      final nepaliDateComponents = dateComponents[0].split("-");
+      final timeComponents = dateComponents[1].split(":");
+
+// Extract components
+      final nepaliYear = int.parse(nepaliDateComponents[0]);
+      final nepaliMonth = int.parse(nepaliDateComponents[1]);
+      final nepaliDay = int.parse(nepaliDateComponents[2]);
+      final hour = int.parse(timeComponents[0]);
+      final minute = int.parse(timeComponents[1]);
+      final second = int.parse(timeComponents[2]);
+
+// Create a NepaliDateTime object
+      final nepaliDateTime = NepaliDateTime(
+          nepaliYear, nepaliMonth, nepaliDay, hour, minute, second);
       // Parse modified strings back to maps/lists
       Map<String, dynamic> rate = jsonDecode(modifiedRate);
       List<dynamic> products = jsonDecode(modifiedProducts);
       List<dynamic> oldProducts = jsonDecode(modifiedOldProducts);
 
+      debugPrint("modified old product");
+      debugPrint(oldProducts.toString());
+
       // Replace the original fields with parsed versions
       salesList[i]['rate'] = rate;
       salesList[i]['products'] = products;
       salesList[i]['old_products'] = oldProducts;
+      salesList[i]['created_at'] = nepaliDateTime.toString();
     }
 
     return salesList;

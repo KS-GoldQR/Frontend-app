@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../features/orders/models/old_jwellery_model.dart';
 import '../features/orders/models/ordered_items_model.dart';
-
 import '../models/customer_model.dart';
 
 class OrderProvider with ChangeNotifier {

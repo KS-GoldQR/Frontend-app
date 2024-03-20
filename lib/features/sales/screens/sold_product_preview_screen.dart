@@ -113,7 +113,8 @@ class _SoldProductPreviewScreenState extends State<SoldProductPreviewScreen> {
               onPressed: () {
                 salesProvider.resetSales();
                 showSnackBar(
-                    title: AppLocalizations.of(context)!.allProductsWillBeCleared,
+                    title:
+                        AppLocalizations.of(context)!.allProductsWillBeCleared,
                     contentType: ContentType.warning);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
@@ -169,7 +170,7 @@ class _SoldProductPreviewScreenState extends State<SoldProductPreviewScreen> {
                           fontSize: 20),
                     ),
                     Text(
-                      "रु${getNumberFormat(getTotalSellPrice(salesProvider.products))}",
+                      "रु ${getNumberFormat(getTotalSellPrice(salesProvider.products))}",
                       style: const TextStyle(
                         fontSize: 20,
                         overflow: TextOverflow.ellipsis,

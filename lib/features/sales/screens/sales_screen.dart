@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../models/sales_model.dart';
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
 import '../../reusable components/module_details_screen.dart';
-import '../service/sales_service.dart';
+import '../../../services/sales_service.dart';
 
 class SalesScreen extends StatefulWidget {
   static const String routeName = '/sold-items-screen';
@@ -41,6 +41,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   double getSoldOldProductTotalPrice(SalesModel sale) {
+    if (sale.oldProducts == null) return 0;
     double totalPrice = 0;
     for (int i = 0; i < sale.oldProducts!.length; i++) {
       totalPrice += sale.oldProducts![i].price;
@@ -92,7 +93,7 @@ class _SalesScreenState extends State<SalesScreen> {
       PlutoColumn(
         title: AppLocalizations.of(context)!.price,
         field: 'amount',
-        formatter: (value) => NumberFormat('#,##,###.00').format(value),
+        formatter: (value) => getNumberFormat(value),
         type: PlutoColumnType.number(
           allowFirstDot: true,
         ),
@@ -138,8 +139,8 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
               )
             : soldProducts!.isEmpty
-                ? const Center(
-                    child: Text("No products sold yet!"),
+                ? Center(
+                    child: Text(AppLocalizations.of(context)!.noProductsFound),
                   )
                 : PlutoGrid(
                     configuration: const PlutoGridConfiguration(

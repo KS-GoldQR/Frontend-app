@@ -13,7 +13,7 @@ import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/error_page.dart';
 import '../../products/screens/about_product_screen.dart';
 import '../../products/screens/edit_product_screen.dart';
-import '../../products/services/product_service.dart';
+import '../../../services/product_service.dart';
 
 // ignore: must_be_immutable
 class QRScannerScreen extends StatefulWidget {

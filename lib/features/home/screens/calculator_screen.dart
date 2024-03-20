@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 
 import '../../../utils/custom_decorators.dart';
 import '../../../utils/form_validators.dart';
@@ -311,7 +310,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           fontSize: 20),
                     ),
                     Text(
-                      "रु${NumberFormat('#,##,###.00').format(currentOrderPrice)}",
+                      "रु ${getNumberFormat(currentOrderPrice)}",
                       style: const TextStyle(
                         fontSize: 20,
                         overflow: TextOverflow.ellipsis,

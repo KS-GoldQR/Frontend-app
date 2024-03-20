@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
@@ -66,7 +65,7 @@ class _GoldRatesScreenState extends State<GoldRatesScreen> {
                                 ),
                               ),
                               Text(
-                                'रु ${NumberFormat('#,##,###.00').format(entry.value)}',
+                                'रु ${getNumberFormat(entry.value)}',
                                 style: const TextStyle(
                                   color: blueColor,
                                   fontWeight: FontWeight.w600,

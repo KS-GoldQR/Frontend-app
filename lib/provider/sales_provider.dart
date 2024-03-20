@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../features/sales/models/sold_product_model.dart';
 
 import '../features/orders/models/old_jwellery_model.dart';
+import '../features/sales/models/sold_product_model.dart';
 import '../models/customer_model.dart';
 
 class SalesProvider extends ChangeNotifier {

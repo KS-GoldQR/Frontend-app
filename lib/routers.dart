@@ -4,6 +4,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/home/screens/home_screen.dart';
 import 'features/home/screens/qr_scanner_screen.dart';
 import 'features/home/screens/user_details_screen.dart';
+import 'features/old products/screens/old_product_screen.dart';
 import 'features/orders/screens/create_order_screen.dart';
 import 'features/orders/screens/customer_details_screen.dart';
 import 'features/orders/screens/old_jwellery_screen.dart';
@@ -12,10 +13,8 @@ import 'features/products/screens/about_product_screen.dart';
 import 'features/products/screens/edit_product_screen.dart';
 import 'features/products/screens/view_inventory_screen.dart';
 import 'features/reusable%20components/final_preview_screen.dart';
-import 'utils/widgets/error_page.dart';
-
-import 'features/old products/screens/old_product_screen.dart';
 import 'features/sales/screens/sales_screen.dart';
+import 'utils/widgets/error_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
   switch (routeSettings.name) {

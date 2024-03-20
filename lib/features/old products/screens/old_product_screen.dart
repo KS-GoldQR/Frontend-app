@@ -2,17 +2,16 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/custom_decorators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
-import '../../old%20products/models/old_product_model.dart';
+import '../../../models/old_product_model.dart';
 import '../../old%20products/screens/add_old_product_screen.dart';
 import '../../old%20products/screens/view_old_product_screen.dart';
-import '../../old%20products/services/old_product_service.dart';
+import '../../../services/old_product_service.dart';
 
 class OldProductsScreen extends StatefulWidget {
   static const String routeName = "/old-products-screen";
@@ -252,7 +251,7 @@ class _OldProductsScreenState extends State<OldProductsScreen> {
                                                         context)!
                                                     .errorFetchingRates)
                                                 : Text(
-                                                    "रु${NumberFormat('#,##,###.00').format((product.weight * goldRates[product.productType]!) + (product.stonePrice ?? 0.0))}"),
+                                                    "रु ${getNumberFormat((product.weight * goldRates[product.productType]!) + (product.stonePrice ?? 0.0))}"),
                                             trailing: IconButton(
                                               onPressed: () =>
                                                   _showChoiceDialog(

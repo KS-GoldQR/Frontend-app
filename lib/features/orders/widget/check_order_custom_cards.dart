@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import '../../../provider/order_provider.dart';
+import '../../../utils/custom_decorators.dart';
 import '../../../utils/utils.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:remixicon/remixicon.dart';
@@ -32,7 +34,7 @@ Widget buildCheckOrderedItems(BuildContext context) {
   }
 
   return orders.isEmpty
-      ? const Center(child: Text("No Items are ordered"))
+      ? Center(child: Text(AppLocalizations.of(context)!.noProductsFound))
       : Card(
           elevation: 5.0,
           shape: RoundedRectangleBorder(
@@ -50,11 +52,14 @@ Widget buildCheckOrderedItems(BuildContext context) {
                 return Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: buildInfoRow(
-                            order.itemName,
-                            "${AppLocalizations.of(context)!.type}: ${order.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : order.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${order.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.jyala}: रु${getNumberFormat(order.jyala)} \n ${AppLocalizations.of(context)!.jarti}: ${getNumberFormat(order.jarti)} ${order.jartiType == "Laal" ? AppLocalizations.of(context)!.laal : AppLocalizations.of(context)!.percentage} \n ${AppLocalizations.of(context)!.price}: रु${getNumberFormat(order.totalPrice)}",
+                        AutoSizeText(
+                          order.itemName,
+                          style: customTextDecoration().copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
                         IconButton(
@@ -66,6 +71,27 @@ Widget buildCheckOrderedItems(BuildContext context) {
                             color: Colors.red,
                           ),
                         ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        buildInfoRow(
+                            AppLocalizations.of(context)!.type,
+                            order.type == "Chhapawal"
+                                ? AppLocalizations.of(context)!.chhapawal
+                                : order.type == "Tejabi"
+                                    ? AppLocalizations.of(context)!.tejabi
+                                    : AppLocalizations.of(context)!.asalChandi),
+                        buildInfoRow(AppLocalizations.of(context)!.weight,
+                            "${order.wt} ${AppLocalizations.of(context)!.gram}"),
+                        buildInfoRow(AppLocalizations.of(context)!.jyala,
+                            "रु ${order.jyala}"),
+                        buildInfoRow(AppLocalizations.of(context)!.jarti,
+                            "${order.jarti} ${order.jartiType == "%" ? AppLocalizations.of(context)!.percentage : AppLocalizations.of(context)!.laal} "),
+                        buildInfoRow(AppLocalizations.of(context)!.price,
+                            "रु ${getNumberFormat(order.totalPrice)}",
+                            isPrice: true),
+                        const Gap(10),
                       ],
                     ),
                     if (index != orders.length - 1)
@@ -107,7 +133,7 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
   }
 
   return orders.isEmpty
-      ? const Center(child: Text("No old Items are ordered"))
+      ? Center(child: Text(AppLocalizations.of(context)!.noProductsFound))
       : Card(
           elevation: 5.0,
           shape: RoundedRectangleBorder(
@@ -125,11 +151,14 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
                 return Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: buildInfoRow(
-                            order.itemName,
-                            "${AppLocalizations.of(context)!.type}: ${order.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : order.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${order.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.rate}: ${order.rate} \n ${AppLocalizations.of(context)!.loss}: ${order.loss} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(order.price)}",
+                        AutoSizeText(
+                          order.itemName,
+                          style: customTextDecoration().copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
                         IconButton(
@@ -141,6 +170,27 @@ Widget buildCheckOldJwelleryItems(BuildContext context) {
                             color: Colors.red,
                           ),
                         ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        buildInfoRow(
+                            AppLocalizations.of(context)!.type,
+                            order.type == "Chhapawal"
+                                ? AppLocalizations.of(context)!.chhapawal
+                                : order.type == "Tejabi"
+                                    ? AppLocalizations.of(context)!.tejabi
+                                    : AppLocalizations.of(context)!.asalChandi),
+                        buildInfoRow(AppLocalizations.of(context)!.weight,
+                            "${order.wt} ${AppLocalizations.of(context)!.gram}"),
+                        buildInfoRow(AppLocalizations.of(context)!.rate,
+                            "रु ${order.rate}"),
+                        buildInfoRow(AppLocalizations.of(context)!.loss,
+                            "रु ${order.loss}"),
+                        buildInfoRow(AppLocalizations.of(context)!.price,
+                            "रु ${getNumberFormat(order.price)}",
+                            isPrice: true),
+                        const Gap(10),
                       ],
                     ),
                     if (index != orders.length - 1)

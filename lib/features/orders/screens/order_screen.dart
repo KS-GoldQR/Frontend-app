@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../models/order_model.dart';
 import '../../../utils/global_variables.dart';
+import '../../../utils/utils.dart';
 import '../../../utils/widgets/loader.dart';
 import '../../reusable%20components/module_details_screen.dart';
-import '../services/order_service.dart';
+import '../../../services/order_service.dart';
 import 'create_order_screen.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -108,7 +108,7 @@ class _OrderScreenState extends State<OrderScreen> {
       PlutoColumn(
         title: AppLocalizations.of(context)!.remaining,
         field: 'amount',
-        formatter: (value) => NumberFormat('#,##,###.00').format(value),
+        formatter: (value) => getNumberFormat(value),
         type: PlutoColumnType.number(
           allowFirstDot: true,
         ),

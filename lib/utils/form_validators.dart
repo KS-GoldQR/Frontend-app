@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'utils.dart';
 
 validatePassword(String value, BuildContext context) {
@@ -102,7 +103,8 @@ validateStonePrice(String value, BuildContext context) {
 
 validateContactNumber(String value, BuildContext context) {
   if (value.isEmpty) {
-    return AppLocalizations.of(context)!.phoneNumberEmpty;
+    // return AppLocalizations.of(context)!.phoneNumberEmpty;
+    return null;
   }
 
   if (value.length != 10) {
@@ -113,7 +115,8 @@ validateContactNumber(String value, BuildContext context) {
 
 validateAddress(String value, BuildContext context) {
   if (value.isEmpty) {
-    return AppLocalizations.of(context)!.addressEmpty;
+    // return AppLocalizations.of(context)!.addressEmpty;
+    return null;
   }
   return null;
 }

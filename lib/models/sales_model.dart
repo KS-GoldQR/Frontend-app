@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 import '../features/orders/models/old_jwellery_model.dart';
 import '../features/sales/models/sold_product_model.dart';
 
@@ -8,9 +10,9 @@ class SalesModel {
   final String id;
   final String userId;
   final String customerName;
-  final String customerPhone;
+  final String? customerPhone;
   final Map<String, dynamic> rate;
-  final DateTime createdAt;
+  final NepaliDateTime createdAt;
   final List<SoldProduct>? products;
   final List<OldJwellery>? oldProducts;
 
@@ -18,7 +20,7 @@ class SalesModel {
       {required this.id,
       required this.userId,
       required this.customerName,
-      required this.customerPhone,
+      this.customerPhone,
       required this.rate,
       required this.createdAt,
       required this.products,
@@ -44,7 +46,7 @@ class SalesModel {
       customerName: map['customer_name'] as String,
       customerPhone: map['customer_phone'] as String,
       rate: Map<String, dynamic>.from((map['rate'] as Map<String, dynamic>)),
-      createdAt: DateTime.tryParse(map['created_at'])!,
+      createdAt: NepaliDateTime.tryParse(map['created_at'])!,
       products: (map['products'] as List<dynamic>?)
           ?.map<SoldProduct>(
               (x) => SoldProduct.fromMap(x as Map<String, dynamic>))

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:grit_qr_scanner/features/home/screens/change_password_screen.dart';
+import '../screens/change_password_screen.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 // import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -15,7 +16,7 @@ class CustomDrawer extends StatelessWidget {
   }) : super(key: key);
 
   String _getGreeting(BuildContext context) {
-    final hour = DateTime.now().hour;
+    final hour = NepaliDateTime.now().hour;
     if (hour < 12) {
       return '${AppLocalizations.of(context)!.goodMorning}!';
     } else if (hour < 18) {

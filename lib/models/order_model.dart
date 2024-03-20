@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 import '../features/orders/models/old_jwellery_model.dart';
 import '../features/orders/models/ordered_items_model.dart';
 
@@ -11,7 +13,7 @@ class Order {
   double advanced_payment;
   String user_id;
   List<OldJwellery>? old_jwellery;
-  DateTime expected_deadline;
+  NepaliDateTime expected_deadline;
   String id;
   String customer_phone;
   String customer_name;
@@ -51,7 +53,7 @@ class Order {
           ?.map<OldJwellery>(
               (x) => OldJwellery.fromMap(x as Map<String, dynamic>))
           .toList(),
-      expected_deadline: DateTime.parse(map['expected_deadline']),
+      expected_deadline: NepaliDateTime.parse(map['expected_deadline']),
       id: map['id'].toString(),
       customer_phone: map['customer_phone'] as String,
       customer_name: map['customer_name'] as String,
@@ -72,7 +74,7 @@ class Order {
     double? advanced_payment,
     String? user_id,
     List<OldJwellery>? old_jwellery,
-    DateTime? expected_deadline,
+    NepaliDateTime? expected_deadline,
     String? id,
     String? customer_phone,
     String? customer_name,

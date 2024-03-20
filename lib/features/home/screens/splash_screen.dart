@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+
 import '../../../utils/global_variables.dart';
 
 class SplashScreen extends StatelessWidget {

@@ -2,7 +2,6 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/order_provider.dart';
@@ -515,7 +514,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             fontSize: 20),
                       ),
                       Text(
-                        "रु${NumberFormat('#,##,###.00').format(currentOrderPrice)}",
+                        "रु ${getNumberFormat(currentOrderPrice)}",
                         style: const TextStyle(
                           fontSize: 20,
                           overflow: TextOverflow.ellipsis,
@@ -533,7 +532,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 //           mainAxisAlignment: MainAxisAlignment.center,
                 //           children: [
                 //             Text(
-                //               '${AppLocalizations.of(context)!.totalPrice}: रु${NumberFormat('#,##,###.00').format(totalPriceToShow)}',
+                //               '${AppLocalizations.of(context)!.totalPrice}: रु ${getNumberFormat(totalPriceToShow)}',
                 //               key: const ValueKey(true),
                 //               textAlign: TextAlign.center,
                 //               style: const TextStyle(fontSize: 20),

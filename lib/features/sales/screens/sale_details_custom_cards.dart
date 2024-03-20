@@ -1,8 +1,11 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:gap/gap.dart';
+import '../../../utils/utils.dart';
 
 import '../../../models/sales_model.dart';
+import '../../../utils/custom_decorators.dart';
 import '../../../utils/widgets/build_row_info.dart';
 
 Widget buildSalesUserInfoCard(SalesModel sale, BuildContext context,
@@ -19,17 +22,18 @@ Widget buildSalesUserInfoCard(SalesModel sale, BuildContext context,
         children: [
           buildInfoRow(AppLocalizations.of(context)!.name, sale.customerName),
           buildInfoRow(
-              AppLocalizations.of(context)!.contactNumber, sale.customerPhone),
+              AppLocalizations.of(context)!.contactNumber,sale.customerPhone ?? ""),
           buildInfoRow(AppLocalizations.of(context)!.soldItemPrice,
-              NumberFormat('#,##,###.00').format(totalProductPrice)),
+              "रु ${getNumberFormat(totalProductPrice)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.soldOldItemPrice,
-              NumberFormat('#,##,###.00').format(totalOldProductPrice)),
-          buildInfoRow(
-              AppLocalizations.of(context)!.totalPrice,
-              NumberFormat('#,##,###.00')
-                  .format(totalProductPrice - totalOldProductPrice)),
+              "रु ${getNumberFormat(totalOldProductPrice)}",
+              isPrice: true),
+          buildInfoRow(AppLocalizations.of(context)!.totalPrice,
+              "रु ${getNumberFormat(totalProductPrice - totalOldProductPrice)}",
+              isPrice: true),
           buildInfoRow(AppLocalizations.of(context)!.soldDate,
-              DateFormat.yMMMd().format(sale.createdAt)),
+              formatDateTime(sale.createdAt)),
         ],
       ),
     ),
@@ -52,10 +56,31 @@ Widget buildSoldProductsList(SalesModel sale, BuildContext context) {
           final soldItem = sale.products![index];
 
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildInfoRow(
+              AutoSizeText(
                 soldItem.name,
-                "${AppLocalizations.of(context)!.type}: ${soldItem.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : soldItem.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${soldItem.weight} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(soldItem.amount)}",
+                style: customTextDecoration().copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              Column(
+                children: [
+                  buildInfoRow(
+                      AppLocalizations.of(context)!.type,
+                      soldItem.type == "Chhapawal"
+                          ? AppLocalizations.of(context)!.chhapawal
+                          : soldItem.type == "Tejabi"
+                              ? AppLocalizations.of(context)!.tejabi
+                              : AppLocalizations.of(context)!.asalChandi),
+                  buildInfoRow(AppLocalizations.of(context)!.weight,
+                      "${soldItem.weight} ${AppLocalizations.of(context)!.gram}"),
+                  buildInfoRow(AppLocalizations.of(context)!.price,
+                      "रु ${getNumberFormat(soldItem.amount)}",
+                      isPrice: true),
+                  const Gap(10),
+                ],
               ),
               if (index != sale.products!.length - 1)
                 const Divider(
@@ -90,9 +115,38 @@ Widget buildSoldOldProductsList(SalesModel sale, BuildContext context) {
 
           return Column(
             children: [
-              buildInfoRow(
-                  oldProduct.itemName,
-                  "${AppLocalizations.of(context)!.type}: ${oldProduct.type == "Chhapawal" ? AppLocalizations.of(context)!.chhapawal : oldProduct.type == "Tejabi" ? AppLocalizations.of(context)!.tejabi : AppLocalizations.of(context)!.asalChandi} \n ${AppLocalizations.of(context)!.weight}: ${oldProduct.wt} ${AppLocalizations.of(context)!.gram} \n ${AppLocalizations.of(context)!.price}: ${NumberFormat('#,##,###.00').format(oldProduct.price)} \n ${AppLocalizations.of(context)!.rate}: ${NumberFormat('#,##,###.00').format(oldProduct.rate)}"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AutoSizeText(
+                    oldProduct.itemName,
+                    style: customTextDecoration().copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  buildInfoRow(
+                      AppLocalizations.of(context)!.type,
+                      oldProduct.type == "Chhapawal"
+                          ? AppLocalizations.of(context)!.chhapawal
+                          : oldProduct.type == "Tejabi"
+                              ? AppLocalizations.of(context)!.tejabi
+                              : AppLocalizations.of(context)!.asalChandi),
+                  buildInfoRow(AppLocalizations.of(context)!.weight,
+                      "${oldProduct.wt} ${AppLocalizations.of(context)!.gram}"),
+                  buildInfoRow(AppLocalizations.of(context)!.rate,
+                      "रु ${oldProduct.rate}"),
+                  buildInfoRow(AppLocalizations.of(context)!.price,
+                      "रु ${getNumberFormat(oldProduct.price)}",
+                      isPrice: true),
+                  const Gap(10),
+                ],
+              ),
               if (index != sale.oldProducts!.length - 1)
                 const Divider(
                   color: Color(0xFFBDBCBC),

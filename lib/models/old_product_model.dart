@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class OldProductModel {
   String productType;
@@ -9,7 +11,7 @@ class OldProductModel {
   String ownedBy;
   String name;
   double weight;
-  DateTime date;
+  NepaliDateTime date;
   String? image;
   double? stonePrice;
   String? stone;
@@ -64,7 +66,7 @@ class OldProductModel {
       ownedBy: map['owned_by'] as String,
       name: map['name'] as String,
       weight: double.tryParse(map['weight'])!,
-      date: DateTime.tryParse(map['date'])!,
+      date: NepaliDateTime.tryParse(map['date'])!,
       image: map['image'] as String?,
       stonePrice: map['stone_price'] != null
           ? double.tryParse(map['stone_price'])

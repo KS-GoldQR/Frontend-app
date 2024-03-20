@@ -2,11 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
-import '../../old%20products/models/old_product_model.dart';
+import '../../../models/old_product_model.dart';
 import '../../products/widgets/product_detail_card.dart';
 
 class ViewOldProductScreen extends StatefulWidget {
@@ -97,28 +96,19 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightInType(widget.product.weight, "Gram")} ${AppLocalizations.of(context)!.gram}"),
-                    ProductDetail(
-                        label: '${AppLocalizations.of(context)!.weight}: ',
-                        value:
-                            "${getWeightInType(widget.product.weight, "Laal")} ${AppLocalizations.of(context)!.laal}"),
-                    ProductDetail(
-                        label: '${AppLocalizations.of(context)!.weight}: ',
-                        value:
-                            "${getWeightInType(widget.product.weight, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+                            "${getWeightInType(widget.product.weight, "Gram")} ${AppLocalizations.of(context)!.gram} / ${getWeightInType(widget.product.weight, "Laal")} ${AppLocalizations.of(context)!.laal} / ${getWeightInType(widget.product.weight, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.actualPrice}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(widget.product.weight * widget.product.rate)}"),
+                            "रु ${getNumberFormat(widget.product.weight * widget.product.rate)}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.rate}: ',
-                        value:
-                            "रु${NumberFormat('#,##,###.00').format(widget.product.rate)}"),
+                        value: "रु ${getNumberFormat(widget.product.rate)}"),
                     if (widget.product.charge != null)
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.charge}: ',
                           value:
-                              "रु${NumberFormat('#,##,###.00').format(widget.product.charge)}"),
+                              "रु ${getNumberFormat(widget.product.charge)}"),
                     if (widget.product.stone != "None")
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.stone}: ',
@@ -128,15 +118,15 @@ class _ViewOldProductScreenState extends State<ViewOldProductScreen> {
                           label:
                               '${AppLocalizations.of(context)!.stonePrice}: ',
                           value:
-                              "रु${NumberFormat('#,##,###.00').format(widget.product.stonePrice)}"),
+                              "रु ${getNumberFormat(widget.product.stonePrice)}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.loss}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(widget.product.loss)} ${AppLocalizations.of(context)!.gram}"),
+                            "रु ${getNumberFormat(widget.product.loss)} ${AppLocalizations.of(context)!.gram}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.price}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: widget.product.weight, rate: widget.product.rate, stonePrice: widget.product.stonePrice ?? 0.0, loss: widget.product.loss))}"),
+                            "रु ${getNumberFormat(getTotalPrice(weight: widget.product.weight, rate: widget.product.rate, stonePrice: widget.product.stonePrice ?? 0.0, loss: widget.product.loss))}"),
                   ],
                 ),
               ),

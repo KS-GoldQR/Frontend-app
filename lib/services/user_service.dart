@@ -4,17 +4,18 @@ import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../models/user_model.dart';
-import '../../../provider/product_provider.dart';
-import '../../../provider/user_provider.dart';
-import '../../../utils/global_variables.dart';
-import '../../../utils/utils.dart';
-import '../../../utils/widgets/error_handling.dart';
-import '../../home/screens/home_screen.dart';
-import '../screens/login_screen.dart';
+import '../models/user_model.dart';
+import '../provider/product_provider.dart';
+import '../provider/user_provider.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../utils/widgets/error_handling.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/auth/screens/login_screen.dart';
 
 class UserService {
   Future<void> userLogin(
@@ -55,9 +56,7 @@ class UserService {
             contentType: ContentType.warning);
       }
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
   }
 
@@ -81,7 +80,7 @@ class UserService {
             response: response,
             onSuccess: () async {
               String endsAtString = jsonDecode(response.body)['ends_at'];
-              DateTime endsAt = DateTime.parse(endsAtString);
+              NepaliDateTime endsAt = NepaliDateTime.parse(endsAtString);
 
               User updatedUser = userProvider.user.copyWith(
                 userId: jsonDecode(response.body)['user_id'],
@@ -137,9 +136,7 @@ class UserService {
                 LoginScreen.routeName, (route) => false);
           });
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
   }
 
@@ -175,8 +172,7 @@ class UserService {
       }
     } catch (e) {
       showSnackBar(
-          title: "Something went wrong",
-          contentType: ContentType.failure);
+          title: "Something went wrong", contentType: ContentType.failure);
     }
     return false;
   }

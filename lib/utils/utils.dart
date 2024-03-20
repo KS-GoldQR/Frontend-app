@@ -4,6 +4,7 @@ import 'dart:io';
 // import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'widgets/error_handling.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -132,7 +133,7 @@ Future<void> getRate(BuildContext context) async {
           goldRates["Asal Chandi"] = double.parse(value);
         }
       });
-      lastUpdated = DateTime.now();
+      lastUpdated = NepaliDateTime.now();
       return;
     } else {
       return;
@@ -196,15 +197,15 @@ double getTotalPrice(
   return double.parse(result.toStringAsFixed(3));
 }
 
-String formatDateTime(DateTime date) {
-  final dateTime = DateTime(date.year, date.month, date.day);
-  return DateFormat.yMMMMd().format(dateTime);
+String formatDateTime(NepaliDateTime date) {
+  final dateTime = NepaliDateTime(date.year, date.month, date.day);
+  return NepaliDateFormat.yMMMd().format(dateTime);
 }
 
-String formatDateTimeRange(DateTime date) {
-  final dateTime = DateTime(date.year, date.month, date.day);
-  return DateFormat('d MMM y').format(dateTime);
-}
+// String formatDateTimeRange(NepaliDateTime date) {
+//   final dateTime = NepaliDateTime(date.year, date.month, date.day);
+//   return DateFormat('d MMM y').format(dateTime);
+// }
 
 (String?, String?, String?) translatedTypes({
   required BuildContext context,

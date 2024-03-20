@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/orders/models/old_jwellery_model.dart';
-import 'package:grit_qr_scanner/features/orders/models/ordered_items_model.dart';
+import '../models/old_jwellery_model.dart';
+import '../models/ordered_items_model.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
 import 'package:provider/provider.dart';
 
 import '../../../models/customer_model.dart';
@@ -14,7 +15,7 @@ import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
-import '../services/order_service.dart';
+import '../../../services/order_service.dart';
 
 class CustomerDetailsScreen extends StatefulWidget {
   static const String routeName = '/customer-details-screen';
@@ -32,7 +33,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _advancePaymentController =
       TextEditingController();
-  DateTime expectedDeadline = DateTime.now();
+  picker.NepaliDateTime expectedDeadline = picker.NepaliDateTime.now();
   final _nameFocus = FocusNode();
   final _addressFocus = FocusNode();
   final _phoneFocus = FocusNode();
@@ -51,12 +52,21 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    // final NepaliDateTime? picked = await showDatePicker(
+    //   context: context,
+    //   currentDate: NepaliDateTime.now(),
+    //   initialDate: expectedDeadline,
+    //   firstDate: NepaliDateTime(2000),
+    //   lastDate: NepaliDateTime(2101),
+    // );
+    final picker.NepaliDateTime? picked = await picker.showAdaptiveDatePicker(
       context: context,
-      currentDate: DateTime.now(),
-      initialDate: expectedDeadline,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialDate: picker.NepaliDateTime.now(),
+      firstDate: picker.NepaliDateTime(2000),
+      lastDate: picker.NepaliDateTime(2100),
+      // language: picker.Language.english,
+      // dateOrder: _dateOrder, // for iOS only
+      initialDatePickerMode: DatePickerMode.day, // for platform except iOS
     );
     if (picked != null && picked != expectedDeadline) {
       setState(() {

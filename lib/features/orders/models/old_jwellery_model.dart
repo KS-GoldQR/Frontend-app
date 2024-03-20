@@ -8,7 +8,7 @@ class OldJwellery {
   double? stonePrice;
   double price;
   double? charge;
-  double loss;
+  double? loss;
   double? rate;
   OldJwellery({
     required this.itemName,
@@ -18,7 +18,7 @@ class OldJwellery {
     this.stonePrice,
     required this.price,
     this.charge,
-   required this.loss,
+    this.loss,
     this.rate,
   });
 
@@ -31,8 +31,8 @@ class OldJwellery {
       'stone_price': stonePrice,
       'price': price,
       'charge': charge,
-      'loss':loss,
-      'rate':rate,
+      'loss': loss,
+      'rate': rate,
     };
   }
 
@@ -50,8 +50,8 @@ class OldJwellery {
               ? map['charge'] as double?
               : null
           : null,
-      loss: map['loss'] != null ? map['loss'] as double : 0.0,
-      rate: map['rate']!=null ? map['rate'] as double? : null,
+      loss: map['loss'] != null ? map['loss'] as double? : null,
+      rate: map['rate'] != null ? map['rate'] as double? : null,
     );
   }
 

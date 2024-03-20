@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class User {
   String userId;
   String? phoneNo;
   String? name;
-  DateTime? subscriptionEndsAt;
+  NepaliDateTime? subscriptionEndsAt;
   String? password;
   String? appVersion;
   String sessionToken;
@@ -37,7 +39,7 @@ class User {
       phoneNo: map['phone'] != null ? map['phone'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
       subscriptionEndsAt: map['ends_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['ends_at'] as int)
+          ? NepaliDateTime.tryParse(map['ends_at'])
           : null,
       password: map['password'] != null ? map['password'] as String : null,
       appVersion:
@@ -55,7 +57,7 @@ class User {
     String? userId,
     String? phoneNo,
     String? name,
-    DateTime? subscriptionEndsAt,
+    NepaliDateTime? subscriptionEndsAt,
     String? password,
     String? appVersion,
     String? sessionToken,

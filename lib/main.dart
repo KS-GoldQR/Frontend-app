@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'features/auth/screens/login_screen.dart';
-import 'features/auth/services/user_service.dart';
+import 'services/user_service.dart';
 import 'features/home/screens/home_screen.dart';
 import 'features/home/screens/splash_screen.dart';
 import 'provider/language_provider.dart';

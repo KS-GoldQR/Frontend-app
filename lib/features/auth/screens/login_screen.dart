@@ -2,12 +2,13 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/utils/form_validators.dart';
 import 'package:loading_btn/loading_btn.dart';
+
 import '../../../utils/custom_decorators.dart';
+import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../home/widgets/qr_button.dart';
-import '../services/user_service.dart';
+import '../../../services/user_service.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login-screen';

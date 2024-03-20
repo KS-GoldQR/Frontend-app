@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'env.dart';
 
 String hostedUrl = Env.hostedUrl;
@@ -14,7 +15,7 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Map<String, double> goldRates = {};
-DateTime lastUpdated = DateTime.now();
+NepaliDateTime lastUpdated = NepaliDateTime.now();
 
 const Color greyColor = Color(0xFF444242);
 const Color blueColor = Color(0xFF276080);

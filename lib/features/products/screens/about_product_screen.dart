@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -51,7 +50,7 @@ class _AboutProductState extends State<AboutProduct> {
               title: AppLocalizations.of(context)!.itemAlreadyInList,
               contentType: ContentType.warning);
           return;
-        }
+        }  
       }
     }
 
@@ -181,19 +180,11 @@ class _AboutProductState extends State<AboutProduct> {
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.weight}: ',
                         value:
-                            "${getWeightInType(product!.weight!, "Gram")} ${AppLocalizations.of(context)!.gram}"),
-                    ProductDetail(
-                        label: '${AppLocalizations.of(context)!.weight}: ',
-                        value:
-                            "${getWeightInType(product!.weight!, "Laal")} ${AppLocalizations.of(context)!.laal}"),
-                    ProductDetail(
-                        label: '${AppLocalizations.of(context)!.weight}: ',
-                        value:
-                            "${getWeightInType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
+                            "${getWeightInType(product!.weight!, "Gram")} ${AppLocalizations.of(context)!.gram} / ${getWeightInType(product!.weight!, "Laal")} ${AppLocalizations.of(context)!.laal} / ${getWeightInType(product!.weight!, "Tola")} ${AppLocalizations.of(context)!.tola}"),
                     ProductDetail(
                         label: '${AppLocalizations.of(context)!.actualPrice}: ',
                         value:
-                            "रु${NumberFormat('#,##,###.00').format(product!.weight! * goldRates[product!.productType!]!)}"),
+                            "रु ${getNumberFormat(product!.weight! * goldRates[product!.productType!]!)}"),
                     if (product!.stone != "None")
                       ProductDetail(
                           label: '${AppLocalizations.of(context)!.stone}: ',
@@ -202,12 +193,11 @@ class _AboutProductState extends State<AboutProduct> {
                       ProductDetail(
                           label:
                               '${AppLocalizations.of(context)!.stonePrice}: ',
-                          value:
-                              "रु${NumberFormat('#,##,###.00').format(product!.stone_price)}"),
+                          value: "रु ${getNumberFormat(product!.stone_price)}"),
                     Row(
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.jyala}: ',
+                          '${AppLocalizations.of(context)!.jyala} (रु): ',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -247,7 +237,7 @@ class _AboutProductState extends State<AboutProduct> {
                             onChanged: (value) {
                               _jyalaController.text = value;
                               _totalPriceController.text =
-                                  "रु${NumberFormat('#,##,###.00').format(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
+                                  "रु ${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
                             },
                             validator: (value) =>
                                 validateJyala(value!, context),
@@ -310,7 +300,7 @@ class _AboutProductState extends State<AboutProduct> {
                             onChanged: (value) {
                               _jartiController.text = value;
                               _totalPriceController.text =
-                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price, jartiWeightType: product!.jartiType))}";
+                                  "रु ${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price, jartiWeightType: product!.jartiType))}";
                             },
                             validator: (value) =>
                                 validateJarti(value!, context),
@@ -346,7 +336,7 @@ class _AboutProductState extends State<AboutProduct> {
                           child: TextFormField(
                             controller: _totalPriceController
                               ..text =
-                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: product!.jyala!, jarti: product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}",
+                                  "रु ${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: product!.jyala!, jarti: product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}",
                             enabled: false, // Disable user input
                             style: const TextStyle(color: Colors.black),
                             decoration: const InputDecoration(
@@ -364,7 +354,7 @@ class _AboutProductState extends State<AboutProduct> {
                             ),
                             onChanged: (value) {
                               _totalPriceController.text =
-                                  "रु${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
+                                  "रु ${getNumberFormat(getTotalPrice(weight: product!.weight!, rate: goldRates[product!.productType!]!, jyala: double.tryParse(_jyalaController.text) ?? product!.jyala!, jarti: double.tryParse(_jartiController.text) ?? product!.jarti!, stonePrice: product!.stone_price ?? 0.0, jartiWeightType: product!.jartiType))}";
                             },
                           ),
                         ),
@@ -375,7 +365,7 @@ class _AboutProductState extends State<AboutProduct> {
                       ProductDetail(
                           label:
                               "${AppLocalizations.of(context)!.lastUpdate}: ",
-                          value: formatDateTimeRange(product!.updatedAt!)),
+                          value: formatDateTime(product!.updatedAt!)),
                     const Gap(20),
                     if (product!.validSession == "1" ||
                         widget.args['fromInventory'])

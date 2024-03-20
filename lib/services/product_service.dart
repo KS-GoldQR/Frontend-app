@@ -8,13 +8,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../../../models/product_model.dart';
-import '../../../provider/product_provider.dart';
-import '../../../provider/user_provider.dart';
-import '../../../utils/global_variables.dart';
-import '../../../utils/utils.dart';
-import '../../../utils/widgets/error_handling.dart';
-import '../../../utils/widgets/error_page.dart';
+import '../models/product_model.dart';
+import '../provider/product_provider.dart';
+import '../provider/user_provider.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../utils/widgets/error_handling.dart';
+import '../utils/widgets/error_page.dart';
 
 class ProductService {
   Future<List<Product>> getInventory(BuildContext context) async {

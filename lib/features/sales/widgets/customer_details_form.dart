@@ -13,7 +13,7 @@ import '../../../utils/custom_decorators.dart';
 import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_button.dart';
-import '../service/sales_service.dart';
+import '../../../services/sales_service.dart';
 
 class CustomerDetailsForm extends StatefulWidget {
   const CustomerDetailsForm({super.key});

@@ -8,14 +8,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../../../models/order_model.dart';
-import '../../../provider/order_provider.dart';
-import '../../../provider/user_provider.dart';
-import '../../../utils/global_variables.dart';
-import '../../../utils/utils.dart';
-import '../../../utils/widgets/error_handling.dart';
-import '../../home/screens/home_screen.dart';
-import '../screens/order_screen.dart';
+import '../models/order_model.dart';
+import '../provider/order_provider.dart';
+import '../provider/user_provider.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../utils/widgets/error_handling.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/orders/screens/order_screen.dart';
 
 class OrderService {
   Future<List<Order>> getOrders(BuildContext context) async {

@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
-import 'package:grit_qr_scanner/features/old%20products/services/old_product_service.dart';
-import 'package:grit_qr_scanner/features/orders/services/order_service.dart';
-import 'package:grit_qr_scanner/features/products/services/product_service.dart';
-import 'package:grit_qr_scanner/features/sales/service/sales_service.dart';
+import 'package:grit_qr_scanner/services/old_product_service.dart';
+import 'package:grit_qr_scanner/services/order_service.dart';
+import 'package:grit_qr_scanner/services/product_service.dart';
+import 'package:grit_qr_scanner/services/sales_service.dart';
 import 'package:grit_qr_scanner/utils/utils.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:remixicon/remixicon.dart';
 
 import '../../../utils/global_variables.dart';
 import '../../../utils/widgets/custom_card.dart';
 import '../../../utils/widgets/error_page.dart';
-import '../../auth/services/user_service.dart';
+import '../../../services/user_service.dart';
 import '../../old%20products/screens/old_product_screen.dart';
 import '../../orders/screens/order_screen.dart';
 import '../../products/screens/view_inventory_screen.dart';
@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Text(
-                        "${AppLocalizations.of(context)!.lastUpdate}: ${DateFormat.yMMMd().format(lastUpdated)}",
+                        "${AppLocalizations.of(context)!.lastUpdate}: ${NepaliDateFormat.yMMMd().format(lastUpdated)}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,

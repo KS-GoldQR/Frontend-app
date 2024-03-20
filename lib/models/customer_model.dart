@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Customer {
   String name;
   String? phone;
   String? address;
-  DateTime? expectedDeadline;
+  NepaliDateTime? expectedDeadline;
   double? advance;
   double? remainingPayment;
   Customer({
@@ -24,7 +26,7 @@ class Customer {
       'customer_address': address,
       'expected_deadline': expectedDeadline?.millisecondsSinceEpoch,
       'advance_payment': advance,
-      'remaining_payment':remainingPayment,
+      'remaining_payment': remainingPayment,
     };
   }
 
@@ -33,7 +35,8 @@ class Customer {
       name: map['customer_name'] as String,
       phone: map['customer_phone'] as String?,
       address: map['customer_address'] as String?,
-      expectedDeadline: DateTime.tryParse(map['expected_deadline'].toString()),
+      expectedDeadline:
+          NepaliDateTime.tryParse(map['expected_deadline'].toString()),
       advance: double.tryParse(map['advance_payment']),
       remainingPayment: double.tryParse(map['remaining_payment']),
     );

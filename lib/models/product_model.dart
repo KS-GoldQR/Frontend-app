@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+
 class Product {
   String id;
   String? image;
@@ -20,8 +22,8 @@ class Product {
   String? customerName;
   String? customerAddress;
   String? customerPhone;
-  DateTime? updatedAt;
-  DateTime? soldAt;
+  NepaliDateTime? updatedAt;
+  NepaliDateTime? soldAt;
   String owner_name;
   String owner_phone;
   String validSession;
@@ -102,11 +104,13 @@ class Product {
       customerPhone: map['customer_phone'] as String?,
       updatedAt: map.containsKey('updated_at')
           ? (map['updated_at'] != null
-              ? DateTime.tryParse(map['updated_at'])
+              ? NepaliDateTime.tryParse(map['updated_at'])
               : null)
           : null,
       soldAt: map.containsKey('sold_at')
-          ? (map['sold_at'] != null ? DateTime.tryParse(map['sold_at']) : null)
+          ? (map['sold_at'] != null
+              ? NepaliDateTime.tryParse(map['sold_at'])
+              : null)
           : null,
       owner_name: map['owner_name'] != null ? map['owner_name'] ?? "" : "",
       owner_phone: map['owner_phone'] != null ? map['owner_phone'] ?? "" : "",
@@ -137,8 +141,8 @@ class Product {
     String? customerName,
     String? customerAddress,
     String? customerPhone,
-    DateTime? updatedAt,
-    DateTime? soldAt,
+    NepaliDateTime? updatedAt,
+    NepaliDateTime? soldAt,
     String? owner_name,
     String? owner_phone,
     String? validSession,

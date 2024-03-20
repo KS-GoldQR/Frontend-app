@@ -8,11 +8,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../../../provider/user_provider.dart';
-import '../../../utils/global_variables.dart';
-import '../../../utils/utils.dart';
-import '../../../utils/widgets/error_handling.dart';
-import '../../old%20products/models/old_product_model.dart';
+import '../provider/user_provider.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../utils/widgets/error_handling.dart';
+import '../models/old_product_model.dart';
 
 class OldProductService {
   Future<List<OldProductModel>> getOldProducts(BuildContext context) async {
@@ -37,6 +37,8 @@ class OldProductService {
               for (int i = 0;
                   i < jsonDecode(response.body)['products'].length;
                   i++) {
+
+                // TODO : date is not parsing as expected
                 products.add(
                   OldProductModel.fromMap(
                       jsonDecode(response.body)['products'][i]),
@@ -64,9 +66,7 @@ class OldProductService {
       }
     } catch (e) {
       debugPrint(e.toString());
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
     return products;
   }
@@ -125,9 +125,7 @@ class OldProductService {
             navigatorKey.currentState!.pop();
           });
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
   }
 
@@ -149,9 +147,7 @@ class OldProductService {
         return false;
       }
     } catch (e) {
-      showSnackBar(
-          title: internalError,
-          contentType: ContentType.warning);
+      showSnackBar(title: internalError, contentType: ContentType.warning);
     }
     return false;
   }

@@ -14,7 +14,7 @@ import '../../../utils/form_validators.dart';
 import '../../../utils/global_variables.dart';
 import '../../../utils/utils.dart';
 import '../../../utils/widgets/custom_button.dart';
-import '../../old%20products/services/old_product_service.dart';
+import '../../../services/old_product_service.dart';
 
 class AddOldProductScreen extends StatefulWidget {
   const AddOldProductScreen({super.key});
